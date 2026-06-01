@@ -36,6 +36,8 @@ Last updated: 2026-06-01.
 - Local dashboard is running at `http://127.0.0.1:8788`.
 - Dashboard implementation split live status polling from settings loading to reduce request pressure on the ESP32.
 - A normal API restart recovered mining after a temporary zero-hash state; post-restart readbacks showed about `1.04 MH/s` and accepted shares increasing.
+- Rendered visual audit completed for the local dashboard at desktop and mobile widths with no console errors or horizontal overflow.
+- Dashboard polish added safe device personalization controls for hostname and time display, fixed partial API error rendering, slowed live polling to reduce ESP32 load, and documented LAN access limits.
 
 ## Needs User Input
 

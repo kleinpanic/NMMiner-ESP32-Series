@@ -25,13 +25,14 @@ function showToast(message, type = "ok") {
 }
 
 async function fetchJson(url, options = {}) {
+  const { allowPartial = false, headers = {}, ...fetchOptions } = options;
   const response = await fetch(url, {
-    headers: { "Accept": "application/json", ...(options.headers || {}) },
-    ...options,
+    headers: { "Accept": "application/json", ...headers },
+    ...fetchOptions,
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.ok === false) {
-    throw new Error(data.detail || data.error || `HTTP ${response.status}`);
+  if (!response.ok || (!allowPartial && data.ok === false)) {
+    throw new Error(data.detail || data.error || data.errors?.[0] || `HTTP ${response.status}`);
   }
   return data;
 }
@@ -91,6 +92,8 @@ function setFormValues(formId, values) {
 }
 
 function updateForms(settings = {}) {
+  setFormValues("network-form", settings.network);
+  setFormValues("time-form", settings.time);
   setFormValues("preference-form", settings.preference);
   setFormValues("market-form", settings.market);
   setFormValues("weather-form", settings.weather);
@@ -259,9 +262,9 @@ async function refreshDashboard(manual = false) {
   state.refreshPromise = (async () => {
     try {
       text("#poll-state", "syncing");
-      const data = await fetchJson("/api/dashboard");
+      const data = await fetchJson("/api/dashboard", { allowPartial: true });
       updateStatus(data);
-      if (manual) showToast("refreshed");
+      if (manual) showToast(data.errors?.length ? "refreshed with warnings" : "refreshed", data.errors?.length ? "error" : "ok");
     } catch (error) {
       text("#poll-state", "offline");
       showToast(error.message, "error");
@@ -275,7 +278,7 @@ async function refreshDashboard(manual = false) {
 
 async function refreshSettings(manual = false) {
   try {
-    const data = await fetchJson("/api/settings");
+    const data = await fetchJson("/api/settings", { allowPartial: true });
     updateForms(data.settings);
     if (manual && data.errors?.length) showToast(`settings partial: ${data.errors.length}`, "error");
   } catch (error) {
@@ -375,10 +378,13 @@ function bindEvents() {
 
 function boot() {
   bindEvents();
-  if (window.lucide) window.lucide.createIcons();
+  if (window.lucide) {
+    window.lucide.createIcons();
+    document.body.classList.add("icons-ready");
+  }
   refreshDashboard();
   refreshSettings();
-  window.setInterval(refreshDashboard, 5000);
+  window.setInterval(refreshDashboard, 10000);
   window.setInterval(refreshSettings, 60000);
 }
 
