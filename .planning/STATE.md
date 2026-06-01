@@ -11,20 +11,34 @@ Last updated: 2026-06-01.
 - Device detected on `/dev/ttyUSB0`.
 - Full 4 MB flash backup completed.
 - Backup SHA-256: `a8c7cae425f1bb206d49adf4be802bda91b626035a1bf5c1d9fafd0cfe6715e4`.
-- Current firmware: `v1.8.28`.
+- Original firmware: `v1.8.28`.
 - Latest official firmware: `v2.0.02`.
 - Display target: `esp32-2432s028r-st7789`.
 - `nmap-2.4g` AP observed locally.
 - User clarified that `Homebase` exists and is the 2.4 GHz SSID.
 - `NMController_web` README, main Python file, and web monitor template snapshots downloaded.
+- Firmware upgraded to official `v2.0.02` using the `esp32-2432s028r-st7789` target.
+- License verification passes after upgrade.
+- Serial config sent for `Homebase` without disconnecting the laptop from `Homebase5`.
+- Device joined LAN at `192.168.1.136`.
+- API verified firmware `v2.0.02`, hostname `cyd2.8_1a76f7`, SSID `Homebase`, timezone `-4`, and NTP sync.
+- Recovered BTC wallet is configured for both primary and fallback pools.
+- Runtime pool testing selected `pool.nerdminers.org:3333` as primary and `solobtc.nmminer.com:3333` as fallback.
+- Post-reboot API showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares.
 
 ## Needs User Input
 
-- `Homebase` Wi-Fi password.
-- Confirmation whether to flash `v2.0.02` now or keep the working `v1.8.28` until Wi-Fi is configured.
+- Preference decisions for customization: on-device screen, LAN web UI, NMController Web, or a new local dashboard.
 
 ## Risk Notes
 
 - `Homebase5` was observed only on 5 GHz channels during local scan; use `Homebase` for this ESP32.
 - Flash backup and recovered config contain secrets and are gitignored.
 - Firecrawl could not scrape the Amazon page because the account has insufficient credits.
+- Do not connect the laptop to the miner AP while it needs to stay online through `Homebase5`; use USB serial and LAN API.
+
+## Session Continuity
+
+Last session: 2026-06-01.
+Stopped at: Baseline setup complete; ready to audit/customize UI, monitor, API, and hardware options.
+Resume file: none.

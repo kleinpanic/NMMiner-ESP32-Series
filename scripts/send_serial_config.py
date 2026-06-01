@@ -27,6 +27,24 @@ def main() -> int:
     )
     parser.add_argument("--primary-password", default="x")
     parser.add_argument("--fallback-password", default="x")
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=1.0,
+        help="Seconds to wait after opening the serial port before first write.",
+    )
+    parser.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Number of times to write the JSON payload.",
+    )
+    parser.add_argument(
+        "--repeat-interval",
+        type=float,
+        default=0.5,
+        help="Seconds between repeated writes.",
+    )
     args = parser.parse_args()
 
     payload = {
@@ -45,15 +63,16 @@ def main() -> int:
     with serial.Serial(args.port, args.baud, timeout=2) as ser:
         ser.dtr = False
         ser.rts = False
-        time.sleep(1.0)
-        ser.write(encoded)
-        ser.flush()
-        time.sleep(0.5)
+        time.sleep(args.delay)
+        for idx in range(args.repeat):
+            ser.write(encoded)
+            ser.flush()
+            if idx + 1 < args.repeat:
+                time.sleep(args.repeat_interval)
 
-    print(f"Sent {len(encoded)} bytes to {args.port}")
+    print(f"Sent {len(encoded)} bytes to {args.port} ({args.repeat} write(s))")
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -8,7 +8,18 @@ Bring up, preserve, upgrade, and operate an NM-CYD / ESP32-2432S028 NMMiner nove
 
 The device was previously configured for `TheBrickMansion`, which is no longer the target Wi-Fi. It is plugged into this laptop over USB serial as `/dev/ttyUSB0`.
 
-The device boot log identifies:
+Current baseline setup:
+
+- Firmware: official `v2.0.02`.
+- Board target: `esp32-2432s028r-st7789`.
+- Wi-Fi: `Homebase` 2.4 GHz.
+- LAN API: `http://192.168.1.136`.
+- Primary pool: `stratum+tcp://pool.nerdminers.org:3333`.
+- Fallback pool: `stratum+tcp://solobtc.nmminer.com:3333`.
+- Timezone: `-4`; NTP sync observed.
+- Wallet: recovered BTC mainnet P2SH address configured and validated.
+
+The original device boot log identified:
 
 - NMMiner firmware `v1.8.28`.
 - Board model `cyd 2.8`.

@@ -4,10 +4,14 @@
 
 - Board: NM-CYD / ESP32-2432S028, CYD 2.8.
 - Chip from `esptool`: ESP32-D0WD-V3, 4 MB flash.
-- Current firmware from serial boot log: NMMiner `v1.8.28`.
+- Original firmware from serial boot log: NMMiner `v1.8.28`.
+- Current firmware after upgrade: NMMiner `v2.0.02`.
 - Latest official release found via GitHub/API and flash manifest: `v2.0.02`, published 2026-05-09.
 - Current display firmware target: `esp32-2432s028r-st7789`.
 - Full flash backup completed before any write.
+- Current LAN address: `http://192.168.1.136`.
+- Current Wi-Fi SSID: `Homebase`.
+- Current timezone: `-4`; NTP sync observed in the serial log.
 
 The current flash backup contains the old Wi-Fi credentials, wallet, pools, and device license. Those recovered values are written in `secrets/recovered-device-config-2026-06-01.txt`, which is intentionally ignored by git.
 
@@ -37,6 +41,8 @@ The ESP32 supports 2.4 GHz Wi-Fi only. A scan from this laptop saw:
 
 The intended long-term SSID is `Homebase`, which should be the 2.4 GHz network. Do not use `Homebase5`; as scanned here, `Homebase5` is the 5 GHz network and the ESP32 cannot join it.
 
+The device is currently configured for `Homebase` and confirmed online at `192.168.1.136`. Do not connect the laptop to the miner AP (`nmap-2.4g`) while relying on the laptop's Wi-Fi for internet access; use USB serial or the LAN API instead.
+
 ## Pool References
 
 The Amazon manual lists these BTC low-difficulty pools:
@@ -55,11 +61,28 @@ The official GitHub README for newer NMMiner firmware also lists:
 
 For this setup, keep BTC pools low difficulty and avoid normal high-difficulty pools.
 
+Runtime pool check from this network:
+
+| Pool | Result |
+| --- | --- |
+| `pool.nerdminers.org:3333` | Responded to `mining.subscribe` and advertised difficulty `0.001`. |
+| `public-pool.io:21496` | TCP connected, but did not return a subscribe response. |
+| `pool.tazmining.ch:33333` | Timed out from this network. |
+| `solobtc.nmminer.com:3333` | Responded to `mining.subscribe`. |
+| `au.solobtc.nmminer.com:3333` | Responded to `mining.subscribe`. |
+
+Current configured pools:
+
+- Primary: `stratum+tcp://pool.nerdminers.org:3333`
+- Fallback: `stratum+tcp://solobtc.nmminer.com:3333`
+
+Post-reboot API verification showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares.
+
 ## Firmware Upgrade Notes
 
-Current: `v1.8.28`.
+Original: `v1.8.28`.
 
-Latest official manifest/release: `v2.0.02`.
+Current/latest official manifest/release: `v2.0.02`.
 
 Downloaded local release files are under `firmware/v2.0.02/` and are gitignored. The correct target for this unit is:
 
@@ -77,7 +100,7 @@ The official flasher writes these offsets for `v2.0.02` on this board:
 | `0x10000` | `firmware.bin` |
 | `0x390000` | `littlefs.bin` |
 
-Prepared command:
+Reflash command:
 
 ```bash
 ./scripts/flash_v2_0_02.sh
@@ -109,7 +132,31 @@ The official flash tool sends a JSON object over USB serial with these keys:
 Use the helper:
 
 ```bash
-./scripts/send_serial_config.py --ssid 'Homebase' --password '<wifi password>' --wallet '<btc wallet>'
+./scripts/send_serial_config.py --ssid 'Homebase' --password '<wifi password>' --wallet '<btc wallet>' --delay 4.5
 ```
 
 If the serial config path does not take, use the AP configuration path instead: long-press `BOOT`, join `nmap-2.4g`, open `http://192.168.4.1`.
+
+The successful setup used a single timed serial write after opening `/dev/ttyUSB0`; repeated writes are supported by the helper for timing experiments, but a single correctly timed write avoids concatenating multiple JSON objects in the firmware parser.
+
+## API Verification
+
+Useful readbacks:
+
+```bash
+curl http://192.168.1.136/probe
+curl http://192.168.1.136/api/system/info
+curl http://192.168.1.136/api/setting/network
+curl http://192.168.1.136/api/setting/mining
+curl http://192.168.1.136/api/setting/time
+```
+
+Known-good final state:
+
+- Firmware: `v2.0.02`
+- Hostname: `cyd2.8_1a76f7`
+- Wi-Fi SSID: `Homebase`
+- Timezone: `-4`
+- Primary pool: `stratum+tcp://pool.nerdminers.org:3333`
+- Secondary pool: `stratum+tcp://solobtc.nmminer.com:3333`
+- Recovered wallet configured for both primary and secondary pool users

@@ -15,7 +15,7 @@ Status: complete.
 
 ## Phase 2: Configuration Recovery
 
-Status: blocked on `Homebase` 2.4 GHz Wi-Fi password.
+Status: complete.
 
 - Use target 2.4 GHz SSID `Homebase`.
 - Send serial config or use AP config page.
@@ -24,7 +24,7 @@ Status: blocked on `Homebase` 2.4 GHz Wi-Fi password.
 
 ## Phase 3: Firmware Upgrade
 
-Status: ready, not flashed.
+Status: complete.
 
 - Confirm upgrade to `v2.0.02`.
 - Flash ST7789 build using official offsets.
@@ -34,7 +34,7 @@ Status: ready, not flashed.
 
 ## Phase 4: Monitor And Tune
 
-Status: pending.
+Status: complete baseline; future tuning remains available.
 
 - Configure low-difficulty BTC pools.
 - Confirm wallet/worker and accepted/rejected shares.

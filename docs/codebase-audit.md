@@ -29,6 +29,8 @@ That means the on-device LVGL visual UI and mining core are not immediately sour
 - The official flash tool uses serial JSON config keys: `ssid`, `password`, `address`, `address2`, `primary_pool_url`, `primary_pool_password`, `fallback_pool_url`, `fallback_pool_password`.
 - For firmware `v2.0.02`, the flasher writes `firmware.bin` at `0x10000` and `littlefs.bin` at `0x390000`.
 - Firmware strings reveal LVGL, TFT_eSPI, Wi-Fi, stratum, wallet validation, monitor web UI, and REST/API behavior.
+- Runtime API on `v2.0.02` exposes enough configuration to customize Wi-Fi, pools, timezone/date format, display preferences, market watch symbols, and weather without firmware patching.
+- Runtime mining verification showed `pool.nerdminers.org:3333` works for this device/network with difficulty `0.001`; `public-pool.io:21496` TCP connects but did not complete subscribe during testing.
 
 ## Customization Paths
 
@@ -42,6 +44,7 @@ Medium risk:
 
 - Inspect and potentially replace LittleFS web assets if a reliable unpack/repack tool is introduced and tested against a restore path.
 - Use the documented HTTP API to automate configuration and monitoring.
+- Add a local dashboard/custom controller that treats the device HTTP API as the stable boundary.
 
 High risk:
 
