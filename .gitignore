@@ -1,0 +1,11 @@
+.venv/
+.firecrawl/
+
+# Contains Wi-Fi credentials, wallet/address values, device license, and full flash dumps.
+secrets/
+hardware/backups/
+logs/
+
+# Downloaded release binaries are reproducible from the official NMMiner repo.
+firmware/
+

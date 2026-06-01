@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="30">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background-color: #2E2E2E;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 50px 0 0 0; /* Added padding to prevent header overlap */
+        }
+
+        header {
+            width: 100%;
+            padding: 20px 0;
+            background-color: #1E1E1E;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            margin: 5px 0;
+        }
+
+        /* Prevent link color changes */
+        a {
+            color: #00FF00; /* Default link color */
+            text-decoration: none; /* Optional: Remove underline */
+        }
+
+        a:visited {
+            color: #00FF00; /* Keep the same color when visited */
+        }
+
+        a:hover {
+            color: #FFD700; /* Change color on hover (e.g., gold) */
+        }
+
+        a:active {
+            color: #00FF00; /* Keep the same color on active */
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 75%;
+            max-width: 100%;
+        }
+
+        th, td {
+            border: 1px solid white;
+            padding: 5px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        td {
+            color: rgba(255, 255, 255, 0.7);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Hover Effects */
+        td:hover {
+            transform: scale(1.05); /* Slightly enlarge on hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+
+        /* CPU Temp styles */
+
+        /* Warning Pulse Animation */
+        @keyframes pulse {
+            0% {
+                background-color: red;
+            }
+            100% {
+                background-color: lightcoral;
+            }
+        }
+
+        .cpu_temp_cold {
+            color: deepskyblue;
+        }
+
+        .cpu_temp_idle {
+            color: green;
+        }
+
+        .cpu_temp_under-load {
+            color: gold;
+        }
+
+        .cpu_temp_warning {
+            background-color: orange;
+            color: black;
+        }
+
+        .cpu_temp_dangerous {
+            background-color: red;
+            color: white;
+            animation: pulse 1.5s infinite alternate ease-in-out;
+        }
+
+        .cpu_temp_unknown {
+            color: gray;
+            font-style: italic;
+        }
+
+        .red-text {
+            color: red;
+        }
+
+        /* RSSI dBm quality styles */
+
+        .rssi-excellent {
+            background-color: rgba(0, 255, 0, 0.4);
+            color: #E0E0E0;
+        }
+
+        .rssi-good {
+            background-color: rgba(144, 238, 144, 0.4);
+            color: #333333;
+        }
+
+        .rssi-fair {
+            background-color: rgba(255, 255, 0, 0.4);
+            color: #333333;
+        }
+
+        .rssi-poor {
+            background-color: rgba(255, 165, 0, 0.4);
+            color: #333333;
+        }
+
+        .rssi-very-poor {
+            background-color: rgba(255, 0, 0, 0.4);
+            color: #E0E0E0;
+        }
+
+        .rssi-extremely-poor {
+            background-color: rgba(139, 0, 0, 0.4);
+            color: #E0E0E0;
+        }
+
+        .rssi-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .rssi-tooltip .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            position: absolute;
+            bottom: 120%; /* Positions above text */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 10;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .rssi-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+
+        #container {
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-top: 100px; /* Prevent overlap with fixed header */
+            margin-bottom: 80px; /* Prevent overlap with fixed footer */
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #2E2E2E;
+            color: #D3D3D3;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+                font-size: 12px;
+            }
+
+            h1, h2, h4, h5 {
+                font-size: 18px;
+            }
+
+            footer p {
+                font-size: 12px;
+            }
+        }
+    </style>
+    <script>
+        /* Add an onload that updates the last load time */
+        window.onload = function() {
+            const lastModifiedString = document.lastModified;
+            const lastUpdate = new Date(lastModifiedString);
+            const now = new Date();
+            const userLocale = navigator.language || 'en-US';
+
+            // Ensure the date is valid
+            if (isNaN(lastUpdate.getTime())) {
+                document.getElementById("last-update").textContent = "Unknown";
+                return;
+            }
+
+            // Compare dates properly
+            const lastUpdateDate = lastUpdate.toLocaleDateString(userLocale);
+            const todayDate = now.toLocaleDateString(userLocale);
+
+            // Force system-based 24-hour format when applicable
+            const timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23' };
+            const dateTimeOptions = { ...timeOptions, year: 'numeric', month: 'numeric', day: 'numeric' };
+
+            // Respect the system locale setting for time format
+            let displayTime = lastUpdate.toLocaleTimeString(userLocale, timeOptions);
+            if (lastUpdateDate !== todayDate) {
+                displayTime = lastUpdate.toLocaleString(userLocale, dateTimeOptions);
+            }
+
+            document.getElementById("last-update").textContent = displayTime;
+        };
+
+        /* Add a warning/error alert for miner temps */
+        document.addEventListener("DOMContentLoaded", function () {
+            const tempCells = document.querySelectorAll("td.cpu_temp_cold, td.cpu_temp_idle, td.cpu_temp_under-load, td.cpu_temp_warning, td.cpu_temp_dangerous");
+
+            tempCells.forEach(cell => {
+                let temp = parseFloat(cell.innerText);
+
+                if (temp >= 65 && temp <= 70) {
+                    Swal.fire({
+                        title: "⚠️ High CPU Temperature",
+                        text: `Your CPU temperature is at ${temp}°C. Please monitor your system.`,
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                        timer: 5000
+                    });
+                } else if (temp > 70 && temp <= 80) {
+                    Swal.fire({
+                        title: "🚨 Critical CPU Temperature!",
+                        text: `Your CPU temperature is dangerously high at ${temp}°C! Immediate action required.`,
+                        icon: "error",
+                        confirmButtonText: "Understood",
+                        showCancelButton: true,
+                        cancelButtonText: "Ignore",
+                        timer: 8000
+                    });
+                } else if (temp > 80) {
+                    Swal.fire({
+                        title: "🔥 Overheating Warning!",
+                        text: `Your CPU temperature is extremely high at ${temp}°C! The device may be at risk of damage.`,
+                        icon: "error",
+                        confirmButtonText: "Shut down system",
+                        showCancelButton: true,
+                        cancelButtonText: "Ignore",
+                        timer: 8000
+                    });
+                }
+            });
+        });
+
+        function parseHashRate(value) {
+            const units = {
+                'TH/s': 1e12,
+                'GH/s': 1e9,
+                'MH/s': 1e6,
+                'KH/s': 1e3,
+                'H/s': 1
+            };
+            const regex = /^([\d.]+)\s*(TH\/s|GH\/s|MH\/s|KH\/s|H\/s)$/;
+            const match = value.match(regex);
+            if (match) {
+                return parseFloat(match[1]) * units[match[2]];
+            }
+            return 0;
+        }
+
+        function parseHash(value) {
+            const units = {
+                'E': 1e18,
+                'P': 1e15,
+                'T': 1e12,
+                'G': 1e9,
+                'M': 1e6,
+                'K': 1e3,
+                '': 1
+            };
+            const regex = /^([\d.]+)\s*(E|P|T|G|M|K|)$/;
+            const match = value.match(regex);
+            if (match) {
+                const hash = parseFloat(match[1]) * units[match[2]];
+                // console.log(hash);
+                return hash;
+            }
+            return 0;
+        }
+
+        function parseShare(value) {
+            const parts = value.split('/');
+            if (parts.length === 2) {
+                return parseInt(parts[1], 10);
+            }
+            return 0;
+        }
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("dataTable");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until
+            no switching has been done: */
+            while (switching) {
+                // Start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /* Loop through all table rows (except the
+                first, which contains table headers): */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // Start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare,
+                    one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /* Check if the two rows should switch place,
+                    based on the direction, asc or desc: */
+                    if (dir == "asc") {
+                        if (n == 1) {
+                            if (parseHashRate(x.innerHTML) > parseHashRate(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 2) {
+                            if (parseShare(x.innerHTML) > parseShare(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 3) {
+                            if (parseHash(x.innerHTML) > parseHash(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 7) {
+                            if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else {
+                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                // If so, mark as a switch and break the loop:
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    } else if (dir == "desc") {
+                        if (n == 1) {
+                            if (parseHashRate(x.innerHTML) < parseHashRate(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 2) {
+                            if (parseShare(x.innerHTML) < parseShare(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 3) {
+                            if (parseHash(x.innerHTML) < parseHash(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (n == 7) {
+                            if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else {
+                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                // If so, mark as a switch and break the loop:
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    // Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    <h1>NMController Web Monitor</h1>
+    <h2 style="color: #00FF00;">Total Hash rate: {{ totalHash }}</h2>
+</header>
+
+<div id="container">
+    <table id="dataTable">
+        <tr>
+            <th onclick="sortTable(0)">IP</th>
+            <th onclick="sortTable(1)">Hash Rate</th>
+            <th onclick="sortTable(2)">Share<br>(Reject/Accept)</th>
+            <th onclick="sortTable(3)">Last Diff</th>
+            <th>Best Diff</th>
+            <th>Valid</th>
+            <th>Temp</th>
+            <th onclick="sortTable(7)">RSSI<br>(dBm)</th>
+            <th>Free<br>Heap</th>
+            <th>Version</th>
+            <th>Uptime</th>
+            <th>Last<br>Seen</th>
+        </tr>
+        {% for row in result %}
+            <tr>
+                <td><a href="http://{{ row[0] }}" target="_blank" rel="noopener noreferrer">{{ row[0] }}</a></td>
+                <!-- <td class="{% if row[2] == 0 %}red-text{% endif %}"> -->
+                <td>{{ row[2] }}</td>
+                <td style="text-align: right;">{{ row[3] }}</td>
+                <td>{{ row[13] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>{{ row[6] }}</td>
+                <td class="{% if row[7] < 30 %}cpu_temp_cold
+                           {% elif 30 <= row[7] <= 45 %}cpu_temp_idle
+                           {% elif 45 <= row[7] <= 70 %}cpu_temp_under-load
+                           {% elif 70 <= row[7] <= 80 %}cpu_temp_warning
+                           {% elif row[7] > 80 %}cpu_temp_dangerous
+                           {% else %}cpu_temp_unknown{% endif %}">
+                    {{ row[7]|float|round(1) }}℃
+                </td>
+                <td class="
+                  {% if row[8] >= -50 %}
+                    rssi-excellent
+                  {% elif row[8] >= -60 %}
+                    rssi-good
+                  {% elif row[8] >= -67 %}
+                    rssi-fair
+                  {% elif row[8] >= -70 %}
+                    rssi-poor
+                  {% elif row[8] >= -80 %}
+                    rssi-very-poor
+                  {% else %}
+                    rssi-extremely-poor
+                  {% endif %}
+                ">
+                    <span class="rssi-tooltip">
+                        {{ row[8] }}
+                        <span class="tooltip-text">
+                            {% if row[8] >= -50 %} Excellent (-50 dBm and above)
+                            {% elif row[8] >= -60 %} Good (-60 dBm to -51 dBm)
+                            {% elif row[8] >= -67 %} Fair (-67 dBm to -61 dBm)
+                            {% elif row[8] >= -70 %} Poor (-70 dBm to -68 dBm)
+                            {% elif row[8] >= -80 %} Very Poor (-80 dBm to -71 dBm)
+                            {% else %} Extremely Poor (Below -80 dBm)
+                            {% endif %}
+                        </span>
+                    </span>
+                </td>
+                <td>{{ row[9]|float|round(2) }}</td>
+                <td class="{% if row[10].endswith('*') %}red-text{% endif %}">{{ row[10] }}</td>
+                <td>{{ row[11] }}</td>
+                <td>{{ row[12] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <h5 style="color: white;">* Latest firmware version is <a
+                href="https://github.com/NMminer1024/NMMiner/releases/latest" target="_blank" rel="noopener noreferrer"
+                style="color: #00FF00; text-decoration: none;">{{ latest_version }}</a></h5>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <h4 style="color: #FFD700;">{{ btc_price_source }} BTC/USD: ${{ "{:,}".format(btc_price) }}<br> Block
+            Reward: {{ block_reward }} BTC
+            (${{ "{:,}".format(reward_value) }})</h4>
+    </div>
+</div>
+
+<footer>
+    <p style="margin: 0;">&copy; 2024 NMTech Copyright Reserved |
+        <a href="https://github.com/NMminer1024/NMMiner" target="_blank" rel="noopener noreferrer"
+           style="color: #00FF00; text-decoration: none;">GitHub</a> | Last Update: <span id="last-update"></span>
+    </p>
+</footer>
+</body>
+</html>

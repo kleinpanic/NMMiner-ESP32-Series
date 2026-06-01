@@ -1,0 +1,200 @@
+NMMiner           Make it better!
+
+
+
+
+    NMMiner
+          User Manual rev.1.0
+            1
+NMMiner                                       Make it better!
+
+1 Specification
+1.1 General Specification
+
+         Title                              Info
+
+     Master Chip      ESP32D0/ ESP32S3, Xtensa32 dual core processor
+
+       HashRate       1000+KH/s(ESP32D0WD)，380+KH/s(ESP32S3)
+
+        Wi-Fi         802.11 b/g/n, up to 150Mbps
+
+  Device management   NMController/NMMiner Monitor
+
+   Firmware upgrade   NM Flash ESPTool（flash.nmminer.com）
+
+    Power Interface   Type-C USB
+
+     Supply mode      USB
+
+  Power Consumption   0.5~1W
+
+ Operating Temperature -20 ~ 70 ℃
+
+
+
+
+                                    2
+NMMiner                                               Make it better!
+
+2 Get Start
+2.1 Prepare
+ Remove the film on the surface of the acrylic（if need）.
+ Your home wifi name.
+ Your home wifi password.
+ Your BTC address.
+
+2.2 Buttons ( NM-CYD / ESP32-2432S028)
+
+     Buttons            Action                      Description
+       boot          Double click               Switch to next page
+       boot           Long press                Force configuration
+      reset              Click                  Reset the NMMiner
+
+
+
+
+  *The board's external I/O ports and TF slot will be used next NMMiner version.
+                                        3
+NMMiner                                     Make it better!
+
+
+
+
+      Web Flasher Setting (esp32-2432s028r-st7789/-ili9341)
+
+2.3 Touch ( NM-TV )
+
+    Buttons       Action                  Description
+  Touch Pad     Short touch           Switch to next page
+  Touch Pad     Long touch            Force configuration
+
+
+
+
+               Web Flasher Setting ( nm-tv-154 )
+                                4
+NMMiner                                    Make it better!
+
+2.4 Button ( nm-usb-chain )
+
+    Button         Action                 Description
+     user        Single click         Switch to next page
+     user        Long press           Force configuration
+                                Device not connected, long Press
+     user       BOOT Mode        to enter boot mode, to update
+                                            firmware
+
+
+
+
+             Web Flasher Setting ( nm-usb-chain-v1 )
+
+
+
+
+                                5
+NMMiner                                      Make it better!
+
+2.5 Button ( nm-bot-chain )
+
+    Buttons         Action                 Description
+     boot         Long press         Clear all status from nvs
+     user         Long press           Force configuration
+     reset          Click                Reset the device
+
+
+
+
+              Web Flasher Setting ( nm-bot-chain-v1 )
+                                 6
+NMMiner                                          Make it better!
+
+2 Configuration
+2.1 When powered on, the miner will first try to reconnect to the last
+WiFi network it used. If it can't connect within 15 seconds, it will
+switch to configuration mode automatically.
+
+
+2.2 Connect to open hotspot: nmap-2.4g.
+
+
+2.3 After connecting to the AP, mobile phones will automatically
+redirect to the setup page while PCs require manually entering
+192.168.4.1 on your browser.
+
+
+
+
+                                    7
+NMMiner                                       Make it better!
+2.4 Configure your nmminer on this page - higher UI refresh values
+boost hash rate, including when the screen is off.
+
+
+
+
+2.5 You can return to the configuration page at any time and refer
+to the button operations.
+
+2.5 After saving, wait 10-15s for auto-restart (no manual reset
+needed)
+
+
+                                  8
+NMMiner                                        Make it better!
+
+3 Centralized monitor
+3.1 NMController
+   Can get from the github, Tutorial :
+
+
+
+
+3.2 NMMiner Monitor
+   Access the web monitor by navigating to your miner's IP address
+
+in a web browser. This interface provides functionality similar to
+
+NMController:
+
+
+
+
+                                         9
+NMMiner                                             Make it better!
+
+4 Pool reference
+Limited chip resources cause high-difficulty pool rejections. Only
+supported low-difficulty pools:
+
+        Url           Type   Port    Description Minimum required difficulty
+pool.nerdminers.org   tcp    3333       BTC            Minimum 0.001
+public-pool.io        tcp    21496      BTC            Minimum 0.001
+pool.tazmining.ch     tcp    33333      BTC            Minimum 0.001
+
+*Note: List of available mining pools (note: we don't operate these pools -
+outages may occur without notice.)
+
+5Q&A
+5.1 Miner stuck at 80%
+
+1) Check the Mining Pool;
+
+2) Check the BTC address used;
+
+3) Try to update to the newest version;
+
+5.2 Stuck at 90% because of the WiFi router
+
+For this situation, you can try to create a 2.4G WiFi AP by your
+
+phone, then try to reconnect the device. If works well, to try:
+
+- For ASUS router, need to turn off the AI settings / two-way IPS;
+
+- For some router is IEEE 802.15.4ax, change to IEEE 802.15.4 b/g/n.
+
+
+                                       10
+

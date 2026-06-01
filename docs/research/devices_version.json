@@ -1,0 +1,1257 @@
+{
+    "versions": [
+        {
+            "version": "v2.0.02",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"}
+            ]
+        },
+        {
+            "version": "v2.0.01",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"}
+            ]
+        },
+        {
+            "version": "v1.8.29",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-c5-devkitc-1"},
+                {"device": "nm-cyd-c5"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"}
+            ]
+        },
+        {
+            "version": "v1.8.28",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.27",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.26",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.25",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.24",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "esp32-32e-lcd-display-40inch"},
+                {"device": "esp32-32e-lcd-display-32inch"},
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.23",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"},
+                {"device": "elecrow-esp32-display-24inch"},
+                {"device": "elecrow-esp32-display-28inch"}
+            ]
+        },
+        {
+            "version": "v1.8.22",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"}
+            ]
+        },
+        {
+            "version": "v1.8.20",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"},
+                {"device": "waveshare-esp32-s3-touch-lcd-35"}
+            ]
+        },
+        {
+            "version": "v1.8.10",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-c3-042-oled-newscreen"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"}
+            ]
+        },
+        {
+            "version": "v1.7.06",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"}
+            ]
+        },
+        {
+            "version": "v1.7.05",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "waveshare-esp32-s3-lcd-147"},
+                {"device": "waveshare-esp32-s3-lcd-147b"}
+            ]
+        },
+        {
+            "version": "v1.7.04",
+            "devices": [
+                {"device": "nm-tv-154"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"}
+            ]
+        },
+        {
+            "version": "v1.7.03",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "nm-tv-154"}
+            ]
+        },
+        {
+            "version": "v1.7.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"},
+                {"device": "nm-tv-154"}
+            ]
+        },
+        {
+            "version": "v1.7.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"}
+            ]
+        },
+        {
+            "version": "v1.6.03",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "lilygo-t-qt"},
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "wt32-sc01"}
+            ]
+        },
+        {
+            "version": "v1.6.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "lilygo-t-qt"},
+                {"device": "wt32-sc01"}
+            ]
+        },
+        {
+            "version": "v1.6.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "esp32-2432s024"},
+                {"device": "esp32-3248s035"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-c3-042-oled"}, 
+                {"device": "esp32-s3-042-oled"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32cam"},
+                {"device": "esp32-s3-geek"},
+                {"device": "lilygo-t-qt"},
+                {"device": "wt32-sc01"}
+            ]
+        },
+        {
+            "version": "v1.5.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32-s3-geek"}
+            ]
+        },
+        {
+            "version": "v1.4.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"},
+                {"device": "esp32-s3-geek"}
+            ]
+        },
+        {
+            "version": "v1.4.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"}
+            ]
+        },
+        {
+            "version": "v1.3.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"}
+            ]
+        },
+        {
+            "version": "v1.2.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"}
+            ]
+        },
+        {
+            "version": "v1.1.03",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"},
+                {"device": "esp32-dev-kitc-32"}
+            ]
+        },
+        {
+            "version": "v1.1.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"}
+            ]
+        },
+        {
+            "version": "v1.1.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"}
+            ]
+        },
+        {
+            "version": "v0.6.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"}
+            ]
+        },
+        {
+            "version": "v0.6.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"},
+                {"device": "seeed-xiao-esp32-c3"}, 
+                {"device": "seeed-xiao-esp32-s3"}
+            ]
+        },
+        {
+            "version": "v0.5.03",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3-amoled"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"}
+            ]
+        },
+        {
+            "version": "v0.5.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"},  
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"}
+            ]
+        },
+        {
+            "version": "v0.5.01",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "ttgo-t-display"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"}
+            ]
+        },
+        {
+            "version": "v0.4.04",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v2"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"}
+            ]
+        },
+        {
+            "version": "v0.4.03",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}, 
+                {"device": "esp32-2432s028r-ili9341"},
+                {"device": "esp32-2432s028r-st7789"}
+            ]
+        },
+        {
+            "version": "v0.4.02",
+            "devices": [
+                {"device": "heltec-vision-master-t190"}, 
+                {"device": "heltec-wifi-kit32-v3"}, 
+                {"device": "heltec-wifi-lora32-v3"}, 
+                {"device": "heltec-wireless-stick-lite-v3"}, 
+                {"device": "heltec-wireless-stick-v3"}, 
+                {"device": "lilygo-t-display-s3"}, 
+                {"device": "lilygo-t-dongle-s3"}, 
+                {"device": "nm-usb-chain-v1"}, 
+                {"device": "nm-bot-chain-v1"}
+            ]
+        },
+        {
+            "version": "v3.0.20",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v3.0.12",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v3.0.11",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v3.0.10",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v2.9.31",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v2.9.30",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"},
+                {"device": "NMQAxe++"}
+            ]
+        },
+        {
+            "version": "v2.9.21",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.9.20",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.9.10",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.9.03",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.9.02",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.9.01",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.8.02",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.8.01",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.7.04",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.7.03",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.7.02",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.6.01",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.51",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.50",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.41",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.31",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.30",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.20",
+            "devices":[
+                {"device": "NMAxe-v1x"},
+                {"device": "NMAxe-Gamma"}
+            ]
+        },
+        {
+            "version": "v2.5.10",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.5.02",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.5.01",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.4.13",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.4.12",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.4.11",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.4.10",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.2.23",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.2.21",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.1.15",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.1.12",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        },
+        {
+            "version": "v2.1.11",
+            "devices":[
+                {"device": "NMAxe-v1x"}
+            ]
+        }
+    ]
+}

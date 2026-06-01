@@ -1,0 +1,24 @@
+{
+  "project": "NMMiner-ESP32-Series",
+  "mode": "hardware-bringup",
+  "workflow": {
+    "granularity": "coarse",
+    "execution": "sequential",
+    "research_before_planning": true,
+    "verify_plans": true,
+    "verify_work": true,
+    "commit_docs": true
+  },
+  "git": {
+    "initialized": true,
+    "ignore_sensitive_artifacts": true
+  },
+  "device": {
+    "serial_port": "/dev/ttyUSB0",
+    "chip": "ESP32-D0WD-V3",
+    "flash_size": "4MB",
+    "board": "cyd 2.8",
+    "firmware_target": "esp32-2432s028r-st7789"
+  }
+}
+
