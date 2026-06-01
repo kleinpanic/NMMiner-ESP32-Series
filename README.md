@@ -23,6 +23,7 @@ Key docs:
 - [Amazon Product Description Notes](docs/product-description.md)
 - [Code/UI/Math Audit Notes](docs/codebase-audit.md)
 - [Customization Audit](docs/customization-audit.md)
+- [Kleinpanic Customization Basis](docs/kleinpanic-customization-basis.md)
 - [Official Manual Text Extract](docs/vendor/NM-CYD-ESP32-2432S028-manual.txt)
 - [GSD Project Context](.planning/PROJECT.md)
 

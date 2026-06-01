@@ -29,10 +29,12 @@ Last updated: 2026-06-01.
 - Fresh official flasher snapshots match saved snapshots; `v2.0.02` still supports `esp32-2432s028r-st7789`.
 - Main firmware repo audit found prebuilt firmware binaries but no published ESP32 firmware source tree.
 - LittleFS extraction confirmed embedded web UI and screensaver assets are inspectable.
+- GitHub profile review completed for `kleinpanic` and saved in `docs/kleinpanic-customization-basis.md`.
+- Official NMminer1024 repo review confirmed `NMminer1024/NMMiner` is the repo for this ESP32 software bundle; no separate public source repo for this CYD firmware was found.
 
 ## Needs User Input
 
-- Preference decisions for customization: on-device screen, LAN web UI, NMController Web, or a new local dashboard.
+- Preference decisions for customization: start with `nmminerctl` CLI, a local dashboard, or custom screensavers.
 
 ## Risk Notes
 
@@ -44,5 +46,5 @@ Last updated: 2026-06-01.
 ## Session Continuity
 
 Last session: 2026-06-01.
-Stopped at: Baseline setup and customization audit complete; ready to implement safe customizations.
+Stopped at: Baseline setup and customization/profile audit complete; ready to implement safe customizations.
 Resume file: none.
