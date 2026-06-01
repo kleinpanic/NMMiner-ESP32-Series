@@ -45,7 +45,15 @@ The built-in route is currently the most reliable one: open `http://192.168.1.13
 http://127.0.0.1:7877/web_monitor
 ```
 
-That running instance is not currently showing the live miner at `192.168.1.136`; it is showing stale data for an older miner IP. The upstream code explains why: it only listens for UDP broadcast JSON on port `12345` and does not poll `/api/system/info`. For this device, an API-polling dashboard will be more reliable than depending only on UDP broadcasts.
+Status check on 2026-06-01:
+
+- The running monitor process is `/usr/bin/python3 nmcontroller.py`.
+- Its working directory is `/home/broklein/codeWS/Python/NMController_web`.
+- Both `/home/broklein/codeWS/Python/NMController_web` and `external/NMController_web` are clean upstream checkouts at commit `ba048864f247ff4678ed75a47c00c6d88a6c23fb`.
+- No separate local dashboard app was found in this setup repo.
+- The page is the stock `NMController Web Monitor` UI and is showing stale data for old IP `10.0.0.96`, firmware `v1.8.28`, not the live miner at `192.168.1.136`, firmware `v2.0.02`.
+
+Conclusion: NMController Web is installed and running, but custom dashboard/profile work is not done yet. The upstream code explains why it currently misses this device: it only listens for UDP broadcast JSON on port `12345` and does not poll `/api/system/info`. For this device, an API-polling dashboard will be more reliable than depending only on UDP broadcasts.
 
 ## Visual And Profile Customization
 
@@ -61,11 +69,15 @@ The embedded screen saver path is validated by firmware and has a 200 KB upload 
 
 The official manual says the board's external I/O ports and TF slot are reserved for a later NMMiner version. Current firmware does not require an SD/TF card, and adding a card should not be treated as enabling a current feature.
 
-Generic `ESP32-2432S028R` / CYD pinout references line up with the labels on this class of board, but clones vary. Treat these as leads until verified against high-resolution photos, silkscreen, and a multimeter:
+The exact Amazon listing is the Aideepen "Bitcoin Miner NerdMiner V2 ESP32 Development Board 2.8 inch" item for `ESP32-2432S028`. The listing confirms the board/shell bundle, ESP32-D0WD-V3, 2.8 inch touch screen, Type-C power, and a 5 V / 2 A troubleshooting recommendation. It does not publish the electrical pinout for the JST/header connectors.
 
-- `CN1` / `P3` expansion headers may expose spare ESP32 GPIO pins plus power rails.
+Generic `ESP32-2432S028R` / CYD pinout references line up with the labels on this class of board, but clones and NMMiner-branded variants can differ. Treat these as leads until verified against high-resolution photos, silkscreen, and a multimeter:
+
+- `CN1` / `P3` expansion headers may expose spare ESP32 GPIO pins plus power rails. The label that looks like `CH1` may be `CN1`.
+- On common CYD boards, `P3` exposes `GND`, `GPIO35`, `GPIO22`, and `GPIO21`; `GPIO21` is also the display backlight, so it is not a clean general-purpose output while the screen is lit.
+- On common CYD boards, `CN1` exposes `GND`, `GPIO22`, `GPIO27`, and `3V3`.
 - The speaker/buzzer output is commonly tied to `GPIO26`.
-- The microSD/TF slot is commonly wired over SPI using pins such as `GPIO5`, `GPIO18`, `GPIO19`, and `GPIO23`.
+- The microSD/TF slot is commonly wired over SPI using `GPIO5`, `GPIO18`, `GPIO19`, and `GPIO23`.
 - Display, touch, backlight, and SD functions share limited ESP32 pins, so "free" pins are not always actually safe for new use.
 
 Power improvements are worth doing before signal/header mods:
