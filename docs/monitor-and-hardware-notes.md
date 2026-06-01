@@ -53,7 +53,16 @@ Status check on 2026-06-01:
 - No separate local dashboard app was found in this setup repo.
 - The page is the stock `NMController Web Monitor` UI and is showing stale data for old IP `10.0.0.96`, firmware `v1.8.28`, not the live miner at `192.168.1.136`, firmware `v2.0.02`.
 
-Conclusion: NMController Web is installed and running, but custom dashboard/profile work is not done yet. The upstream code explains why it currently misses this device: it only listens for UDP broadcast JSON on port `12345` and does not poll `/api/system/info`. For this device, an API-polling dashboard will be more reliable than depending only on UDP broadcasts.
+Conclusion from the status check: NMController Web is installed and running, but it is not the canonical customized dashboard. The upstream code explains why it currently misses this device: it only listens for UDP broadcast JSON on port `12345` and does not poll `/api/system/info`.
+
+Canonical local controller status:
+
+- Implemented in this repo under `apps/nmminer-control`.
+- Run with `./scripts/run_nmminer_control.sh`.
+- Local URL: `http://127.0.0.1:8788`.
+- Polls `/api/system/info` through a Flask proxy instead of relying on UDP broadcasts.
+- Separates live status polling from settings reads so the ESP32 is not hammered by repeated full-settings fetches.
+- Supports display, market, weather, pool, identify, restart, and `.ss` screensaver preflight/upload surfaces.
 
 ## Visual And Profile Customization
 
@@ -95,7 +104,7 @@ Before connecting anything to `CH1`, `P3`, a speaker header, or JST power, captu
 
 ## Decision
 
-Clone and customize source-available monitor tooling, not the binary firmware, for the first personalization pass. The next useful build target is a local controller/dashboard that polls `http://192.168.1.136/api/system/info`, displays the miner state cleanly, and can upload custom screen savers.
+Clone upstream monitor tooling for reference only. Keep the source-available custom controller in this repo, and avoid binary firmware patching for the first personalization pass.
 
 ## Sources
 

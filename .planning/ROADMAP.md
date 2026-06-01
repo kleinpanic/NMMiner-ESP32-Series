@@ -65,9 +65,11 @@ Status: pending.
 
 ## Phase 7: Personalized Local Controller
 
-Status: pending.
+Status: complete baseline; further polish remains available.
 
 - Build a local API-polling dashboard for `http://192.168.1.136/api/system/info`.
 - Add safe settings controls for display, weather, market symbols, and pool config.
 - Add a custom 320x240 screen saver generation/upload workflow.
 - Keep official firmware binary-only and avoid direct firmware patching unless upstream source becomes available.
+- Canonicalize the controller under `apps/nmminer-control`.
+- Keep the older upstream NMController checkout as non-canonical reference only.

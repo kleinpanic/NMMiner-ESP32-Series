@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kleinpanic NMMiner Control</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">kp</div>
+          <div>
+            <h1>Kleinpanic NMMiner Control</h1>
+            <p id="miner-url">syncing</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="pulse" aria-hidden="true"></span>
+          <span id="poll-state">live</span>
+          <span id="firmware-chip">firmware</span>
+          <button class="icon-button" id="refresh-now" type="button" title="Refresh">
+            <i data-lucide="refresh-cw"></i>
+          </button>
+          <button class="icon-button" id="identify-top" type="button" title="Identify miner">
+            <i data-lucide="radar"></i>
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <section class="panel identity-panel">
+            <div class="section-title">Miner</div>
+            <h2 id="host-name">Unknown</h2>
+            <dl>
+              <div><dt>Model</dt><dd id="hw-model">-</dd></div>
+              <div><dt>IP</dt><dd id="self-ip">-</dd></div>
+              <div><dt>Firmware</dt><dd id="fw-version">-</dd></div>
+              <div><dt>RSSI</dt><dd id="rssi-side">-</dd></div>
+              <div><dt>Seen</dt><dd id="last-seen">-</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">Commands</div>
+            <div class="button-stack">
+              <button class="command primary" data-action="find" type="button">
+                <i data-lucide="radar"></i><span>Identify</span>
+              </button>
+              <button class="command" data-submit-form="preference-form" type="button">
+                <i data-lucide="sliders-horizontal"></i><span>Apply Display</span>
+              </button>
+              <button class="command" data-submit-form="market-form" type="button">
+                <i data-lucide="chart-no-axes-column"></i><span>Apply Market</span>
+              </button>
+              <button class="command" data-submit-form="weather-form" type="button">
+                <i data-lucide="cloud-sun"></i><span>Apply Weather</span>
+              </button>
+              <button class="command danger" data-action="restart" type="button">
+                <i data-lucide="power"></i><span>Restart</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel pools-panel">
+            <div class="section-title">Manual Pools</div>
+            <div id="manual-pools" class="pool-list"></div>
+          </section>
+        </aside>
+
+        <section class="main-grid">
+          <section class="metric-row">
+            <article class="metric">
+              <span>Hash Rate</span>
+              <strong id="hash-rate">-</strong>
+              <small id="hash-rate-raw">-</small>
+            </article>
+            <article class="metric">
+              <span>Accepted</span>
+              <strong id="accepted">-</strong>
+              <small>shares</small>
+            </article>
+            <article class="metric">
+              <span>Rejected</span>
+              <strong id="rejected">-</strong>
+              <small id="reject-rate">-</small>
+            </article>
+            <article class="metric">
+              <span>Pool Diff</span>
+              <strong id="pool-diff">-</strong>
+              <small id="last-diff">last -</small>
+            </article>
+            <article class="metric">
+              <span>Uptime</span>
+              <strong id="uptime">-</strong>
+              <small id="uptime-ever">ever -</small>
+            </article>
+          </section>
+
+          <section class="panel chart-panel">
+            <div class="panel-head">
+              <div>
+                <div class="section-title">Live Trace</div>
+                <h2>Hashrate and Shares</h2>
+              </div>
+              <div class="legend">
+                <span><b class="magenta"></b>hash</span>
+                <span><b class="green"></b>accepted</span>
+                <span><b class="red"></b>rejected</span>
+              </div>
+            </div>
+            <canvas id="hash-chart" width="1100" height="360" aria-label="Hashrate chart"></canvas>
+          </section>
+
+          <section class="lower-grid">
+            <section class="panel status-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-title">Pool Status</div>
+                  <h2 id="pool-url">-</h2>
+                </div>
+                <span id="pool-status">connected</span>
+              </div>
+              <dl class="dense-list">
+                <div><dt>User</dt><dd id="pool-user">-</dd></div>
+                <div><dt>Network diff</dt><dd id="network-diff">-</dd></div>
+                <div><dt>Session best</dt><dd id="best-session">-</dd></div>
+                <div><dt>All-time best</dt><dd id="best-ever">-</dd></div>
+                <div><dt>Free heap</dt><dd id="heap">-</dd></div>
+                <div><dt>LittleFS</dt><dd id="storage">-</dd></div>
+              </dl>
+            </section>
+
+            <section class="panel forms-panel">
+              <div class="tabs" role="tablist" aria-label="Settings">
+                <button class="tab active" data-tab="display" type="button">Display</button>
+                <button class="tab" data-tab="market" type="button">Market</button>
+                <button class="tab" data-tab="weather" type="button">Weather</button>
+                <button class="tab" data-tab="pool" type="button">Pool</button>
+                <button class="tab" data-tab="screen" type="button">Screen</button>
+              </div>
+
+              <div class="tab-page active" id="tab-display">
+                <form id="preference-form" data-section="preference">
+                  <label>Brightness <input name="Brightness" type="range" min="1" max="100" /></label>
+                  <div class="split">
+                    <label>Rotation
+                      <select name="RotateScreen">
+                        <option>0</option><option>90</option><option>180</option><option>270</option>
+                      </select>
+                    </label>
+                    <label>LED
+                      <select name="LedEnable">
+                        <option value="0">off</option><option value="1">on</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="split">
+                    <label>Screensaver
+                      <select name="ScreenSaver">
+                        <option>never</option><option>30s</option><option>1m</option><option>5m</option><option>15m</option><option>30m</option>
+                      </select>
+                    </label>
+                    <label>Mode
+                      <select name="ScreenSaverMode">
+                        <option>image</option><option>black</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button class="save" type="submit"><i data-lucide="save"></i><span>Save Display</span></button>
+                </form>
+              </div>
+
+              <div class="tab-page" id="tab-market">
+                <form id="market-form" data-section="market">
+                  <div class="split">
+                    <label>Main coin <input name="MainCoin" autocomplete="off" /></label>
+                    <label>Mode
+                      <select name="PricePageMode">
+                        <option>kline</option><option>pricewall</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>Watchlist <input name="WatchCoins" autocomplete="off" /></label>
+                  <div class="split">
+                    <label>Rotate
+                      <select name="KlineRotate">
+                        <option>never</option><option>10s</option><option>20s</option><option>60s</option><option>5m</option><option>30m</option>
+                      </select>
+                    </label>
+                    <label>Interval
+                      <select name="KlineInterval">
+                        <option>1m</option><option>5m</option><option>15m</option><option>30m</option><option>1h</option><option>4h</option><option>1d</option><option>1w</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button class="save" type="submit"><i data-lucide="save"></i><span>Save Market</span></button>
+                </form>
+              </div>
+
+              <div class="tab-page" id="tab-weather">
+                <form id="weather-form" data-section="weather">
+                  <label>City <input name="WeatherCity" autocomplete="off" /></label>
+                  <div class="split">
+                    <label>Latitude <input name="WeatherLat" autocomplete="off" /></label>
+                    <label>Longitude <input name="WeatherLon" autocomplete="off" /></label>
+                  </div>
+                  <div class="split">
+                    <label>Temp
+                      <select name="WeatherTempUnit">
+                        <option>fahrenheit</option><option>celsius</option>
+                      </select>
+                    </label>
+                    <label>Wind
+                      <select name="WeatherSpeedUnit">
+                        <option>mph</option><option>kmh</option><option>ms</option><option>kn</option>
+                      </select>
+                    </label>
+                    <label>Alt
+                      <select name="WeatherAltMode">
+                        <option>pressure</option><option>altitude</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="split buttons">
+                    <button class="save" type="submit"><i data-lucide="save"></i><span>Save Weather</span></button>
+                    <button class="ghost" data-action="weather-refresh" type="button"><i data-lucide="refresh-cw"></i><span>Refresh</span></button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="tab-page" id="tab-pool">
+                <form id="mining-form" data-section="mining">
+                  <label>Primary pool <input name="PrimaryPool" autocomplete="off" /></label>
+                  <label>Primary user <input name="PrimaryAddress" autocomplete="off" /></label>
+                  <div class="split">
+                    <label>Primary password <input name="PrimaryPassword" autocomplete="off" /></label>
+                    <label>Fallback password <input name="SecondaryPassword" autocomplete="off" /></label>
+                  </div>
+                  <label>Fallback pool <input name="SecondaryPool" autocomplete="off" /></label>
+                  <label>Fallback user <input name="SecondaryAddress" autocomplete="off" /></label>
+                  <button class="save warn" type="submit"><i data-lucide="save"></i><span>Save Pool</span></button>
+                </form>
+              </div>
+
+              <div class="tab-page" id="tab-screen">
+                <div class="screen-workspace">
+                  <canvas id="screen-preview" width="320" height="240"></canvas>
+                  <form id="screensaver-form">
+                    <label>.ss file <input name="file" type="file" accept=".ss" /></label>
+                    <div class="split buttons">
+                      <button class="ghost" id="screen-preflight" type="button"><i data-lucide="scan-search"></i><span>Preflight</span></button>
+                      <button class="save" type="submit"><i data-lucide="upload"></i><span>Upload</span></button>
+                    </div>
+                    <output id="screen-output">ready</output>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </section>
+        </section>
+      </main>
+
+      <div id="toast" role="status" aria-live="polite"></div>
+    </div>
+  </body>
+</html>

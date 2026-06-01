@@ -43,3 +43,11 @@
 - Inspect firmware and LittleFS binaries for web assets, LVGL/UI strings, config schema, and recoverable behavior.
 - Determine whether on-device visual UI and mining math can be customized from source, configured through APIs, patched as assets, or only reverse engineered.
 - Produce a customization backlog with risk levels before modifying firmware.
+
+## R8: Canonical Local Controller
+
+- Keep the canonical local controller in this repo rather than relying on the pre-existing `~/codeWS/Python/NMController_web` checkout.
+- Poll the miner through `/api/system/info` instead of depending only on UDP broadcast packets.
+- Proxy miner API calls through a local server to avoid browser CORS issues.
+- Support safe controls for display, market, weather, pool configuration, identify, restart, and screensaver preflight/upload.
+- Do not commit dynamic wallet, Wi-Fi password, license, serial log, or flash backup data.

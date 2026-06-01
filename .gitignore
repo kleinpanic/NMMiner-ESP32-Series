@@ -1,5 +1,7 @@
 .venv/
 .firecrawl/
+__pycache__/
+*.pyc
 
 # Contains Wi-Fi credentials, wallet/address values, device license, and full flash dumps.
 secrets/

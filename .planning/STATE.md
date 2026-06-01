@@ -31,10 +31,15 @@ Last updated: 2026-06-01.
 - LittleFS extraction confirmed embedded web UI and screensaver assets are inspectable.
 - GitHub profile review completed for `kleinpanic` and saved in `docs/kleinpanic-customization-basis.md`.
 - Official NMminer1024 repo review confirmed `NMminer1024/NMMiner` is the repo for this ESP32 software bundle; no separate public source repo for this CYD firmware was found.
+- Confirmed the running `/home/broklein/codeWS/Python/NMController_web` monitor pre-existed this repo work and is a clean upstream checkout, not a customized local dashboard.
+- Canonical local dashboard added under `apps/nmminer-control`.
+- Local dashboard is running at `http://127.0.0.1:8788`.
+- Dashboard implementation split live status polling from settings loading to reduce request pressure on the ESP32.
+- A normal API restart recovered mining after a temporary zero-hash state; post-restart readbacks showed about `1.04 MH/s` and accepted shares increasing.
 
 ## Needs User Input
 
-- Preference decisions for customization: start with `nmminerctl` CLI, a local dashboard, or custom screensavers.
+- Hardware photos or pin measurements before wiring JST, CH1/CN1, P3, speaker, or SD/TF modifications.
 
 ## Risk Notes
 

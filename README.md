@@ -28,9 +28,16 @@ Key docs:
 - [Official Manual Text Extract](docs/vendor/NM-CYD-ESP32-2432S028-manual.txt)
 - [GSD Project Context](.planning/PROJECT.md)
 
+Canonical local tools:
+
+- [Kleinpanic NMMiner Control](apps/nmminer-control/README.md)
+
 Useful commands:
 
 ```bash
+# Run the local dashboard/controller
+./scripts/run_nmminer_control.sh
+
 # Back up current flash
 .venv/bin/python -m esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 read-flash 0x0 0x400000 hardware/backups/nmminer-esp32-d0wd-v3-full-flash-$(date +%F).bin
 
