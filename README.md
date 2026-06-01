@@ -12,7 +12,7 @@ Current device state:
 - Wi-Fi: `Homebase` 2.4 GHz
 - LAN API: `http://192.168.1.136`
 - Primary pool: `stratum+tcp://pool.nerdminers.org:3333`
-- Fallback pool: `stratum+tcp://solobtc.nmminer.com:3333`
+- Fallback pool: `stratum+tcp://pool.nerdminers.org:3333`
 - Wallet: recovered BTC mainnet P2SH address, validated and configured
 - Full flash backup: `hardware/backups/nmminer-esp32-d0wd-v3-full-flash-2026-06-01.bin` (gitignored)
 - Recovered credentials and wallet notes: `secrets/recovered-device-config-2026-06-01.txt` (gitignored)
@@ -22,6 +22,7 @@ Key docs:
 - [Setup Procedure](docs/setup-nm-cyd.md)
 - [Amazon Product Description Notes](docs/product-description.md)
 - [Code/UI/Math Audit Notes](docs/codebase-audit.md)
+- [Customization Audit](docs/customization-audit.md)
 - [Official Manual Text Extract](docs/vendor/NM-CYD-ESP32-2432S028-manual.txt)
 - [GSD Project Context](.planning/PROJECT.md)
 

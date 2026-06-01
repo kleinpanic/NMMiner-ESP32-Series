@@ -23,8 +23,12 @@ Last updated: 2026-06-01.
 - Device joined LAN at `192.168.1.136`.
 - API verified firmware `v2.0.02`, hostname `cyd2.8_1a76f7`, SSID `Homebase`, timezone `-4`, and NTP sync.
 - Recovered BTC wallet is configured for both primary and fallback pools.
-- Runtime pool testing selected `pool.nerdminers.org:3333` as primary and `solobtc.nmminer.com:3333` as fallback.
+- Runtime pool testing selected `pool.nerdminers.org:3333` for both primary and fallback so both configured URLs match the Amazon manual PDF and the only PDF-listed pool that completed live subscribe testing.
 - Post-reboot API showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares.
+- Customization audit completed in `docs/customization-audit.md`.
+- Fresh official flasher snapshots match saved snapshots; `v2.0.02` still supports `esp32-2432s028r-st7789`.
+- Main firmware repo audit found prebuilt firmware binaries but no published ESP32 firmware source tree.
+- LittleFS extraction confirmed embedded web UI and screensaver assets are inspectable.
 
 ## Needs User Input
 
@@ -40,5 +44,5 @@ Last updated: 2026-06-01.
 ## Session Continuity
 
 Last session: 2026-06-01.
-Stopped at: Baseline setup complete; ready to audit/customize UI, monitor, API, and hardware options.
+Stopped at: Baseline setup and customization audit complete; ready to implement safe customizations.
 Resume file: none.

@@ -15,7 +15,7 @@ Current baseline setup:
 - Wi-Fi: `Homebase` 2.4 GHz.
 - LAN API: `http://192.168.1.136`.
 - Primary pool: `stratum+tcp://pool.nerdminers.org:3333`.
-- Fallback pool: `stratum+tcp://solobtc.nmminer.com:3333`.
+- Fallback pool: `stratum+tcp://pool.nerdminers.org:3333`.
 - Timezone: `-4`; NTP sync observed.
 - Wallet: recovered BTC mainnet P2SH address configured and validated.
 

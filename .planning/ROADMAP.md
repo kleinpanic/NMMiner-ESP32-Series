@@ -43,7 +43,7 @@ Status: complete baseline; future tuning remains available.
 
 ## Phase 5: Code, UI, And Mining-Math Audit
 
-Status: pending.
+Status: complete baseline; customization implementation remains pending.
 
 - Map the official NMMiner repo and confirm firmware source availability.
 - Audit `NMController_web` source for monitoring UI behavior, hashrate formatting, UDP discovery, and customization opportunities.

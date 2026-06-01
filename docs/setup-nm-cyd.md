@@ -74,9 +74,9 @@ Runtime pool check from this network:
 Current configured pools:
 
 - Primary: `stratum+tcp://pool.nerdminers.org:3333`
-- Fallback: `stratum+tcp://solobtc.nmminer.com:3333`
+- Fallback: `stratum+tcp://pool.nerdminers.org:3333`
 
-Post-reboot API verification showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares.
+Post-reboot API verification showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares. Both configured pool URLs are manual-listed; the fallback duplicates the only manual pool that completed live `mining.subscribe` testing from this network.
 
 ## Firmware Upgrade Notes
 
@@ -158,5 +158,5 @@ Known-good final state:
 - Wi-Fi SSID: `Homebase`
 - Timezone: `-4`
 - Primary pool: `stratum+tcp://pool.nerdminers.org:3333`
-- Secondary pool: `stratum+tcp://solobtc.nmminer.com:3333`
+- Secondary pool: `stratum+tcp://pool.nerdminers.org:3333`
 - Recovered wallet configured for both primary and secondary pool users

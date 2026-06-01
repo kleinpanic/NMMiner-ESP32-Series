@@ -1,5 +1,7 @@
 # Code, UI, And Mining-Math Audit Notes
 
+Detailed current audit: [customization-audit.md](customization-audit.md).
+
 ## Initial Finding
 
 The official `NMminer1024/NMMiner` repository is not a full firmware source tree. The current tree is mainly:
@@ -12,6 +14,8 @@ The official `NMminer1024/NMMiner` repository is not a full firmware source tree
 
 That means the on-device LVGL visual UI and mining core are not immediately source-auditable from that repo. The repo does expose enough artifacts to audit behavior and customization boundaries.
 
+As of the 2026-06-01 audit, a fresh clone of `NMminer1024/NMMiner` contained no `platformio.ini`, `src/`, `.ino`, firmware `.cpp`, or firmware `.h` source files outside packaged tool/runtime artifacts. Treat the ESP32 firmware as binary-only unless upstream publishes a separate build tree.
+
 ## Source-Available Or Inspectable Targets
 
 - `NMController_web`: Python/Flask LAN monitor source.
@@ -19,6 +23,7 @@ That means the on-device LVGL visual UI and mining core are not immediately sour
 - Official flash tool JavaScript saved as `docs/research/flash-nmminer-script.js`.
 - Device HTTP API reference saved as `docs/research/nmminer-api-reference.md`.
 - Firmware/LittleFS binaries and extracted strings.
+- Extracted `littlefs.bin` web assets: `index.html.gz`, `apidoc.html.gz`, and screensaver `.ss` files.
 - Runtime serial logs.
 
 ## Early Audit Observations
@@ -31,6 +36,7 @@ That means the on-device LVGL visual UI and mining core are not immediately sour
 - Firmware strings reveal LVGL, TFT_eSPI, Wi-Fi, stratum, wallet validation, monitor web UI, and REST/API behavior.
 - Runtime API on `v2.0.02` exposes enough configuration to customize Wi-Fi, pools, timezone/date format, display preferences, market watch symbols, and weather without firmware patching.
 - Runtime mining verification showed `pool.nerdminers.org:3333` works for this device/network with difficulty `0.001`; `public-pool.io:21496` TCP connects but did not complete subscribe during testing.
+- LittleFS extraction confirmed the embedded web UI can convert images to NMMiner `.ss` screensavers client-side and upload them through `/api/update/screensaver`.
 
 ## Customization Paths
 
@@ -45,6 +51,7 @@ Medium risk:
 - Inspect and potentially replace LittleFS web assets if a reliable unpack/repack tool is introduced and tested against a restore path.
 - Use the documented HTTP API to automate configuration and monitoring.
 - Add a local dashboard/custom controller that treats the device HTTP API as the stable boundary.
+- Generate and upload custom `.ss` screensavers using the documented API and embedded web UI format.
 
 High risk:
 
