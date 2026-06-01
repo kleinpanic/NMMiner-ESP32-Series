@@ -58,5 +58,16 @@ Status: pending.
 
 - Check power stability.
 - Evaluate enclosure/heat and USB cable/brick.
+- Identify JST, CH1, P3, speaker, and TF/SD wiring from board photos before applying power or attaching peripherals.
+- Confirm whether any exposed header pins are actually unused by display, touch, backlight, speaker, or SD functions.
 - Compare CYD board with newer NMMiner-supported hardware.
 - Decide whether any physical upgrades are worth doing for a novelty miner.
+
+## Phase 7: Personalized Local Controller
+
+Status: pending.
+
+- Build a local API-polling dashboard for `http://192.168.1.136/api/system/info`.
+- Add safe settings controls for display, weather, market symbols, and pool config.
+- Add a custom 320x240 screen saver generation/upload workflow.
+- Keep official firmware binary-only and avoid direct firmware patching unless upstream source becomes available.
