@@ -38,6 +38,11 @@ Last updated: 2026-06-01.
 - A normal API restart recovered mining after a temporary zero-hash state; post-restart readbacks showed about `1.04 MH/s` and accepted shares increasing.
 - Rendered visual audit completed for the local dashboard at desktop and mobile widths with no console errors or horizontal overflow.
 - Dashboard polish added safe device personalization controls for hostname and time display, fixed partial API error rendering, slowed live polling to reduce ESP32 load, and documented LAN access limits.
+- Device display/weather preferences were configured: 12-hour time, Eastern offset, US date format, 70% brightness, LED enabled, image screensaver after 5 minutes, and Fahrenheit/mph weather for Washington, DC.
+- Current firmware exposes brightness and timed screensaver behavior, but not the old `AutoBrightness`/`ScreenTimeout` settings found in older firmware strings.
+- Laptop wallpaper images were converted into valid NMMiner `.ss` screen savers with `scripts/nmminer_screensaver.py`; generated batches are local artifacts and gitignored.
+- Screen saver uploads are stored on the ESP32 internal LittleFS partition, not on SD/TF. Live readback after upload showed `393216` bytes total and `344064` used.
+- Current NMMiner firmware should be treated as not using external humidity/sensor, speaker, or SD/TF workflows even though the CYD board family exposes those connectors.
 
 ## Needs User Input
 

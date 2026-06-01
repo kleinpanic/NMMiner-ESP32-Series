@@ -6,6 +6,7 @@ __pycache__/
 # Contains Wi-Fi credentials, wallet/address values, device license, and full flash dumps.
 secrets/
 hardware/backups/
+hardware/screensavers/generated*/
 logs/
 
 # Downloaded release binaries are reproducible from the official NMMiner repo.

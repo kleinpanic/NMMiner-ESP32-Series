@@ -74,11 +74,24 @@ The best first personalization target is not firmware patching. It is:
 
 The embedded screen saver path is validated by firmware and has a 200 KB upload limit. Existing bundled screen savers are about 70-83 KB, and an 80 KB preflight test passed.
 
+Screen saver images are stored on the ESP32's internal LittleFS partition under `/ss/saver_320_240_NNN.ss`. They are not stored on the laptop after upload and they are not stored on the SD/TF card slot. Live readback after the first upload pass showed:
+
+- LittleFS total: `393216` bytes.
+- LittleFS used: `344064` bytes.
+- Approximate free space: `49152` bytes.
+- Screen saver preflight `existingCount`: `16`.
+
+This partition is not the same place as mining settings, Wi-Fi settings, wallet, or firmware. Filling it is not expected to erase mining config, but it can affect the embedded web UI and screen saver assets because those also live in LittleFS. The firmware's screen saver preflight/upload flow manages this by rejecting overlarge files and deleting old matching `/ss/saver_*.ss` files when needed.
+
+The local generator is `scripts/nmminer_screensaver.py`. It mirrors the official browser encoder path and writes valid `.ss` files with the NMMiner header, RGB565 pixels, RLE body, and HS bit encoding. Generated preview/binary batches under `hardware/screensavers/generated*/` are gitignored because they are reproducible and can be large.
+
 ## Hardware Notes
 
 The official manual says the board's external I/O ports and TF slot are reserved for a later NMMiner version. Current firmware does not require an SD/TF card, and adding a card should not be treated as enabling a current feature.
 
 The exact Amazon listing is the Aideepen "Bitcoin Miner NerdMiner V2 ESP32 Development Board 2.8 inch" item for `ESP32-2432S028`. The listing confirms the board/shell bundle, ESP32-D0WD-V3, 2.8 inch touch screen, Type-C power, and a 5 V / 2 A troubleshooting recommendation. It does not publish the electrical pinout for the JST/header connectors.
+
+A generic `ESP32-2432S028R-CYD` product listing for this board class lists a microSD slot, GPIO connector, speaker connector, temperature/humidity connector, and 5 V power through USB-C, microUSB, or a 4-pin 1.25 mm connector. Treat that as board-family evidence, not a guarantee that NMMiner firmware currently reads those add-ons.
 
 Generic `ESP32-2432S028R` / CYD pinout references line up with the labels on this class of board, but clones and NMMiner-branded variants can differ. Treat these as leads until verified against high-resolution photos, silkscreen, and a multimeter:
 
@@ -88,6 +101,15 @@ Generic `ESP32-2432S028R` / CYD pinout references line up with the labels on thi
 - The speaker/buzzer output is commonly tied to `GPIO26`.
 - The microSD/TF slot is commonly wired over SPI using `GPIO5`, `GPIO18`, `GPIO19`, and `GPIO23`.
 - Display, touch, backlight, and SD functions share limited ESP32 pins, so "free" pins are not always actually safe for new use.
+
+Current NMMiner `v2.0.02` should be treated as not supporting external humidity/sensor, speaker, or SD/TF workflows. The settings/API expose internet weather, display, pool, market, and screen saver behavior, not an attached sensor readout or SD-backed asset store. Wiring a sensor can be useful for a future custom firmware branch, but this firmware will ignore it.
+
+Practical buying guidance:
+
+- Stable USB-C power first: 5 V / 2 A adapter and a short known-good USB-C cable.
+- For speaker experiments: 2-pin 1.25 mm JST-style pigtail plus a small speaker/passive buzzer, but only after verifying the board connector and firmware support path.
+- For GPIO/sensor experiments: 4-pin 1.25 mm pigtails or 1.25 mm-to-Dupont leads, plus a 3.3 V I2C environmental sensor such as BME280, SHT31/SHT40, or AHT20. Use `CN1` only after confirming pin order.
+- For SD/TF: a small microSD card is fine to physically add, but it is not needed for the current miner or uploaded screensavers.
 
 Power improvements are worth doing before signal/header mods:
 
