@@ -1,8 +1,30 @@
+---
+gsd_state_version: 1.0
+milestone: v2.0.02
+milestone_name: milestone
+status: in-progress
+last_updated: "2026-06-04T04:00:00.000Z"
+progress:
+  total_phases: 8
+  completed_phases: 0
+  total_plans: 9
+  completed_plans: 1
+  percent: 11
+---
+
 # State
 
-Last updated: 2026-06-01.
+Last updated: 2026-06-04 (Plan 08-01 execution).
 
-## Completed
+## Completed (Phase 8, Plan 01)
+
+**2026-06-04:** Phase 8 Plan 1 executed (08-01): PlatformIO setup and NerdMiner_v2 fork.
+- Tasks 1-3, 5 complete: PlatformIO installed, NerdMiner cloned, ST7789 verified, secrets .gitignore hardened.
+- Task 4 (baseline build) blocked by upstream TFT_eSPI configuration issue (documented in SUMMARY.md).
+- Commit: 1b9ee59 (feat(08-01): establish PlatformIO build environment and clone NerdMiner_v2 fork).
+- Baseline firmware compilation deferred; all environment and repository setup complete.
+
+## Prior Completed
 
 - Git repository initialized.
 - Manual PDF downloaded to `docs/vendor/NM-CYD-ESP32-2432S028-manual.pdf`.
