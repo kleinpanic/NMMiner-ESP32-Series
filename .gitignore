@@ -10,7 +10,9 @@ hardware/screensavers/generated*/
 logs/
 
 # Downloaded release binaries are reproducible from the official NMMiner repo.
+# Exception: firmware/custom/ contains our custom fork and should be tracked.
 firmware/
+!firmware/custom/
 
 # Upstream source checkouts used for local audit/customization experiments.
 external/
