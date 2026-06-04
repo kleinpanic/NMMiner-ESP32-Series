@@ -9,6 +9,8 @@ as the canonical controller surface.
 from __future__ import annotations
 
 import os
+import posixpath
+import re
 import threading
 import time
 from typing import Any
@@ -349,10 +351,33 @@ def play_test_tone():
         return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
 
 
+def safe_sd_path(raw: str) -> str:
+    """Validate an SD path before proxying to the miner.
+
+    Defense-in-depth boundary: the firmware sanitizes too, but the proxy must
+    never pass through path traversal or null bytes. Rejects with a 400.
+    """
+    if not raw or not raw.startswith("/") or "\x00" in raw:
+        raise MinerError("invalid path", status_code=400)
+    if ".." in raw.split("/"):
+        raise MinerError("invalid path", status_code=400)
+    normalized = posixpath.normpath(raw)
+    if not normalized.startswith("/"):
+        raise MinerError("invalid path", status_code=400)
+    return normalized
+
+
+def safe_download_name(raw_path: str) -> str:
+    """RFC 6266-safe download filename — no CR/LF, no path separators."""
+    base = posixpath.basename(raw_path)
+    cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", base)
+    return cleaned or "download"
+
+
 @app.get("/api/sd/list")
 def list_sd_files():
-    path = request.args.get("path", "/")
     try:
+        path = safe_sd_path(request.args.get("path", "/"))
         result = miner_request("GET", "/api/sd/list", params={"path": path}, timeout=2.0)
         return jsonify({"ok": True, "data": result})
     except MinerError as exc:
@@ -361,11 +386,12 @@ def list_sd_files():
 
 @app.get("/api/sd/download")
 def download_sd_file():
-    path = request.args.get("path")
-    if not path:
+    raw = request.args.get("path")
+    if not raw:
         return jsonify({"ok": False, "error": "path query parameter required"}), 400
 
     try:
+        path = safe_sd_path(raw)
         response = requests.get(
             miner_url("/api/sd/download"),
             params={"path": path},
@@ -375,9 +401,12 @@ def download_sd_file():
         if response.status_code >= 400:
             raise MinerError("download failed", status_code=response.status_code, detail=response.text.strip())
 
+        # Never trust the miner's content headers for arbitrary downloads:
+        # force an opaque attachment with a sanitized name + nosniff.
         return response.content, response.status_code, {
-            "Content-Type": response.headers.get("content-type", "application/octet-stream"),
-            "Content-Disposition": response.headers.get("content-disposition", f"attachment; filename={path.split('/')[-1]}"),
+            "Content-Type": "application/octet-stream",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Disposition": f'attachment; filename="{safe_download_name(path)}"',
             "Content-Length": response.headers.get("content-length", str(len(response.content))),
         }
     except MinerError as exc:
@@ -393,6 +422,7 @@ def delete_sd_file():
         return jsonify({"ok": False, "error": "path required"}), 400
 
     try:
+        payload = {**payload, "path": safe_sd_path(payload["path"])}
         result = miner_request("POST", "/api/sd/delete", json=payload, timeout=2.0)
         return jsonify({"ok": True, "data": result})
     except MinerError as exc:
