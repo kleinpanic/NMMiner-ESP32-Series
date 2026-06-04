@@ -73,3 +73,18 @@ Status: complete baseline; further polish remains available.
 - Keep official firmware binary-only and avoid direct firmware patching unless upstream source becomes available.
 - Canonicalize the controller under `apps/nmminer-control`.
 - Keep the older upstream NMController checkout as non-canonical reference only.
+
+## Phase 8: Custom Firmware Fork (SD + Speaker + Dashboard)
+
+Status: pending.
+
+Direction decided 2026-06-03: stock NMMiner v2.0.02 is binary-only with no SD/audio API, so we fork open source instead. See `docs/firmware-customization-feasibility.md`.
+
+- Fork the MIT-licensed `BitMaker-hub/NerdMiner_v2` as our custom firmware base.
+- Target this unit's display correctly: ESP32-2432S028R, **ST7789** variant (mainline NerdMiner CYD env defaults to ILI9341 — must verify/override).
+- Graft SD-card file I/O and speaker/buzzer (LEDC tone) support from `witnessmenow/ESP32-Cheap-Yellow-Display` and CYD NerdMiner forks; verify CYD pins (speaker ~GPIO26; SD SPI GPIO5/18/19/23) against silkscreen before relying on them.
+- Build our own custom features on top (own JSON status + control web API exposing mining stats, an `sd` block, and `speaker` control).
+- Re-point/extend `apps/nmminer-control` dashboard to the new firmware API; add SD + speaker control surfaces.
+- Upgrade dashboard UI and validate visually via Playwright MCP at desktop + mobile widths.
+- Keep the full NMMiner flash backup as the restore path; only flash the fork after a verified backup and a documented rollback.
+- Keep stock NMMiner binary/docs as reference only; do not pursue binary reverse-engineering unless the fork proves insufficient (RE recon kept as fallback).

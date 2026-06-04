@@ -43,6 +43,9 @@ Last updated: 2026-06-01.
 - Laptop wallpaper images were converted into valid NMMiner `.ss` screen savers with `scripts/nmminer_screensaver.py`; generated batches are local artifacts and gitignored.
 - Screen saver uploads are stored on the ESP32 internal LittleFS partition, not on SD/TF. Live readback after upload showed `393216` bytes total and `344064` used.
 - Current NMMiner firmware should be treated as not using external humidity/sensor, speaker, or SD/TF workflows even though the CYD board family exposes those connectors.
+- 2026-06-03: User physically installed a microSD card and a speaker on the CYD board (a Flipper Zero is also plugged into the laptop but is unrelated/charging).
+- 2026-06-03: Firmware feasibility researched (Brave + Firecrawl + local binary recon). Findings in `docs/firmware-customization-feasibility.md`: stock NMMiner v2.0.02 is binary-only, unlicensed, and exposes zero SD/audio in its 21-endpoint HTTP API; its image already links the SD (VSPI/FatFS) and LEDC drivers but never uses them for files/audio.
+- 2026-06-03 DECISION: do NOT extend the stock binary. Fork the MIT-licensed `BitMaker-hub/NerdMiner_v2`, target the ESP32-2432S028R ST7789 variant, and graft SD + speaker code from `witnessmenow/ESP32-Cheap-Yellow-Display`. Build custom features + our own web API and re-point the dashboard. Binary RE kept only as a fallback. Added as ROADMAP Phase 8.
 
 ## Needs User Input
 
@@ -57,6 +60,6 @@ Last updated: 2026-06-01.
 
 ## Session Continuity
 
-Last session: 2026-06-01.
-Stopped at: Baseline setup and customization/profile audit complete; ready to implement safe customizations.
+Last session: 2026-06-03.
+Stopped at: Firmware customization direction decided (fork NerdMiner v2 for SD + speaker + custom dashboard). Phase 8 added to ROADMAP. Ready to discuss/plan Phase 8.
 Resume file: none.
