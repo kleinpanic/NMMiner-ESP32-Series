@@ -19,3 +19,6 @@ external/
 
 # Claude Code local state / worktrees
 .claude/
+
+# nested-fork build worktrees (parallel module agents)
+fork-wt/
