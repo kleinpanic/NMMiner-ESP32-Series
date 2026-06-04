@@ -116,7 +116,7 @@
             <canvas id="hash-chart" width="1100" height="360" aria-label="Hashrate chart"></canvas>
           </section>
 
-          <section class="lower-grid">
+          <section class="lower-grid lower-grid-3col">
             <section class="panel status-panel">
               <div class="panel-head">
                 <div>
@@ -133,6 +133,41 @@
                 <div><dt>Free heap</dt><dd id="heap">-</dd></div>
                 <div><dt>LittleFS</dt><dd id="storage">-</dd></div>
               </dl>
+            </section>
+
+            <section class="panel sd-panel" id="sd-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-title">SD Card</div>
+                  <h2>Files</h2>
+                </div>
+                <span id="sd-status" class="status-badge">checking</span>
+              </div>
+              <div id="file-list" class="file-list"></div>
+              <output id="sd-output"></output>
+            </section>
+
+            <section class="panel speaker-panel" id="speaker-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-title">Speaker</div>
+                  <h2>Audio</h2>
+                </div>
+              </div>
+              <form id="speaker-form" class="speaker-form">
+                <label>
+                  Volume
+                  <div class="slider-wrapper">
+                    <input type="range" id="volume-slider" min="0" max="100" value="80" />
+                    <span id="volume-display">80%</span>
+                  </div>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="mute-toggle" />
+                  Mute
+                </label>
+                <button type="button" id="test-tone-btn" class="command"><i data-lucide="speaker"></i><span>Test Tone</span></button>
+              </form>
             </section>
 
             <section class="panel forms-panel">
