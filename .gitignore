@@ -16,3 +16,6 @@ firmware/
 
 # Upstream source checkouts used for local audit/customization experiments.
 external/
+
+# Claude Code local state / worktrees
+.claude/
