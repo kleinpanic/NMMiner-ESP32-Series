@@ -82,6 +82,8 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 
 ## Session Continuity
 
-Last session: 2026-06-03.
-Stopped at: Firmware customization direction decided (fork NerdMiner v2 for SD + speaker + custom dashboard). Phase 8 added to ROADMAP. Ready to discuss/plan Phase 8.
+Last session: 2026-06-04.
+Stopped at: Phase 8 software-complete. Fork `kleinpanic/NerdMiner-CYD-Custom` v1.0.0 built green (speaker + SD + custom API), dashboard upgraded + Playwright-validated, 73 tests @94% branch coverage, security findings fixed. Repo pushed then set PRIVATE per user (hold public release until on-device validation passes).
+BLOCKED on hardware: flashing/live validation (08-08) needs the CYD on a USB DATA port of this laptop. Currently power-only — alive on LAN (192.168.1.136) but no /dev/ttyUSB*/CH340 on the bus (only the Flipper on ttyACM0).
+Resume: once `/dev/ttyUSB0` appears → fresh 4MB backup → `pio run -e ESP32-2432S028R -t upload` → serial-monitor validate → on-device checklist (fork docs/FLASH_GUIDE.md) → if pass, re-publish: `gh api -X PATCH repos/kleinpanic/NerdMiner-CYD-Custom -f private=false`.
 Resume file: none.
