@@ -301,6 +301,113 @@ def action(action: str):
     return jsonify({"ok": True, "action": action, "minerResponse": result})
 
 
+@app.get("/api/speaker")
+def get_speaker():
+    try:
+        result = miner_request("GET", "/api/speaker", timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.post("/api/speaker/volume")
+def set_volume():
+    payload = request.get_json(silent=True) or {}
+    if "volume_percent" not in payload:
+        return jsonify({"ok": False, "error": "volume_percent required"}), 400
+
+    try:
+        result = miner_request("POST", "/api/speaker/volume", json=payload, timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.post("/api/speaker/mute")
+def set_mute():
+    payload = request.get_json(silent=True) or {}
+    if "muted" not in payload:
+        return jsonify({"ok": False, "error": "muted boolean required"}), 400
+
+    try:
+        result = miner_request("POST", "/api/speaker/mute", json=payload, timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.post("/api/speaker/test-tone")
+def play_test_tone():
+    payload = request.get_json(silent=True) or {}
+    if "freq_hz" not in payload or "duration_ms" not in payload:
+        payload = {"freq_hz": 1000, "duration_ms": 200}
+
+    try:
+        result = miner_request("POST", "/api/speaker/test-tone", json=payload, timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.get("/api/sd/list")
+def list_sd_files():
+    path = request.args.get("path", "/")
+    try:
+        result = miner_request("GET", "/api/sd/list", params={"path": path}, timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.get("/api/sd/download")
+def download_sd_file():
+    path = request.args.get("path")
+    if not path:
+        return jsonify({"ok": False, "error": "path query parameter required"}), 400
+
+    try:
+        response = requests.get(
+            miner_url("/api/sd/download"),
+            params={"path": path},
+            timeout=REQUEST_TIMEOUT,
+            stream=True,
+        )
+        if response.status_code >= 400:
+            raise MinerError("download failed", status_code=response.status_code, detail=response.text.strip())
+
+        return response.content, response.status_code, {
+            "Content-Type": response.headers.get("content-type", "application/octet-stream"),
+            "Content-Disposition": response.headers.get("content-disposition", f"attachment; filename={path.split('/')[-1]}"),
+            "Content-Length": response.headers.get("content-length", str(len(response.content))),
+        }
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+    except requests.RequestException as exc:
+        raise MinerError("miner unreachable", detail=str(exc)) from exc
+
+
+@app.post("/api/sd/delete")
+def delete_sd_file():
+    payload = request.get_json(silent=True) or {}
+    if "path" not in payload:
+        return jsonify({"ok": False, "error": "path required"}), 400
+
+    try:
+        result = miner_request("POST", "/api/sd/delete", json=payload, timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
+@app.get("/api/sd/log")
+def get_sd_log():
+    try:
+        result = miner_request("GET", "/api/sd/log", timeout=2.0)
+        return jsonify({"ok": True, "data": result})
+    except MinerError as exc:
+        return jsonify({"ok": False, "error": str(exc), "detail": exc.detail}), exc.status_code
+
+
 @app.get("/api/screensaver/preflight")
 def screensaver_preflight():
     size = request.args.get("size", type=int)
