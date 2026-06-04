@@ -336,6 +336,156 @@ async function uploadScreensaver(event) {
   showToast("screensaver uploaded");
 }
 
+async function fetchSDList(path = "/") {
+  try {
+    const data = await fetchJson(`/api/sd/list?path=${encodeURIComponent(path)}`);
+    renderFileList(data.data?.files || []);
+    if (data.data?.total_size) {
+      text("#sd-status", `${formatBytes(data.data.used_size || 0)} / ${formatBytes(data.data.total_size)}`);
+    }
+  } catch (error) {
+    text("#file-list", "unavailable");
+    text("#sd-status", "error");
+  }
+}
+
+function renderFileList(files = []) {
+  const list = $("#file-list");
+  if (!list) return;
+  if (!files || files.length === 0) {
+    list.innerHTML = '<div class="file-list-empty">No files</div>';
+    return;
+  }
+  list.innerHTML = '';
+  files.forEach((file, idx) => {
+    const item = document.createElement("div");
+    item.className = `file-item ${idx % 2 ? "alt" : ""}`;
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "file-name";
+    nameSpan.textContent = file.name;
+
+    const sizeSpan = document.createElement("span");
+    sizeSpan.className = "file-size";
+    sizeSpan.textContent = file.is_dir ? "-" : formatBytes(file.size);
+
+    const actionsSpan = document.createElement("span");
+    actionsSpan.className = "file-actions";
+
+    if (file.is_dir) {
+      const btn = document.createElement("button");
+      btn.className = "file-action";
+      btn.title = "Open";
+      btn.textContent = "↓";
+      btn.onclick = () => fetchSDList(file.name);
+      actionsSpan.appendChild(btn);
+    } else {
+      const dlBtn = document.createElement("button");
+      dlBtn.className = "file-action";
+      dlBtn.title = "Download";
+      dlBtn.textContent = "⬇";
+      dlBtn.onclick = () => downloadFile(file.name);
+      actionsSpan.appendChild(dlBtn);
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "file-action danger";
+      delBtn.title = "Delete";
+      delBtn.textContent = "×";
+      delBtn.onclick = () => deleteFile(file.name);
+      actionsSpan.appendChild(delBtn);
+    }
+
+    item.appendChild(nameSpan);
+    item.appendChild(sizeSpan);
+    item.appendChild(actionsSpan);
+    list.appendChild(item);
+  });
+}
+
+async function downloadFile(path) {
+  try {
+    const response = await fetch(`/api/sd/download?path=${encodeURIComponent(path)}`);
+    if (!response.ok) throw new Error("download failed");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = path.split("/").pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("file downloaded");
+  } catch (error) {
+    showToast(error.message, "error");
+  }
+}
+
+async function deleteFile(path) {
+  if (!window.confirm(`Delete ${path}?`)) return;
+  try {
+    await fetchJson("/api/sd/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path }),
+    });
+    showToast("file deleted");
+    fetchSDList();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
+}
+
+async function initSD() {
+  fetchSDList().catch(() => {
+    text("#sd-status", "unavailable");
+  });
+}
+
+async function setVolume(percent) {
+  try {
+    const val = Math.max(0, Math.min(100, Number(percent)));
+    await fetchJson("/api/speaker/volume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ volume_percent: val }),
+    });
+    text("#volume-display", `${val}%`);
+  } catch (error) {
+    showToast(error.message, "error");
+  }
+}
+
+async function setMute(muted) {
+  try {
+    await fetchJson("/api/speaker/mute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ muted: Boolean(muted) }),
+    });
+  } catch (error) {
+    showToast(error.message, "error");
+  }
+}
+
+async function playTestTone() {
+  const btn = $("#test-tone-btn");
+  if (!btn || btn.disabled) return;
+  try {
+    btn.disabled = true;
+    await fetchJson("/api/speaker/test-tone", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ freq_hz: 1000, duration_ms: 200 }),
+    });
+    showToast("test tone sent");
+  } catch (error) {
+    showToast(error.message, "error");
+  } finally {
+    window.setTimeout(() => { btn.disabled = false; }, 300);
+  }
+}
+
 function bindEvents() {
   $("#refresh-now")?.addEventListener("click", () => refreshDashboard(true));
   $("#refresh-now")?.addEventListener("click", () => refreshSettings(true));
@@ -374,6 +524,18 @@ function bindEvents() {
     preflightScreensaver().catch((error) => showToast(error.message, "error"));
   });
   $("#screensaver-form")?.addEventListener("submit", uploadScreensaver);
+
+  $("#volume-slider")?.addEventListener("input", (event) => {
+    setVolume(event.target.value);
+  });
+
+  $("#mute-toggle")?.addEventListener("change", (event) => {
+    setMute(event.target.checked);
+  });
+
+  $("#test-tone-btn")?.addEventListener("click", () => {
+    playTestTone().catch((error) => showToast(error.message, "error"));
+  });
 }
 
 function boot() {
@@ -384,6 +546,7 @@ function boot() {
   }
   refreshDashboard();
   refreshSettings();
+  initSD();
   window.setInterval(refreshDashboard, 10000);
   window.setInterval(refreshSettings, 60000);
 }
