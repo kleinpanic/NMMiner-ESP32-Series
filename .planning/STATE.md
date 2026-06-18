@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
 milestone: v3.0
-milestone_name: NMMiner RE + Custom Integrations
-status: planning
-last_updated: "2026-06-18T01:30:00.000Z"
-last_activity: 2026-06-18
+milestone_name: — NMMiner RE + Custom Integrations
+status: Roadmap created — 8 phases
+last_updated: "2026-06-18T01:04:32.121Z"
+last_activity: 2026-06-18 — v3.0 ROADMAP.md written
 progress:
   total_phases: 8
   completed_phases: 0
@@ -87,7 +87,7 @@ Last updated: 2026-06-18 (ROADMAP.md created — 8-phase v3.0 spine).
 
 ## Session Continuity
 
-Last session: 2026-06-18 — roadmapper produced the v3.0 ROADMAP.md (8 phases).
+Last session: 2026-06-18T01:04:32.112Z
 
 ## Milestone v3.0 — NMMiner RE + Custom Integrations (status: planning → ready to plan Phase 1)
 
@@ -117,7 +117,7 @@ Coverage: 30/30 v3.0 requirements mapped, 0 unmapped.
 **Fallback track (v2.0.02 fork):** device mines + speaker/API verified; on-device fork validation never formally shipped. Kept as working fallback.
 
 Resume: `/gsd-resume-work`.
-Resume file: none.
+Resume file: .planning/phases/01-re-spec-the-ui-read-only/01-CONTEXT.md
 
 ## Current Position
 
