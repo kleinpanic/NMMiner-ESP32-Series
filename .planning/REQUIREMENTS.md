@@ -25,10 +25,10 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 ### Core UI (UI)
 
 - [x] **UI-01**: On boot the device shows a Loading screen reproducing the stock look (NMMiner / "Make it better", firmware version, connection progress) with kleinpanic branding layered on.
-- [ ] **UI-02**: A `UIManager` registers the 6 named screens (`Loading/Miner/Clock/SPrice/Weather/Config 320x240`) as a page list with `LastPage` NVS persistence (resumes on last page after reboot).
-- [ ] **UI-03**: The Miner screen renders the full `/api/system/info.miner` field set (hashrate, shares R/A, net/pool/last/best diff session + all-time, blkhits, freeheap, RSSI, temp, pool URL) matching stock formatting.
-- [ ] **UI-04**: The Clock screen renders NTP time (selectable 12/24h + date format), date, and BTC price with green-up / red-down coloring.
-- [ ] **UI-05**: A Config screen shows the config-mode indicator; the AP `nmap-2.4g` + captive portal at `192.168.4.1` is entered via long-press boot (10s) or 15s WiFi-connect failure.
+- [x] **UI-02**: A `UIManager` registers the 6 named screens (`Loading/Miner/Clock/SPrice/Weather/Config 320x240`) as a page list with `LastPage` NVS persistence (resumes on last page after reboot).
+- [x] **UI-03**: The Miner screen renders the full `/api/system/info.miner` field set (hashrate, shares R/A, net/pool/last/best diff session + all-time, blkhits, freeheap, RSSI, temp, pool URL) matching stock formatting.
+- [x] **UI-04**: The Clock screen renders NTP time (selectable 12/24h + date format), date, and BTC price with green-up / red-down coloring.
+- [x] **UI-05**: A Config screen shows the config-mode indicator; the AP `nmap-2.4g` + captive portal at `192.168.4.1` is entered via long-press boot (10s) or 15s WiFi-connect failure.
 - [x] **UI-06**: All screens are rebuilt natively from SPEC.md on the `NerdMiner-CYD-Custom` fork (driven by recovered evidence, not imagination or mis-carved assets).
 
 ### Touch & Input (TOUCH)
