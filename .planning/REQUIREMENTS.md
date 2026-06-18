@@ -24,12 +24,12 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Core UI (UI)
 
-- [ ] **UI-01**: On boot the device shows a Loading screen reproducing the stock look (NMMiner / "Make it better", firmware version, connection progress) with kleinpanic branding layered on.
+- [x] **UI-01**: On boot the device shows a Loading screen reproducing the stock look (NMMiner / "Make it better", firmware version, connection progress) with kleinpanic branding layered on.
 - [ ] **UI-02**: A `UIManager` registers the 6 named screens (`Loading/Miner/Clock/SPrice/Weather/Config 320x240`) as a page list with `LastPage` NVS persistence (resumes on last page after reboot).
 - [ ] **UI-03**: The Miner screen renders the full `/api/system/info.miner` field set (hashrate, shares R/A, net/pool/last/best diff session + all-time, blkhits, freeheap, RSSI, temp, pool URL) matching stock formatting.
 - [ ] **UI-04**: The Clock screen renders NTP time (selectable 12/24h + date format), date, and BTC price with green-up / red-down coloring.
 - [ ] **UI-05**: A Config screen shows the config-mode indicator; the AP `nmap-2.4g` + captive portal at `192.168.4.1` is entered via long-press boot (10s) or 15s WiFi-connect failure.
-- [ ] **UI-06**: All screens are rebuilt natively from SPEC.md on the `NerdMiner-CYD-Custom` fork (driven by recovered evidence, not imagination or mis-carved assets).
+- [x] **UI-06**: All screens are rebuilt natively from SPEC.md on the `NerdMiner-CYD-Custom` fork (driven by recovered evidence, not imagination or mis-carved assets).
 
 ### Touch & Input (TOUCH)
 
@@ -98,12 +98,12 @@ Explicitly excluded. Documented to prevent scope creep (anti-features from resea
 | ASSET-01 | Phase 2 | Pending |
 | ASSET-02 | Phase 2 | Pending |
 | ASSET-03 | Phase 2 | Pending |
-| UI-01 | Phase 3 | Pending |
+| UI-01 | Phase 3 | Complete |
 | UI-02 | Phase 3 | Pending |
 | UI-03 | Phase 3 | Pending |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 3 | Pending |
-| UI-06 | Phase 3 | Pending |
+| UI-06 | Phase 3 | Complete |
 | TOUCH-01 | Phase 4 | Pending |
 | TOUCH-02 | Phase 4 | Pending |
 | TOUCH-03 | Phase 4 | Pending |
@@ -123,6 +123,7 @@ Explicitly excluded. Documented to prevent scope creep (anti-features from resea
 | FALLBACK-01 | Phase 8 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 30 total
 - Mapped to phases: 30
 - Unmapped: 0 ✓
