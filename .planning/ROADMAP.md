@@ -135,7 +135,10 @@ Plans:
   2. The SD card (VSPI GPIO5/18/19/23) mounts and logs on the now-free hardware VSPI.
   3. Custom LED behavior and kleinpanic branding accents are integrated over the recovered UI, verified against silkscreen pins.
   4. Mining stays fully functional throughout (NerdMiner stratum core unchanged; primary + fallback pool, switch-back to primary ≤10s).
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Name the share-accept beep (Speaker::beepShareAccepted, D-62) + add nm_led mining/share/disconnect status (HW-01, HW-03, HW-04)
+- [ ] 06-02-PLAN.md — Graceful at-seam SD log on VSPI + full build gate + mining.cpp diff gate (HW-02, HW-04)
 **UI hint**: yes
 
 ### Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)
