@@ -68,7 +68,9 @@ Plans:
   1. The stock LVGL font(s)/glyphs are extracted as reusable LVGL C-arrays (or a matched substitute is documented), together with the stock color palette.
   2. The LittleFS partition is unpacked with LittleFS tooling (NOT mkspiffs), yielding the gzipped web UI plus the 17 `/ss/saver_320_240_*.ss` screensavers.
   3. A byte-accurate `.ss` decoder (extending `scripts/nmminer_ss_decode.py`) decodes all 17 stock screensavers cleanly and is reusable by the firmware screensaver carousel.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 02-01-PLAN.md — LittleFS manifest + .ss decoder regression test (bit-replication fix) + ss_render C-port spec (ASSET-02, ASSET-03)
+- [ ] 02-02-PLAN.md — Identify stock fonts, enable/regenerate Montserrat + FA subset C-arrays, palette header (ASSET-01)
 
 ### Phase 3: Rebuild Core Screens + UIManager Carousel
 **Goal**: Booting the fork reproduces the stock NMMiner structural identity — the named screens, the page carousel, and last-page persistence — driven by recovered evidence.
