@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: NMMiner RE + Custom Integrations
 status: planning
-last_updated: "2026-06-18T00:53:15.366Z"
+last_updated: "2026-06-18T01:30:00.000Z"
 last_activity: 2026-06-18
 progress:
-  total_phases: 0
+  total_phases: 8
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -15,7 +15,7 @@ progress:
 
 # State
 
-Last updated: 2026-06-04 (Plan 08-01 execution).
+Last updated: 2026-06-18 (ROADMAP.md created — 8-phase v3.0 spine).
 
 ## Completed (Phase 8, Plan 01)
 
@@ -25,6 +25,9 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 - Task 4 (baseline build) blocked by upstream TFT_eSPI configuration issue (documented in SUMMARY.md).
 - Commit: 1b9ee59 (feat(08-01): establish PlatformIO build environment and clone NerdMiner_v2 fork).
 - Baseline firmware compilation deferred; all environment and repository setup complete.
+
+> NOTE: the "Phase 8" above belongs to the ARCHIVED v2.0.02 milestone
+> (`.planning/archive/v2.0.02-fork-milestone/`). v3.0 phase numbering resets at 1.
 
 ## Prior Completed
 
@@ -69,7 +72,7 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 - Current NMMiner firmware should be treated as not using external humidity/sensor, speaker, or SD/TF workflows even though the CYD board family exposes those connectors.
 - 2026-06-03: User physically installed a microSD card and a speaker on the CYD board (a Flipper Zero is also plugged into the laptop but is unrelated/charging).
 - 2026-06-03: Firmware feasibility researched (Brave + Firecrawl + local binary recon). Findings in `docs/firmware-customization-feasibility.md`: stock NMMiner v2.0.02 is binary-only, unlicensed, and exposes zero SD/audio in its 21-endpoint HTTP API; its image already links the SD (VSPI/FatFS) and LEDC drivers but never uses them for files/audio.
-- 2026-06-03 DECISION: do NOT extend the stock binary. Fork the MIT-licensed `BitMaker-hub/NerdMiner_v2`, target the ESP32-2432S028R ST7789 variant, and graft SD + speaker code from `witnessmenow/ESP32-Cheap-Yellow-Display`. Build custom features + our own web API and re-point the dashboard. Binary RE kept only as a fallback. Added as ROADMAP Phase 8.
+- 2026-06-03 DECISION: do NOT extend the stock binary. Fork the MIT-licensed `BitMaker-hub/NerdMiner_v2`, target the ESP32-2432S028R ST7789 variant, and graft SD + speaker code from `witnessmenow/ESP32-Cheap-Yellow-Display`. Build custom features + our own web API and re-point the dashboard. Binary RE kept only as a fallback. (Archived milestone.)
 
 ## Needs User Input
 
@@ -84,28 +87,41 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 
 ## Session Continuity
 
-Last session: 2026-06-17/18 (huge session — pivoted to v3.0 NMMiner reverse-engineering).
+Last session: 2026-06-18 — roadmapper produced the v3.0 ROADMAP.md (8 phases).
 
-## Milestone v3.0 — NMMiner RE + Custom Integrations (status: planning → ready to execute)
+## Milestone v3.0 — NMMiner RE + Custom Integrations (status: planning → ready to plan Phase 1)
 
 **Decided:** Recover stock NMMiner v2.0.02's original look (closed binary) by RE-ing it as a SPECIFICATION, then rebuild its exact screens natively on our `firmware/custom/NerdMiner-CYD-Custom` fork (which already has working speaker/SD/LED/branding) + restore touch/market/screensaver. NOT a binary patch (rejected: fragmented flash, SHA check, no-redistribution, brick risk). NerdMiner fork = build base/fallback. Device currently mines on the fork (Homebase, 192.168.1.136).
 
-**DONE this session:**
+**ROADMAP (8 phases, coarse, versioned `v3.0 / Phase N`):**
 
-- v3.0 formalized in PROJECT.md + STATE.md (committed 662d075).
+1. RE-Spec the UI (read-only) — RE-01..RE-04
+2. Recover Fonts/Glyphs + Filesystem Assets — ASSET-01..ASSET-03
+3. Rebuild Core Screens + UIManager Carousel — UI-01..UI-06
+4. Restore Interactive Touch (SoftSPI) — TOUCH-01..TOUCH-03 (before SD)
+5. Data-Driven Screens + HTTP API Parity — DATA-01..DATA-06
+6. Wire Custom Features at the Share-Accept Seam — HW-01..HW-04
+7. On-Device Validation — VALID-01..VALID-03 (BLOCKED on /dev/ttyUSB0)
+8. Fallback Path-A Binary-Patch Spike (contingency) — FALLBACK-01
+
+Coverage: 30/30 v3.0 requirements mapped, 0 unmapped.
+
+**DONE prior session:**
+
+- v3.0 formalized in PROJECT.md + STATE.md + REQUIREMENTS.md (committed).
 - 4-dimension research + synthesis committed: `.planning/research/{STACK,FEATURES,ARCHITECTURE,PITFALLS,SUMMARY}.md`.
 - RE FOUNDATION (all on disk, recovered-assets gitignored): ESP32 image parsed → DROM `0x3f400020` + IROM `0x400d0020` isolated; **LittleFS extracted** (web UI + 17 screensavers); **`.ss` format fully decoded** → `scripts/nmminer_ss_decode.py` (all 17 decode clean); **IROM disassembled** (476k lines) via objcopy→ELF; **string→function xref works** — located `Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`. Pipeline doc: `docs/nmminer-re-pipeline.md`.
 
-**NEXT (per research SUMMARY.md, ~8 phases):** finish milestone setup (REQUIREMENTS.md + roadmapper → ROADMAP.md) if missing; then: (1) Ghidra 11 + dynacylabs esp32 flash-loader + self-built ESP-IDF v4.4.6 FIDB → decompile located screen funcs → SPEC.md; (2) extract fonts (LVGL C-arrays) + assets; (3) rebuild core screens + UIManager carousel on fork; (4) restore touch on SoftSPI BEFORE SD; (5) market(Binance)/weather(open-meteo)/screensaver screens; (6) wire speaker/SD/LED/branding at share-accept seam; (7) on-device validate (needs /dev/ttyUSB0 + hard power-cycle between flashes); (8) fallback path-A spike only if needed.
+**NEXT:** `/gsd-plan-phase 1 --research` (FIDB build + per-screen geometry extraction flagged research-recommended in SUMMARY.md). Phases 1-6 + 8 are device-independent and should be front-loaded; Phase 7 waits on `/dev/ttyUSB0`.
 
-**Fallback track (v2.0.02 fork):** task list item — device mines + speaker/API verified; on-device fork validation never formally shipped. Kept as working fallback.
+**Fallback track (v2.0.02 fork):** device mines + speaker/API verified; on-device fork validation never formally shipped. Kept as working fallback.
 
-Resume: `/gsd-resume-work`, then the `/goal` handed to the user (drives the full GSD phase lifecycle for v3.0).
+Resume: `/gsd-resume-work`.
 Resume file: none.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap complete, ready to plan Phase 1)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-18 — Milestone v3.0 started
+Status: Roadmap created — 8 phases
+Last activity: 2026-06-18 — v3.0 ROADMAP.md written
