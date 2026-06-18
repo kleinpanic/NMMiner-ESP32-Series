@@ -78,4 +78,3 @@ created: 2026-06-18
 - [ ] `nyquist_compliant: true` set in frontmatter once plan tasks map to this table
 
 **Approval:** pending
-</content>
