@@ -50,7 +50,7 @@ Hard ordering locks:
 **Requirements**: RE-01, RE-02, RE-03, RE-04
 **Success Criteria** (what must be TRUE):
   1. A Ghidra 11.3.1 + dynacylabs flash-loader v11.3.1 (prebuilt) workbench opens the stock image with DROM (`0x3f400020`) / IROM (`0x400d0020`) mapped; the self-built ESP-IDF v4.4.6 FIDB is attempted, and stripped SDK/Arduino-core symbols are recovered via the FIDB where it applies OR via a documented fallback (loader ROM/SVD + string→`l32r` xref) sufficient to decompile the screen/render/share-accept functions.
-  2. The stock LVGL major version (v8 vs v9) is stated with evidence (FIDB-named decoder symbols + `LV_IMG_CF_*` / `LV_COLOR_FORMAT_*` string family) before any extractor is written.
+  2. The stock LVGL major version (v8 vs v9) is stated citing at least two independent items from the acceptable-evidence set (decoder/render call-shape; descriptor layout; constructor API signatures; DROM string family `LV_IMG_CF_*`/`LV_COLOR_FORMAT_*`; build-era strings) with a Confidence label, before any extractor is written.
   3. `hardware/recovered-assets/SPEC.md` exists and documents the screen inventory, per-screen widget geometry, fonts/colors, market field set, and screensaver render path, decompiled from `Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`, and the render / share-accept / screensaver paths.
   4. SPEC.md is markdown-only, never linked into firmware, and all recovered closed-firmware assets remain gitignored (no redistribution).
 **Plans**: 3 plans

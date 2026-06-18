@@ -53,6 +53,12 @@ code paths, and records the recovered geometry/fields/colors/behavior.
 - **D-09:** The `hardware/recovered-assets/lvgl_*.png` and `jpg_*` files are **mis-carved noise**, NOT real screens (screens are runtime LVGL widget code, not stored bitmaps). Do not treat them as recovered art or seed the rebuild from them.
 - **D-10:** Do **not** run a v9 `lv_img_dsc_t` magic-byte scan and conclude "no images" — for v8 the descriptor is a 12-byte packed bitfield with no magic. Fonts are the extractable LVGL C-arrays (Phase 2 work); screens are code (this phase).
 
+### No-redistribution boundary (D-11 — user decision 2026-06-18)
+- **D-11:** Boundary = **script-only strict + fair-use analysis docs**. Committed **scripts** (`scripts/*.py`) MUST contain ZERO verbatim closed-firmware literals (grep-enforced: no `share accepted`/`%ldms`/decompiled-body markers); they carry only addresses, our own class-name-derived identifiers, and structural logic. Private `.planning/` analysis docs MAY quote **short individual** firmware literals as RE evidence (fair-use, not asset redistribution). ALL bulk assets — binaries, fonts, images, decompiled function bodies, full string tables — stay under gitignored `hardware/recovered-assets/`. No history rewrite. This resolves the cross-AI "literal leakage" concern as a **documented exception**, not a violation.
+
+### Read-only invariant scope (D-12 — clarified cycle 4)
+- **D-12:** "Read-only" = **no NMMiner/custom/device firmware build and no flashing/device write**. Building local **ESP-IDF example projects to populate the FIDB** is explicitly ALLOWED (those ELFs are throwaway tooling under gitignored paths, not the target firmware). The invariant forbids touching the device and building/altering the NMMiner or fork firmware images — not local RE-tooling compiles.
+
 ### Claude's Discretion
 - Exact Ghidra script vs interactive workflow for bulk symbol import (headless export for symbols; interactive/assisted reading for the novel per-screen geometry extraction).
 - Which specific IDF example projects to compile for the FIDB.
