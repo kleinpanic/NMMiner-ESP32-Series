@@ -11,16 +11,16 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Reverse-Engineering Spec (RE)
 
-- [ ] **RE-01**: A working Ghidra 11.3.1 + dynacylabs esp32 flash-loader v11.3.1 (prebuilt) workbench loads the stock image with DROM (`0x3f400020`) / IROM (`0x400d0020`) mapped; the self-built ESP-IDF v4.4.6 FIDB is attempted, and stripped SDK/Arduino-core symbols are recovered via the FIDB where it applies **OR** via a documented fallback (dynacylabs loader ROM/SVD annotations + the proven string→`l32r` xref pipeline) sufficient to decompile the screen / render / share-accept functions.
-- [ ] **RE-02**: The stock LVGL major version (v8 vs v9) is confirmed authoritatively in-decompiler, citing **at least two independent items from the acceptable-evidence set** (decoder/render call-shape; `lv_img_dsc_t`/`lv_font_t` descriptor layout; screen-constructor API signatures; DROM string family `LV_IMG_CF_*` v8 / `LV_COLOR_FORMAT_*` v9; build-era/version strings) with a recorded Confidence label, before any extractor is written.
-- [ ] **RE-03**: The located screen-construction functions (`Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`) plus the render / share-accept / screensaver code paths are decompiled into `hardware/recovered-assets/SPEC.md` (screen inventory, per-screen widget geometry, fonts/colors, market field set, screensaver render path).
-- [ ] **RE-04**: SPEC.md is markdown-only and never linked into firmware; all recovered closed-firmware assets remain gitignored (no redistribution).
+- [x] **RE-01**: A working Ghidra 11.3.1 + dynacylabs esp32 flash-loader v11.3.1 (prebuilt) workbench loads the stock image with DROM (`0x3f400020`) / IROM (`0x400d0020`) mapped; the self-built ESP-IDF v4.4.6 FIDB is attempted, and stripped SDK/Arduino-core symbols are recovered via the FIDB where it applies **OR** via a documented fallback (dynacylabs loader ROM/SVD annotations + the proven string→`l32r` xref pipeline) sufficient to decompile the screen / render / share-accept functions.
+- [x] **RE-02**: The stock LVGL major version (v8 vs v9) is confirmed authoritatively in-decompiler, citing **at least two independent items from the acceptable-evidence set** (decoder/render call-shape; `lv_img_dsc_t`/`lv_font_t` descriptor layout; screen-constructor API signatures; DROM string family `LV_IMG_CF_*` v8 / `LV_COLOR_FORMAT_*` v9; build-era/version strings) with a recorded Confidence label, before any extractor is written.
+- [x] **RE-03**: The located screen-construction functions (`Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`) plus the render / share-accept / screensaver code paths are decompiled into `hardware/recovered-assets/SPEC.md` (screen inventory, per-screen widget geometry, fonts/colors, market field set, screensaver render path).
+- [x] **RE-04**: SPEC.md is markdown-only and never linked into firmware; all recovered closed-firmware assets remain gitignored (no redistribution).
 
 ### Asset Recovery (ASSET)
 
-- [ ] **ASSET-01**: The stock LVGL font(s)/glyphs are extracted as reusable LVGL C-arrays (or a matched substitute is documented), together with the stock color palette.
-- [ ] **ASSET-02**: The LittleFS partition is unpacked with LittleFS tooling (NOT mkspiffs): gzipped web UI + the 17 `/ss/saver_320_240_*.ss` screensavers.
-- [ ] **ASSET-03**: A byte-accurate `.ss` decoder (extending `scripts/nmminer_ss_decode.py`) decodes all 17 stock screensavers cleanly and is reusable by the firmware screensaver carousel.
+- [x] **ASSET-01**: The stock LVGL font(s)/glyphs are extracted as reusable LVGL C-arrays (or a matched substitute is documented), together with the stock color palette.
+- [x] **ASSET-02**: The LittleFS partition is unpacked with LittleFS tooling (NOT mkspiffs): gzipped web UI + the 17 `/ss/saver_320_240_*.ss` screensavers.
+- [x] **ASSET-03**: A byte-accurate `.ss` decoder (extending `scripts/nmminer_ss_decode.py`) decodes all 17 stock screensavers cleanly and is reusable by the firmware screensaver carousel.
 
 ### Core UI (UI)
 
