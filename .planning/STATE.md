@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: — NMMiner RE + Custom Integrations
-status: Roadmap created — 8 phases
-last_updated: "2026-06-18T01:04:32.121Z"
-last_activity: 2026-06-18 — v3.0 ROADMAP.md written
+status: completed
+last_updated: "2026-06-18T07:04:44.096Z"
+last_activity: 2026-06-18 -- Phase 4 marked complete
 progress:
   total_phases: 8
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 4
+  total_plans: 19
+  completed_plans: 18
+  percent: 50
 ---
 
 # State
@@ -87,7 +87,7 @@ Last updated: 2026-06-18 (ROADMAP.md created — 8-phase v3.0 spine).
 
 ## Session Continuity
 
-Last session: 2026-06-18T01:04:32.112Z
+Last session: 2026-06-18T07:04:44.085Z
 
 ## Milestone v3.0 — NMMiner RE + Custom Integrations (status: planning → ready to plan Phase 1)
 
@@ -117,11 +117,15 @@ Coverage: 30/30 v3.0 requirements mapped, 0 unmapped.
 **Fallback track (v2.0.02 fork):** device mines + speaker/API verified; on-device fork validation never formally shipped. Kept as working fallback.
 
 Resume: `/gsd-resume-work`.
-Resume file: .planning/phases/01-re-spec-the-ui-read-only/01-CONTEXT.md
+Resume file: .planning/phases/05-data-driven-screens-http-api-parity/05-05-SUMMARY.md
 
 ## Current Position
 
-Phase: Not started (roadmap complete, ready to plan Phase 1)
+Phase: 4 — COMPLETE
 Plan: —
-Status: Roadmap created — 8 phases
-Last activity: 2026-06-18 — v3.0 ROADMAP.md written
+Status: Phase 4 complete
+Last activity: 2026-06-18 -- Phase 4 marked complete
+
+### Blockers
+
+- 05-05 BLOCKED: dram0_0_seg overflow by 640 bytes (D-58). Referencing nm_market_tick/get_pairs pulls nm_market.cpp.o (6158B .bss incl 5120B s_pairs) into the link; 4600B dram0 headroom exceeded. Fix in 05-02 (resize s_pairs) or platformio.ini. webapi.cpp complete+compiling (63f3957).
