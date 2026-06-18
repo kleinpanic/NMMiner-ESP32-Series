@@ -1,8 +1,10 @@
 # Roadmap: NMMiner ESP32 Series
 
+## v3.0 — NMMiner RE + Custom Integrations
+
 **Milestone:** v3.0 — NMMiner RE + Custom Integrations
 **Granularity:** coarse
-**Phase ID convention:** versioned milestone headings (`v3.0 / Phase N`)
+**Phase ID convention:** `Phase N` headings under the `## v3.0` milestone section
 **Created:** 2026-06-18
 
 > Prior milestone (v2.0.02 bring-up + NerdMiner fork) is archived under
@@ -31,18 +33,18 @@ Hard ordering locks:
 
 ## Phases
 
-- [ ] **v3.0 / Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing.
-- [ ] **v3.0 / Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers.
-- [ ] **v3.0 / Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash on the fork.
-- [ ] **v3.0 / Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
-- [ ] **v3.0 / Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
-- [ ] **v3.0 / Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional.
-- [ ] **v3.0 / Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
-- [ ] **v3.0 / Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Go/no-go decision recorded; execute the spike only if RE surfaced an unreproducible NMMiner-exclusive behavior, else formally waive.
+- [ ] **Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing.
+- [ ] **Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers.
+- [ ] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash on the fork.
+- [ ] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
+- [ ] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
+- [ ] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional.
+- [ ] **Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
+- [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Go/no-go decision recorded; execute the spike only if RE surfaced an unreproducible NMMiner-exclusive behavior, else formally waive.
 
 ## Phase Details
 
-### v3.0 / Phase 1: RE-Spec the UI (read-only)
+### Phase 1: RE-Spec the UI (read-only)
 **Goal**: The closed stock binary is turned into a written design contract that all UI rebuild work can be driven from, with the LVGL version question settled authoritatively.
 **Depends on**: Nothing (first phase; RE foundation already on disk — DROM/IROM isolated, IROM disassembled, screen funcs located)
 **Requirements**: RE-01, RE-02, RE-03, RE-04
@@ -54,7 +56,7 @@ Hard ordering locks:
 **Plans**: TBD
 **Research**: recommended (FIDB build is a non-trivial Tarlogic workflow; per-screen geometry extraction is novel for this project)
 
-### v3.0 / Phase 2: Recover Fonts/Glyphs + Filesystem Assets
+### Phase 2: Recover Fonts/Glyphs + Filesystem Assets
 **Goal**: The reusable visual assets that ARE extractable from the binary (fonts, palette, screensavers, web UI) are recovered cleanly and ready to feed the rebuild.
 **Depends on**: Phase 1 (SPEC.md identifies which fonts/glyphs/assets matter and the confirmed LVGL version)
 **Requirements**: ASSET-01, ASSET-02, ASSET-03
@@ -64,7 +66,7 @@ Hard ordering locks:
   3. A byte-accurate `.ss` decoder (extending `scripts/nmminer_ss_decode.py`) decodes all 17 stock screensavers cleanly and is reusable by the firmware screensaver carousel.
 **Plans**: TBD
 
-### v3.0 / Phase 3: Rebuild Core Screens + UIManager Carousel
+### Phase 3: Rebuild Core Screens + UIManager Carousel
 **Goal**: Booting the fork reproduces the stock NMMiner structural identity — the named screens, the page carousel, and last-page persistence — driven by recovered evidence.
 **Depends on**: Phase 1 (SPEC.md geometry), Phase 2 (fonts/palette)
 **Requirements**: UI-01, UI-02, UI-03, UI-04, UI-05, UI-06
@@ -77,7 +79,7 @@ Hard ordering locks:
 **Plans**: TBD
 **UI hint**: yes
 
-### v3.0 / Phase 4: Restore Interactive Touch (SoftSPI)
+### Phase 4: Restore Interactive Touch (SoftSPI)
 **Goal**: The user can navigate the rebuilt UI by touch and boot button, with touch moved off hardware VSPI so SD can later own it cleanly.
 **Depends on**: Phase 3 (screens + carousel to navigate). MUST come before Phase 6 SD wiring (VSPI bus-ownership lock-in).
 **Requirements**: TOUCH-01, TOUCH-02, TOUCH-03
@@ -88,7 +90,7 @@ Hard ordering locks:
 **Plans**: TBD
 **UI hint**: yes
 
-### v3.0 / Phase 5: Data-Driven Screens + HTTP API Parity
+### Phase 5: Data-Driven Screens + HTTP API Parity
 **Goal**: The page-gated market/weather/swarm/screensaver behaviors and the full HTTP API match stock cadence and shapes so the existing dashboard/controller contract holds.
 **Depends on**: Phase 3 (carousel), Phase 4 (touch wake/nav), Phase 2 (`.ss` decoder)
 **Requirements**: DATA-01, DATA-02, DATA-03, DATA-04, DATA-05, DATA-06
@@ -102,7 +104,7 @@ Hard ordering locks:
 **Research**: recommended (`.ss` header byte-layout, kline rendering specifics, idle→screensaver state machine are open)
 **UI hint**: yes
 
-### v3.0 / Phase 6: Wire Custom Features at the Share-Accept Seam
+### Phase 6: Wire Custom Features at the Share-Accept Seam
 **Goal**: Our custom speaker / SD / LED / branding light up over the recovered UI at the in-process NerdMiner share-accept seam, without breaking mining.
 **Depends on**: Phase 4 (touch on SoftSPI frees VSPI for SD), Phase 3/5 (UI to brand). Custom feature code already built+tested in the fork.
 **Requirements**: HW-01, HW-02, HW-03, HW-04
@@ -114,7 +116,7 @@ Hard ordering locks:
 **Plans**: TBD
 **UI hint**: yes
 
-### v3.0 / Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)
+### Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)
 **Goal**: The rebuilt fork firmware is proven on the real device — booting, mining, and visually matching stock — with a documented reversible restore path.
 **Depends on**: Phases 3-6 (software complete). HARD BLOCKER: gated on `/dev/ttyUSB0` (data port, not charge-only) appearing.
 **Requirements**: VALID-01, VALID-02, VALID-03
@@ -124,7 +126,7 @@ Hard ordering locks:
   3. The restore-from-backup path is documented and proven reversible against the 4 MB backup.
 **Plans**: TBD
 
-### v3.0 / Phase 8: Fallback Path-A Binary-Patch Spike (contingency)
+### Phase 8: Fallback Path-A Binary-Patch Spike (contingency)
 **Goal**: A recorded go/no-go verdict on the Path-A binary-patch contingency — satisfied whether the spike is executed or formally waived.
 **Depends on**: Phase 1 (RE findings determine whether any NMMiner-exclusive behavior is unreproducible on the fork)
 **Requirements**: FALLBACK-01
