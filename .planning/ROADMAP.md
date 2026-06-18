@@ -33,14 +33,21 @@ Hard ordering locks:
 
 ## Phases
 
-- [ ] **Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing.
-- [ ] **Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers.
-- [x] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash on the fork.
-- [x] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
-- [x] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
-- [x] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional. *(Code/build complete; on-device confirm → Phase 7.)*
-- [ ] **Phase 7: On-Device Validation** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
-- [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Go/no-go decision recorded; execute the spike only if RE surfaced an unreproducible NMMiner-exclusive behavior, else formally waive.
+> ⚠️ **STATUS (2026-06-18): milestone PAUSED, on-device validation FAILED.** The `[x]` on Phases
+> 3–6 means **code-complete + compiled + code-reviewed**, NOT hardware-verified. On-device (Phase 7)
+> the rebuilt UI does NOT render correctly (white screen, was upside-down, config crash, boot-loop;
+> WiFi regression introduced this session). Phases 3–6 require an **on-device-gated redo** (user-approved).
+> Genuinely complete + device-independent: **Phases 1–2 only**. See STATE.md "HONEST FAILURE RECORD"
+> + `phases/07-on-device-validation/07-REVIEW.md` (H1–H5).
+
+- [x] **Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing. ✅ done (device-independent)
+- [x] **Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers. ✅ done (device-independent)
+- [~] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash. ⚠️ COMPILE-ONLY; renders BROKEN on-device (white screen) — needs on-device-gated redo (H5).
+- [~] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI; nav + config entry + wake; boot-button controls. ⚠️ COMPILE-ONLY; touch calibration wrong for rotation 3 on-device (H3).
+- [~] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice/Weather/screensaver/Swarm/API. ⚠️ COMPILE-ONLY; unverified on-device (UI doesn't render to confirm).
+- [~] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker/SD/LED/branding. ⚠️ Partial on-device: SD mount + LED-blink confirmed; speaker/beep/branding unverified (UI broken). HW-04 mining core starts.
+- [ ] **Phase 7: On-Device Validation** - ❌ FAILED + PAUSED (user). Flash+backup+verify done, but visual parity FAILED. Audit → 07-REVIEW.md (2 Crit, H1–H5). Resume = on-device-gated UI redo.
+- [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Not started. Go/no-go pending (expected WAIVE).
 
 ## Phase Details
 

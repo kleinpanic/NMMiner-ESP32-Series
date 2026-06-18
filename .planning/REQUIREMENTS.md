@@ -128,6 +128,24 @@ Explicitly excluded. Documented to prevent scope creep (anti-features from resea
 - Mapped to phases: 30
 - Unmapped: 0 ✓
 
+> ## ⚠️ ON-DEVICE VALIDATION STATUS (2026-06-18) — HONEST CORRECTION
+>
+> The `[x]` / "Complete" marks on **UI-01..06, TOUCH-01..03, DATA-01..06, HW-01..04** mean
+> **code-complete + compiled + code-reviewed ONLY**. They were NOT verified on hardware — the
+> milestone deferred all on-device checks to Phase 7. **Phase 7 then FAILED:** the rebuilt v3.0
+> UI does not render correctly on the real ESP32-2432S028R (white screen, was upside-down, config
+> crash, boot-loop; WiFi regression introduced this session). So these requirements are **NOT
+> actually validated** — treat them as **PROVISIONAL / FAILED on-device** pending the H1–H5
+> hardening in `.planning/phases/07-on-device-validation/07-REVIEW.md`.
+>
+> - **VALID-01** — backup+verify_flash done, but the flashed build is broken → **partial**.
+> - **VALID-02** — boot serial OK + mining core starts, but **visual parity FAILED** (UI broken). → **FAILED**.
+> - **VALID-03** — restore path documented + backup proven valid (4 MB, sha recorded) → **met**, not yet round-trip-exercised.
+> - **HW-02** — SD mounts on FAT32 on-device (confirmed live) → the one HW item with real on-device evidence.
+> - Genuinely-done-and-not-device-dependent: **RE-01..04, ASSET-01..03** (Phases 1–2).
+>
+> Milestone v3.0 is **NOT complete**. Status: paused by user after on-device failure.
+
 ---
 *Requirements defined: 2026-06-18*
 *Last updated: 2026-06-18 after milestone v3.0 definition*

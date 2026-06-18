@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: — NMMiner RE + Custom Integrations
-status: completed
-last_updated: "2026-06-18T16:17:59.054Z"
-last_activity: 2026-06-18 -- Phase 6 marked complete
+status: paused-validation-failed
+last_updated: "2026-06-18T17:30:00.000Z"
+last_activity: 2026-06-18 -- Phase 7 PAUSED by user; on-device validation FAILED, rebuilt UI does not render correctly
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 2   # ONLY Phases 1-2 (RE-spec + asset recovery) are genuinely done; 3-6 were COMPILE-verified only and FAIL on-device (see Phase 7 audit)
   total_plans: 21
-  completed_plans: 21
-  percent: 75
+  completed_plans: 21   # plans executed + compiled; NOT on-device-validated
+  percent: 40           # honest: device-rendering goal unmet
 ---
 
 # State
@@ -121,11 +121,60 @@ Resume file: .planning/phases/05-data-driven-screens-http-api-parity/05-05-SUMMA
 
 ## Current Position
 
-Phase: 6 — COMPLETE
-Plan: 1 of 2
-Status: Phase 6 complete
-Last activity: 2026-06-18 -- Phase 6 marked complete
+Phase: 7 — PAUSED (user-requested) / ON-DEVICE VALIDATION FAILED
+Status: milestone NOT complete. The rebuilt v3.0 UI does not render correctly on hardware.
+Last activity: 2026-06-18 -- Phase 7 paused by user after on-device validation exposed systemic render failures.
 
-### Blockers
+## ⚠️ HONEST FAILURE RECORD (2026-06-18) — read before resuming
 
-- 05-05 BLOCKED: dram0_0_seg overflow by 640 bytes (D-58). Referencing nm_market_tick/get_pairs pulls nm_market.cpp.o (6158B .bss incl 5120B s_pairs) into the link; 4600B dram0 headroom exceeded. Fix in 05-02 (resize s_pairs) or platformio.ini. webapi.cpp complete+compiling (63f3957).
+**What actually happened:** Phases 3–6 were marked "complete/verified" on the strength of
+**compile-success + code-review only**. The actual on-device *rendering* was deferred to Phase 7.
+When Phase 7 finally flashed to the real ESP32-2432S028R, the rebuilt LVGL UI **did not work**:
+
+- **Boot-loop crash** — default 8 KB Arduino loopTask stack overflowed (LVGL + ArduinoJson +
+  .ss decode) → "Stack canary watchpoint triggered" Guru Meditation → reboot loop → black screen.
+  FIXED this session (SET_LOOP_TASK_STACK_SIZE 32 KB, commit 054e9f5).
+- **Stock screens clobbering LVGL** — ungated stock TFT_eSPI loading/setup screens painted over
+  the LVGL panel. Partly fixed (gated), but see CR-02 below.
+- **Config-mode LoadProhibited crash** — drawSetupScreen rerouting to the LVGL config page from the
+  WiFiManager callback dereferenced an unbuilt page → boot loop. FIXED (no-op), but CR-02 regression.
+- **Upside-down render** — nm_display used setRotation(1); stock flips to 3. FIXED (commit b83a12a).
+- **WHITE SCREEN (still broken at pause)** — loading + config screens set bg_color black WITHOUT
+  bg_opa COVER (only Miner does it right). Dark-theme flip masked nothing; the real fix is H5.
+- **WiFi regression (still broken)** — a bug THIS session introduced: "SD-authoritative config"
+  (tryConfigFromSD) overrides NVS creds every boot + writes cleartext WifiPW to the card (CR-01).
+  Probable cause of "Homebase connects once then drops to portal." Back this out (H1).
+- **Config mode invisible** — the drawSetupScreen no-op removed the SSID/192.168.4.1 display with
+  nothing replacing it (CR-02).
+- **Touch** — calibration still for rotation 1, panel now rotation 3 (WR-02).
+
+**Process failure (root):** the GSD lifecycle for Phases 3–6 used compile gates, not on-device
+verification. "Verified 6/6 / UI 6/6" meant "compiled + code-reviewed," NOT "renders on hardware."
+Resume MUST add on-device verification per screen as the gate (user-approved: "harden the LVGL
+rebuild, on-device gated").
+
+**Full audit + fix plan:** `.planning/phases/07-on-device-validation/07-REVIEW.md`
+(2 Critical, 7 Warning, 5 Info; hardening tasks H1–H5).
+
+### Resume plan (paused — do NOT auto-run; user controls cadence/limit)
+
+1. **H1** — back out SD-authoritative config: NVS wins, SD is import-only; stop writing WifiPW to SD. (fixes WiFi regression CR-01)
+2. **H5** — add `bg_opa COVER` to nm_screen_loading + nm_screen_config. (fixes white screen WR-01)
+3. **H2** — restore config-mode on-screen feedback (SSID + 192.168.4.1) via the LVGL config path. (CR-02)
+4. **H3** — re-derive touch calibration/axis-swap for rotation 3. (WR-02)
+5. **H4** — make rotation + brightness runtime CONFIG, applied at the right boot point. (WR-02/WR-03)
+6. Then: per-screen on-device verify (Loading/Miner/Clock/SPrice/Weather/Config), then VALID-01..03.
+
+### Device / repo state at pause
+
+- Fork HEAD: `b83a12a` (all session work committed; working tree clean).
+- Device: running the BROKEN v3.0 build (white screen, not mining).
+- Fresh 4 MB backup of the working firmware: `hardware/backups/cyd-backup-20260618-164206.bin`
+  (sha `0aafd81d…`). Restore to a working miner:
+  `esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <that backup>`.
+- SD card: formatted FAT32 (label NMMINER), inserted; mounts on-device (HW-02 confirmed live).
+- /dev/ttyUSB0 present. ESP32-D0WD-V3, ILI9341 panel (confirmed via raw self-test).
+
+### Earlier blocker (resolved)
+
+- 05-05 dram0_0_seg overflow (D-58) — resolved during Phase 5 (s_pairs resize); build green at 90.5%.
