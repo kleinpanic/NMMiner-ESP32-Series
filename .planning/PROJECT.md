@@ -4,6 +4,22 @@
 
 Bring up, preserve, upgrade, and operate an NM-CYD / ESP32-2432S028 NMMiner novelty miner using official documentation and repeatable local procedures.
 
+## Current Milestone: v3.0 Reverse-Engineer NMMiner + Re-integrate Custom Features
+
+**Goal:** Recover the original stock NMMiner v2.0.02 on-device UI, screens, screensavers, market data, and interactive touch by reverse-engineering the closed binary (full 4 MB backup in hand) — then re-add our speaker (LEDC), SD card (VSPI), LED, and kleinpanic branding on top. Result = original NMMiner look + functionality + interactivity, PLUS our custom upgrades.
+
+**Target features:**
+- Reverse-engineer the NMMiner binary: recover screen/LVGL assets, map the render + share-accept + screensaver/market code paths.
+- Restore the original on-device look (screens, screensavers, market screens) and interactive touch.
+- Speaker / audio integration (LEDC, GPIO26) — beep on share, alarm on disconnect.
+- SD card integration (VSPI, GPIO5/18/19/23).
+- kleinpanic branding (boot splash + accents) over the recovered UI.
+- Keep mining fully functional.
+
+**Approach:** Path B (reverse-engineer) from `docs/firmware-customization-feasibility.md`, now chosen because the NMMiner look became non-negotiable. The open-source NerdMiner_v2 fork (`firmware/custom/NerdMiner-CYD-Custom`, milestone v2.0.02) is retained as a working fallback only.
+
+**Foundation already done:** ESP32 image parsed into 5 segments; DROM (`0x3f400020`) and IROM (`0x400d0020`) isolated as `hardware/recovered-assets/{drom,irom}.bin`; Xtensa `objdump` from the PlatformIO toolchain works; confirmed LVGL (`lvgl_color_buf`), named screen resources (`Clock320x240`), and NMMiner's own market/screensaver APIs (`/api/market/pairs`, `/api/update/screensaver`).
+
 ## Context
 
 The device was previously configured for `TheBrickMansion`, which is no longer the target Wi-Fi. It is plugged into this laptop over USB serial as `/dev/ttyUSB0`.

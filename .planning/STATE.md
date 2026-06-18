@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0.02
-milestone_name: milestone
-status: in-progress
-last_updated: "2026-06-04T04:00:00.000Z"
+milestone: v3.0
+milestone_name: NMMiner RE + Custom Integrations
+status: planning
+last_updated: "2026-06-18T00:23:12.976Z"
+last_activity: 2026-06-18
 progress:
-  total_phases: 8
+  total_phases: 0
   completed_phases: 0
-  total_plans: 9
-  completed_plans: 1
-  percent: 11
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # State
@@ -19,6 +20,7 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 ## Completed (Phase 8, Plan 01)
 
 **2026-06-04:** Phase 8 Plan 1 executed (08-01): PlatformIO setup and NerdMiner_v2 fork.
+
 - Tasks 1-3, 5 complete: PlatformIO installed, NerdMiner cloned, ST7789 verified, secrets .gitignore hardened.
 - Task 4 (baseline build) blocked by upstream TFT_eSPI configuration issue (documented in SUMMARY.md).
 - Commit: 1b9ee59 (feat(08-01): establish PlatformIO build environment and clone NerdMiner_v2 fork).
@@ -82,8 +84,16 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 
 ## Session Continuity
 
-Last session: 2026-06-04.
+Last session: 2026-06-17 (resume; user asks about hearing speaker audio).
+Prior session: 2026-06-04.
 Stopped at: Phase 8 software-complete. Fork `kleinpanic/NerdMiner-CYD-Custom` v1.0.0 built green (speaker + SD + custom API), dashboard upgraded + Playwright-validated, 73 tests @94% branch coverage, security findings fixed. Repo pushed then set PRIVATE per user (hold public release until on-device validation passes).
 BLOCKED on hardware: flashing/live validation (08-08) needs the CYD on a USB DATA port of this laptop. Currently power-only — alive on LAN (192.168.1.136) but no /dev/ttyUSB*/CH340 on the bus (only the Flipper on ttyACM0).
 Resume: once `/dev/ttyUSB0` appears → fresh 4MB backup → `pio run -e ESP32-2432S028R -t upload` → serial-monitor validate → on-device checklist (fork docs/FLASH_GUIDE.md) → if pass, re-publish: `gh api -X PATCH repos/kleinpanic/NerdMiner-CYD-Custom -f private=false`.
 Resume file: none.
+
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-18 — Milestone v3.0 started
