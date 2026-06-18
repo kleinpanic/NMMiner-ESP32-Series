@@ -11,7 +11,7 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Reverse-Engineering Spec (RE)
 
-- [ ] **RE-01**: A working Ghidra 11.x + dynacylabs esp32 flash-loader v12.0 + self-built ESP-IDF v4.4.6 FIDB workbench loads the stock image with DROM (`0x3f400020`) / IROM (`0x400d0020`) mapped and stripped SDK/Arduino-core symbols recovered.
+- [ ] **RE-01**: A working Ghidra 11.3.1 + dynacylabs esp32 flash-loader v11.3.1 (prebuilt) + self-built ESP-IDF v4.4.6 FIDB workbench loads the stock image with DROM (`0x3f400020`) / IROM (`0x400d0020`) mapped and stripped SDK/Arduino-core symbols recovered.
 - [ ] **RE-02**: The stock LVGL major version (v8 vs v9) is confirmed authoritatively in-decompiler (via FIDB-named decoder symbols + `LV_IMG_CF_*`/`LV_COLOR_FORMAT_*` string family) before any extractor is written.
 - [ ] **RE-03**: The located screen-construction functions (`Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`) plus the render / share-accept / screensaver code paths are decompiled into `hardware/recovered-assets/SPEC.md` (screen inventory, per-screen widget geometry, fonts/colors, market field set, screensaver render path).
 - [ ] **RE-04**: SPEC.md is markdown-only and never linked into firmware; all recovered closed-firmware assets remain gitignored (no redistribution).
