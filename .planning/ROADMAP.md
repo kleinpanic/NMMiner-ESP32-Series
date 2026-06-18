@@ -39,7 +39,7 @@ Hard ordering locks:
 - [x] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
 - [x] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
 - [x] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional. *(Code/build complete; on-device confirm → Phase 7.)*
-- [ ] **Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
+- [ ] **Phase 7: On-Device Validation** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
 - [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Go/no-go decision recorded; execute the spike only if RE surfaced an unreproducible NMMiner-exclusive behavior, else formally waive.
 
 ## Phase Details
@@ -141,15 +141,17 @@ Plans:
 - [ ] 06-02-PLAN.md — Graceful at-seam SD log on VSPI + full build gate + mining.cpp diff gate (HW-02, HW-04)
 **UI hint**: yes
 
-### Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)
+### Phase 7: On-Device Validation
 **Goal**: The rebuilt fork firmware is proven on the real device — booting, mining, and visually matching stock — with a documented reversible restore path.
-**Depends on**: Phases 3-6 (software complete). HARD BLOCKER: gated on `/dev/ttyUSB0` (data port, not charge-only) appearing.
+**Depends on**: Phases 3-6 (software complete). `/dev/ttyUSB0` present (CH340) — prior BLOCKED label cleared.
 **Requirements**: VALID-01, VALID-02, VALID-03
 **Success Criteria** (what must be TRUE):
   1. Every device flash is preceded by a fresh 4 MB esptool backup and followed by `verify_flash` plus a hard USB power-cycle (documented flash runbook).
   2. The rebuilt fork firmware is flashed and serial-confirmed to boot, passes a visual parity checklist against stock, and has mining confirmed active on-device.
   3. The restore-from-backup path is documented and proven reversible against the 4 MB backup.
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 07-01-PLAN.md — Backup → flash → verify_flash + power-cycle → serial/visual/mining validation → reversible restore (VALID-01/02/03)
 
 ### Phase 8: Fallback Path-A Binary-Patch Spike (contingency)
 **Goal**: A recorded go/no-go verdict on the Path-A binary-patch contingency — satisfied whether the spike is executed or formally waived.
