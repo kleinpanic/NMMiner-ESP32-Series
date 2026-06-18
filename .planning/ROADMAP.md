@@ -82,7 +82,14 @@ Plans:
   3. The Miner screen renders the full `/api/system/info.miner` field set (hashrate, shares R/A, net/pool/last/best diff session + all-time, blkhits, freeheap, RSSI, temp, pool URL) matching stock formatting.
   4. The Clock screen renders NTP time (12/24h + date format), date, and BTC price with green-up / red-down coloring, and a Config screen shows the config-mode indicator with AP `nmap-2.4g` + captive portal at `192.168.4.1`.
   5. All screens are rebuilt natively from SPEC.md on the `NerdMiner-CYD-Custom` fork (recovered evidence, not imagination or mis-carved assets).
-**Plans**: TBD
+**Plans**: 6 plans
+Plans:
+- [ ] 03-01-PLAN.md — LVGL-over-TFT_eSPI bridge for CYD + boot brightness ramp (black-screen fix) + resolve Clock price colors
+- [ ] 03-02-PLAN.md — UIManager: 6-page carousel + nm_screen_t contract + LastPage NVS persistence + boot routing
+- [ ] 03-03-PLAN.md — Loading + Config screens from SPEC geometry (+ kleinpanic branding)
+- [ ] 03-04-PLAN.md — Miner screen: full SPEC layout + /api/system/info.miner field set
+- [ ] 03-05-PLAN.md — Clock screen (NTP + green-up/red-down price) + SPrice/Weather page stubs
+- [ ] 03-06-PLAN.md — Integration build (pio run -e ESP32-2432S028R SUCCESS) + branding pass + 03-VALIDATION.md
 **UI hint**: yes
 
 ### Phase 4: Restore Interactive Touch (SoftSPI)
