@@ -116,7 +116,13 @@ Plans:
   3. The screensaver carousel renders decoded `.ss` images after idle timeout, supports black mode and timeout prefs, exposes upload/preflight endpoints, and resumes on touch.
   4. Swarm LAN discovery (Miner-page-gated) plus `/api/swarm/find` FindMe overlay visibly overrides an active screensaver.
   5. The HTTP API matches stock paths/shapes (`/probe`, `/alive`, `/api/system/info`, `/api/setting/*`, `/api/market/pairs`, `/api/weather/refresh`, `/api/swarm/find`, `/api/system/restart`, screensaver preflight/upload), and branding/identity strings (`model="NMMiner"`, "Make it better") are preserved.
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 05-01-PLAN.md — NVS settings foundation (nm_stock namespace, stock field set + ss-timeout map)
+- [ ] 05-02-PLAN.md — Binance market fetch + SPrice kline/pricewall screen (DATA-01)
+- [ ] 05-03-PLAN.md — open-meteo weather fetch + Weather screen (DATA-02)
+- [ ] 05-04-PLAN.md — .ss screensaver carousel + swarm scan + idle/FindMe state machine (DATA-03, DATA-04)
+- [ ] 05-05-PLAN.md — HTTP API parity + branding + swarm/upload endpoints (DATA-04, DATA-05, DATA-06)
+- [ ] 05-06-PLAN.md — wire modules into loop + integration build gate + flash budget (DATA-01..06)
 **Research**: recommended (`.ss` header byte-layout, kline rendering specifics, idle→screensaver state machine are open)
 **UI hint**: yes
 
