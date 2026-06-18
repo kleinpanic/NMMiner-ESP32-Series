@@ -13,6 +13,21 @@ from PIL import Image
 MAGIC = (0x53, 0x4E)  # "SN"
 
 
+def rgb565_to_rgb888(v: int) -> tuple[int, int, int]:
+    # Bit-replication, not a bare left-shift: shifting a 5-bit channel up by 3
+    # leaves the low 3 bits zero, so the max value (31<<3 == 248) never reaches
+    # 255 -> high values read too dark / the image looks over-saturated (D-26c,
+    # user-observed). Replicating the high bits down into the gap fills them so
+    # 31 -> 255 and intermediate values scale evenly.
+    r5 = (v >> 11) & 0x1F
+    g6 = (v >> 5) & 0x3F
+    b5 = v & 0x1F
+    r = (r5 << 3) | (r5 >> 2)
+    g = (g6 << 2) | (g6 >> 4)
+    b = (b5 << 3) | (b5 >> 2)
+    return (r, g, b)
+
+
 def hs_decode(body: bytes, w_bits: int = 10, l_bits: int = 4) -> bytes:
     bits = []
     for byte in body:
@@ -77,10 +92,10 @@ def decode_ss(path: str) -> Image.Image:
     px += [0] * (w * h - len(px))
     img = bytearray(w * h * 3)
     for idx, v in enumerate(px):
-        r = (v >> 11) & 0x1F; g = (v >> 5) & 0x3F; b = v & 0x1F
-        img[idx * 3] = (r * 255) // 31
-        img[idx * 3 + 1] = (g * 255) // 63
-        img[idx * 3 + 2] = (b * 255) // 31
+        r, g, b = rgb565_to_rgb888(v)
+        img[idx * 3] = r
+        img[idx * 3 + 1] = g
+        img[idx * 3 + 2] = b
     return Image.frombytes("RGB", (w, h), bytes(img))
 
 
