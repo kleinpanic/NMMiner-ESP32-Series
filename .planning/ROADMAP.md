@@ -56,7 +56,7 @@ Hard ordering locks:
 **Plans**: 3 plans
 Plans:
 - [ ] 01-01-PLAN.md — Ghidra 11.3.1 + dynacylabs v11.3.1 workbench, image import, ESP-IDF v4.4.6 FIDB (time-boxed), reusable xref script (RE-01)
-- [ ] 01-02-PLAN.md — LVGL v8-vs-v9 verdict with two-signal evidence, seeds SPEC.md metadata (RE-02)
+- [ ] 01-02-PLAN.md — LVGL v8-vs-v9 verdict citing two items from the acceptable-evidence set, seeds SPEC.md metadata (RE-02)
 - [ ] 01-03-PLAN.md — locate all 6 screens + seam + ss_render, deep-spec Miner+Clock, write SPEC.md (RE-03, RE-04)
 **Research**: recommended (FIDB build is a non-trivial Tarlogic workflow; per-screen geometry extraction is novel for this project)
 

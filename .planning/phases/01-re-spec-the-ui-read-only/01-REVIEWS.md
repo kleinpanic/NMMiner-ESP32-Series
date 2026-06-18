@@ -363,3 +363,24 @@ The plans are structurally sound and the critical path (LVGL gate before geometr
 
 ### Convergence verdict
 HIGH concerns present (H1–H5) → **replan required** via `/gsd-plan-phase 1 --reviews` before execution. None are architectural; all are proof/spec-hardening fixes to the 3 existing plans.
+
+---
+
+## Convergence Outcome (cycles 2-4)
+
+`/gsd-plan-review-convergence` ran 3 verification cycles after the initial review:
+
+| Cycle | gemini | opencode | codex (gate) | Action |
+|-------|--------|----------|--------------|--------|
+| 1 (initial) | LOW (0 HIGH) | MEDIUM (0 HIGH) | MEDIUM (4 HIGH) | replan → fixed H1-H5 |
+| 2 | 0 HIGH | 0 HIGH | **2 HIGH** (firmware-string leak in committed script; RE-01 mismatch) | reworded RE-01; replan |
+| 3 | 0 HIGH | — | **2 HIGH** (read-only invariant vs FIDB build; RE-02 mismatch) | narrowed invariant (D-12); reworded RE-02; user-decided redistribution boundary (D-11) |
+| 4 | (LOW) | — | **0 HIGH** ✓ | converged |
+
+**CONVERGED at cycle 4 — codex UNRESOLVED HIGH COUNT: 0.** Residual cycle-4 items (all non-blocking, fixed inline): MEDIUM-1 (Plan-02 smoke now scopes `Confidence` to the LVGL block), MEDIUM-2 (read_first path corrected to `.planning/REQUIREMENTS.md`), LOW-1 (ROADMAP plan label updated to "acceptable-evidence set").
+
+The loop earned its cost: it caught a genuine no-redistribution violation (verbatim firmware format string hardcoded in a committed helper script) and three requirement-vs-plan consistency gaps (RE-01, RE-02, the read-only invariant) that would otherwise have shipped into execution.
+
+**Key decisions recorded:** D-11 (no-redistribution boundary = script-only strict + fair-use analysis docs), D-12 (read-only = no device/firmware build+flash; local ESP-IDF example builds for the FIDB allowed). Both in 01-CONTEXT.md.
+
+Plans are review-clean. Proceeding to `/gsd-execute-phase 1`.
