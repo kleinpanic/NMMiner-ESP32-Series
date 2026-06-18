@@ -31,7 +31,21 @@ CORE_IDENTIFIERS = [
     "ss_render"
 ]
 
+def _all_positions(blob, needle):
+    out, i = [], blob.find(needle)
+    while i != -1:
+        out.append(i)
+        i = blob.find(needle, i + 1)
+    return out
+
+
 def resolve_string(drom, irom, search_str):
+    """Return list of (drom_addr, irom_addr, delta) hits, or [] if none.
+
+    A 4-byte LE literal can legitimately appear in more than one literal pool, and
+    an l32r literal may point a few bytes into the string (Pitfall 3, e.g. SPrice).
+    Surface ALL hits across a small delta window rather than hiding multiplicity.
+    """
     if isinstance(search_str, str):
         search_bytes = search_str.encode('ascii')
     else:
@@ -39,20 +53,14 @@ def resolve_string(drom, irom, search_str):
 
     off = drom.find(search_bytes)
     if off == -1:
-        return None
+        return []
 
-    drom_addr = DROM_VMA + off
-    pos = irom.find(struct.pack('<I', drom_addr))
-
-    if pos == -1:
-        # Fallback (Pitfall 3, e.g. SPrice): the l32r literal may point one byte
-        # past the string start.
-        drom_addr += 1
-        pos = irom.find(struct.pack('<I', drom_addr))
-        if pos == -1:
-            return None
-
-    return (drom_addr, IROM_VMA + pos)
+    hits = []
+    for delta in range(0, 4):  # exact, then up to +3 bytes into the string
+        drom_addr = DROM_VMA + off + delta
+        for pos in _all_positions(irom, struct.pack('<I', drom_addr)):
+            hits.append((drom_addr, IROM_VMA + pos, delta))
+    return hits
 
 def main():
     if len(sys.argv) < 4:
@@ -88,12 +96,16 @@ def main():
         to_search = [cmd]
 
     for s in to_search:
-        res = resolve_string(drom, irom, s)
-        if res:
-            d_addr, i_addr = res
-            print(f"{s} -> DROM 0x{d_addr:08x} -> IROM literal 0x{i_addr:08x}")
-        else:
+        hits = resolve_string(drom, irom, s)
+        if not hits:
             print(f"{s} -> NOT FOUND")
+            continue
+        d_addr, i_addr, delta = hits[0]
+        note = "" if delta == 0 else f" (+{delta}-byte offset)"
+        print(f"{s} -> DROM 0x{d_addr:08x} -> IROM literal 0x{i_addr:08x}{note}")
+        if len(hits) > 1:
+            extra = ", ".join(f"0x{i:08x}" for _, i, _ in hits[1:])
+            print(f"  WARNING: {len(hits)} literal hits (ambiguous) — others: {extra}")
 
 if __name__ == "__main__":
     main()

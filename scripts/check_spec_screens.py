@@ -31,19 +31,28 @@ def section(text, title_substr):
 
 
 def widget_row_count(sec):
-    # count markdown table data rows (lines starting with '|' that are not the
-    # header or the |---| separator)
-    n = 0
-    for ln in sec.splitlines():
-        s = ln.strip()
-        if not s.startswith("|"):
-            continue
-        if re.match(r"^\|[\s:|-]+\|?$", s):  # separator
-            continue
-        if re.search(r"(?i)\bslot\b|\bpurpose\b|\bwidget\b", s) and "x" in s.lower() and "y" in s.lower():
-            continue  # header row
-        n += 1
-    return n
+    """Count data rows of the first markdown table in a section.
+
+    A table = a header '|' row, then a |---| separator row, then contiguous data
+    '|' rows. Counting only rows that follow a real separator avoids both the
+    column-name-dependent header skip and stray '|' lines outside tables.
+    """
+    lines = [ln.strip() for ln in sec.splitlines()]
+    best = 0
+    i = 0
+    sep_re = re.compile(r"^\|[\s:|-]+\|?$")
+    while i < len(lines) - 1:
+        # header candidate followed by a separator row = start of a table
+        if lines[i].startswith("|") and not sep_re.match(lines[i]) and sep_re.match(lines[i + 1]):
+            n, j = 0, i + 2
+            while j < len(lines) and lines[j].startswith("|") and not sep_re.match(lines[j]):
+                n += 1
+                j += 1
+            best = max(best, n)
+            i = j
+        else:
+            i += 1
+    return best
 
 
 def fail(msg):
@@ -54,7 +63,8 @@ def fail(msg):
 def main(argv):
     path = argv[1] if len(argv) > 1 else "hardware/recovered-assets/SPEC.md"
     try:
-        t = open(path).read()
+        with open(path, encoding="utf-8", errors="replace") as f:
+            t = f.read()
     except OSError as e:
         fail("cannot read SPEC at %s (%s)" % (path, e))
 
