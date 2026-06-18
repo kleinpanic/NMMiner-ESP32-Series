@@ -53,7 +53,11 @@ Hard ordering locks:
   2. The stock LVGL major version (v8 vs v9) is stated with evidence (FIDB-named decoder symbols + `LV_IMG_CF_*` / `LV_COLOR_FORMAT_*` string family) before any extractor is written.
   3. `hardware/recovered-assets/SPEC.md` exists and documents the screen inventory, per-screen widget geometry, fonts/colors, market field set, and screensaver render path, decompiled from `Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`, and the render / share-accept / screensaver paths.
   4. SPEC.md is markdown-only, never linked into firmware, and all recovered closed-firmware assets remain gitignored (no redistribution).
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 01-01-PLAN.md — Ghidra 11.3.1 + dynacylabs v11.3.1 workbench, image import, ESP-IDF v4.4.6 FIDB (time-boxed), reusable xref script (RE-01)
+- [ ] 01-02-PLAN.md — LVGL v8-vs-v9 verdict with two-signal evidence, seeds SPEC.md metadata (RE-02)
+- [ ] 01-03-PLAN.md — locate all 6 screens + seam + ss_render, deep-spec Miner+Clock, write SPEC.md (RE-03, RE-04)
 **Research**: recommended (FIDB build is a non-trivial Tarlogic workflow; per-screen geometry extraction is novel for this project)
 
 ### Phase 2: Recover Fonts/Glyphs + Filesystem Assets
@@ -140,7 +144,7 @@ Hard ordering locks:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. RE-Spec the UI | 0/0 | Not started | - |
+| 1. RE-Spec the UI | 0/3 | Planned | - |
 | 2. Recover Fonts/Assets | 0/0 | Not started | - |
 | 3. Core Screens + Carousel | 0/0 | Not started | - |
 | 4. Restore Touch (SoftSPI) | 0/0 | Not started | - |
