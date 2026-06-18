@@ -39,12 +39,12 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Data-Driven Screens & API (DATA)
 
-- [ ] **DATA-01**: The SPrice screen renders Binance (`data-api.binance.vision`) kline candlestick + pricewall modes, page-gated to run only on Miner/Clock/Price.
-- [ ] **DATA-02**: The Weather screen renders open-meteo forecast/AQI (°C/°F, wind, sunrise/sunset) with a rate-limited `/api/weather/refresh`.
-- [ ] **DATA-03**: The screensaver carousel renders decoded `.ss` images after idle timeout, supports black mode and timeout prefs, exposes upload/preflight endpoints, and resumes on touch.
-- [ ] **DATA-04**: Swarm LAN discovery (Miner-page-gated) + `/api/swarm/find` FindMe overlay that visibly overrides an active screensaver.
-- [ ] **DATA-05**: The HTTP API matches stock paths/shapes (`/probe`, `/alive`, `/api/system/info`, `/api/setting/*`, `/api/market/pairs`, `/api/weather/refresh`, `/api/swarm/find`, `/api/system/restart`, screensaver preflight/upload) so the existing dashboard/controller contract holds.
-- [ ] **DATA-06**: Branding/identity strings (`model="NMMiner"`, "Make it better") are preserved so controllers keying off `model` still work.
+- [x] **DATA-01**: The SPrice screen renders Binance (`data-api.binance.vision`) kline candlestick + pricewall modes, page-gated to run only on Miner/Clock/Price.
+- [x] **DATA-02**: The Weather screen renders open-meteo forecast/AQI (°C/°F, wind, sunrise/sunset) with a rate-limited `/api/weather/refresh`.
+- [x] **DATA-03**: The screensaver carousel renders decoded `.ss` images after idle timeout, supports black mode and timeout prefs, exposes upload/preflight endpoints, and resumes on touch.
+- [x] **DATA-04**: Swarm LAN discovery (Miner-page-gated) + `/api/swarm/find` FindMe overlay that visibly overrides an active screensaver.
+- [x] **DATA-05**: The HTTP API matches stock paths/shapes (`/probe`, `/alive`, `/api/system/info`, `/api/setting/*`, `/api/market/pairs`, `/api/weather/refresh`, `/api/swarm/find`, `/api/system/restart`, screensaver preflight/upload) so the existing dashboard/controller contract holds.
+- [x] **DATA-06**: Branding/identity strings (`model="NMMiner"`, "Make it better") are preserved so controllers keying off `model` still work.
 
 ### Custom Hardware Re-add (HW)
 
