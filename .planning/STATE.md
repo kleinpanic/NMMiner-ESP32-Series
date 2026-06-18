@@ -84,11 +84,22 @@ Last updated: 2026-06-04 (Plan 08-01 execution).
 
 ## Session Continuity
 
-Last session: 2026-06-17 (resume; user asks about hearing speaker audio).
-Prior session: 2026-06-04.
-Stopped at: Phase 8 software-complete. Fork `kleinpanic/NerdMiner-CYD-Custom` v1.0.0 built green (speaker + SD + custom API), dashboard upgraded + Playwright-validated, 73 tests @94% branch coverage, security findings fixed. Repo pushed then set PRIVATE per user (hold public release until on-device validation passes).
-BLOCKED on hardware: flashing/live validation (08-08) needs the CYD on a USB DATA port of this laptop. Currently power-only — alive on LAN (192.168.1.136) but no /dev/ttyUSB*/CH340 on the bus (only the Flipper on ttyACM0).
-Resume: once `/dev/ttyUSB0` appears → fresh 4MB backup → `pio run -e ESP32-2432S028R -t upload` → serial-monitor validate → on-device checklist (fork docs/FLASH_GUIDE.md) → if pass, re-publish: `gh api -X PATCH repos/kleinpanic/NerdMiner-CYD-Custom -f private=false`.
+Last session: 2026-06-17/18 (huge session — pivoted to v3.0 NMMiner reverse-engineering).
+
+## Milestone v3.0 — NMMiner RE + Custom Integrations (status: planning → ready to execute)
+
+**Decided:** Recover stock NMMiner v2.0.02's original look (closed binary) by RE-ing it as a SPECIFICATION, then rebuild its exact screens natively on our `firmware/custom/NerdMiner-CYD-Custom` fork (which already has working speaker/SD/LED/branding) + restore touch/market/screensaver. NOT a binary patch (rejected: fragmented flash, SHA check, no-redistribution, brick risk). NerdMiner fork = build base/fallback. Device currently mines on the fork (Homebase, 192.168.1.136).
+
+**DONE this session:**
+- v3.0 formalized in PROJECT.md + STATE.md (committed 662d075).
+- 4-dimension research + synthesis committed: `.planning/research/{STACK,FEATURES,ARCHITECTURE,PITFALLS,SUMMARY}.md`.
+- RE FOUNDATION (all on disk, recovered-assets gitignored): ESP32 image parsed → DROM `0x3f400020` + IROM `0x400d0020` isolated; **LittleFS extracted** (web UI + 17 screensavers); **`.ss` format fully decoded** → `scripts/nmminer_ss_decode.py` (all 17 decode clean); **IROM disassembled** (476k lines) via objcopy→ELF; **string→function xref works** — located `Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`. Pipeline doc: `docs/nmminer-re-pipeline.md`.
+
+**NEXT (per research SUMMARY.md, ~8 phases):** finish milestone setup (REQUIREMENTS.md + roadmapper → ROADMAP.md) if missing; then: (1) Ghidra 11 + dynacylabs esp32 flash-loader + self-built ESP-IDF v4.4.6 FIDB → decompile located screen funcs → SPEC.md; (2) extract fonts (LVGL C-arrays) + assets; (3) rebuild core screens + UIManager carousel on fork; (4) restore touch on SoftSPI BEFORE SD; (5) market(Binance)/weather(open-meteo)/screensaver screens; (6) wire speaker/SD/LED/branding at share-accept seam; (7) on-device validate (needs /dev/ttyUSB0 + hard power-cycle between flashes); (8) fallback path-A spike only if needed.
+
+**Fallback track (v2.0.02 fork):** task list item — device mines + speaker/API verified; on-device fork validation never formally shipped. Kept as working fallback.
+
+Resume: `/gsd-resume-work`, then the `/goal` handed to the user (drives the full GSD phase lifecycle for v3.0).
 Resume file: none.
 
 ## Current Position
