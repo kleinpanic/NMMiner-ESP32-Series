@@ -77,10 +77,10 @@ bit-bang (`digitalRead(TOUCH_MISO)` at nm_touch.cpp:88). Corrected checks:
 | Input | Source | Gesture | nm_ui action |
 |---|---|---|---|
 | Touch tap (release < 800ms) | `nm_poll_touch_gesture` → `NM_TOUCH_SHORT` | short | `nm_uimanager_next_page()` (persists LastPage) |
-| Touch hold ≥ 10s | `nm_poll_touch_gesture` → `NM_TOUCH_LONG` (edge-fired while held) | long | `reset_configuration()` (config/AP mode) |
+| Touch hold ≥ 10s | `nm_poll_touch_gesture` → `NM_TOUCH_LONG` (edge-fired while held) | long | `enter_config_portal() [shipped; was reset_configuration in pre-fix draft]` (config/AP mode) |
 | Touch tap while dimmed | any gesture, `s_dimmed==true` | wake | `nm_display_wake()` only — consumed, no nav |
 | Boot button double-click | OneButton `attachDoubleClick` → `on_button_next` | next | `nm_uimanager_next_page()` |
-| Boot button long-press (10s) | OneButton `attachLongPressStart` + `setPressMs(NM_TOUCH_LONG_MS)` → `on_button_config` | config | `reset_configuration()` |
+| Boot button long-press (10s) | OneButton `attachLongPressStart` + `setPressMs(NM_TOUCH_LONG_MS)` → `on_button_config` | config | `enter_config_portal() [shipped; was reset_configuration in pre-fix draft]` |
 | Boot button single-click | OneButton `attachClick` → `on_button_wake` | wake | `nm_display_wake()` if dimmed |
 | (idle) no input > 60s | `nm_uimanager_tick` idle check | dim | `nm_display_dim()` (minimal; full screensaver = Phase 5) |
 

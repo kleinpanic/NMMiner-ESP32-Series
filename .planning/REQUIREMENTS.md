@@ -33,9 +33,9 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Touch & Input (TOUCH)
 
-- [ ] **TOUCH-01**: Touch works on SoftSPI (moved off hardware VSPI, leaving VSPI free for SD), diagnosed via raw-Z pressure first to separate bus vs calibration faults.
-- [ ] **TOUCH-02**: Short touch = next page, long-press (10s) = config mode, tap wakes a sleeping screen.
-- [ ] **TOUCH-03**: Boot button: double-click = next page, long-press = force config, single-click = wake screen.
+- [x] **TOUCH-01**: Touch works on SoftSPI (moved off hardware VSPI, leaving VSPI free for SD), diagnosed via raw-Z pressure first to separate bus vs calibration faults.
+- [x] **TOUCH-02**: Short touch = next page, long-press (10s) = config mode, tap wakes a sleeping screen.
+- [x] **TOUCH-03**: Boot button: double-click = next page, long-press = force config, single-click = wake screen.
 
 ### Data-Driven Screens & API (DATA)
 
