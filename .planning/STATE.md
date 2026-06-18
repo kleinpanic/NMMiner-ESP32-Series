@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: NMMiner RE + Custom Integrations
 status: planning
-last_updated: "2026-06-18T00:23:12.976Z"
+last_updated: "2026-06-18T00:53:15.366Z"
 last_activity: 2026-06-18
 progress:
   total_phases: 0
@@ -91,6 +91,7 @@ Last session: 2026-06-17/18 (huge session — pivoted to v3.0 NMMiner reverse-en
 **Decided:** Recover stock NMMiner v2.0.02's original look (closed binary) by RE-ing it as a SPECIFICATION, then rebuild its exact screens natively on our `firmware/custom/NerdMiner-CYD-Custom` fork (which already has working speaker/SD/LED/branding) + restore touch/market/screensaver. NOT a binary patch (rejected: fragmented flash, SHA check, no-redistribution, brick risk). NerdMiner fork = build base/fallback. Device currently mines on the fork (Homebase, 192.168.1.136).
 
 **DONE this session:**
+
 - v3.0 formalized in PROJECT.md + STATE.md (committed 662d075).
 - 4-dimension research + synthesis committed: `.planning/research/{STACK,FEATURES,ARCHITECTURE,PITFALLS,SUMMARY}.md`.
 - RE FOUNDATION (all on disk, recovered-assets gitignored): ESP32 image parsed → DROM `0x3f400020` + IROM `0x400d0020` isolated; **LittleFS extracted** (web UI + 17 screensavers); **`.ss` format fully decoded** → `scripts/nmminer_ss_decode.py` (all 17 decode clean); **IROM disassembled** (476k lines) via objcopy→ELF; **string→function xref works** — located `Clock320x240`@`0x400d1864`, `Miner320x240`@`0x400d1960`. Pipeline doc: `docs/nmminer-re-pipeline.md`.
