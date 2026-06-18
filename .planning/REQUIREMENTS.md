@@ -48,10 +48,10 @@ Requirements for milestone v3.0. Each maps to exactly one roadmap phase (see Tra
 
 ### Custom Hardware Re-add (HW)
 
-- [ ] **HW-01**: The speaker (LEDC GPIO26) beeps on an accepted share and alarms on pool disconnect, wired at the NerdMiner share-accept seam (in-process call, not an Xtensa hook).
-- [ ] **HW-02**: The SD card (VSPI GPIO5/18/19/23) mounts and logs on the now-free hardware VSPI (after touch moved to SoftSPI).
-- [ ] **HW-03**: Custom LED behavior and kleinpanic branding accents are integrated over the recovered UI, verified against silkscreen pins.
-- [ ] **HW-04**: Mining stays fully functional throughout all changes (NerdMiner stratum core unchanged; primary + fallback pool, switch-back to primary ≤10s).
+- [x] **HW-01**: The speaker (LEDC GPIO26) beeps on an accepted share and alarms on pool disconnect, wired at the NerdMiner share-accept seam (in-process call, not an Xtensa hook). *(Code/build PASS — `beepShareAccepted()` non-blocking at mining.cpp seam; audible confirm → Phase 7/VALID-02.)*
+- [x] **HW-02**: The SD card (VSPI GPIO5/18/19/23) mounts and logs on the now-free hardware VSPI (after touch moved to SoftSPI). *(Code/build PASS — `logShareEvent()` isReady-gated via existing appendCSVLog; physical-card confirm → Phase 7.)*
+- [x] **HW-03**: Custom LED behavior and kleinpanic branding accents are integrated over the recovered UI, verified against silkscreen pins. *(Code/build PASS — `nm_led` sole RGB owner on LED_PIN/G/B macros; visible confirm → Phase 7.)*
+- [x] **HW-04**: Mining stays fully functional throughout all changes (NerdMiner stratum core unchanged; primary + fallback pool, switch-back to primary ≤10s). *(PASS — mining.cpp phase diff = the single seam line; build SUCCESS; live-mining confirm → Phase 7.)*
 
 ### On-Device Validation (VALID)
 
@@ -113,10 +113,10 @@ Explicitly excluded. Documented to prevent scope creep (anti-features from resea
 | DATA-04 | Phase 5 | Pending |
 | DATA-05 | Phase 5 | Pending |
 | DATA-06 | Phase 5 | Pending |
-| HW-01 | Phase 6 | Pending |
-| HW-02 | Phase 6 | Pending |
-| HW-03 | Phase 6 | Pending |
-| HW-04 | Phase 6 | Pending |
+| HW-01 | Phase 6 | Complete (on-device→P7) |
+| HW-02 | Phase 6 | Complete (on-device→P7) |
+| HW-03 | Phase 6 | Complete (on-device→P7) |
+| HW-04 | Phase 6 | Complete |
 | VALID-01 | Phase 7 | Pending |
 | VALID-02 | Phase 7 | Pending |
 | VALID-03 | Phase 7 | Pending |

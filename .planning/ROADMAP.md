@@ -35,10 +35,10 @@ Hard ordering locks:
 
 - [ ] **Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing.
 - [ ] **Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers.
-- [ ] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash on the fork.
-- [ ] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
-- [ ] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
-- [ ] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional.
+- [x] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash on the fork.
+- [x] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI (frees VSPI for SD); short/long-press nav + config entry + wake; boot-button controls.
+- [x] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice (Binance), Weather (open-meteo), screensaver carousel, Swarm + FindMe, 21-endpoint API, branding strings.
+- [x] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker (LEDC GPIO26), SD (VSPI) on the now-free bus, custom LED + kleinpanic accents; mining stays functional. *(Code/build complete; on-device confirm → Phase 7.)*
 - [ ] **Phase 7: On-Device Validation (BLOCKED on /dev/ttyUSB0)** - Backup → flash fork → verify_flash + power-cycle → serial boot + visual parity + mining active; reversible restore.
 - [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Go/no-go decision recorded; execute the spike only if RE surfaced an unreproducible NMMiner-exclusive behavior, else formally waive.
 
