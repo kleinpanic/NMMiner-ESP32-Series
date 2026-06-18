@@ -44,14 +44,31 @@ Run against `firmware/custom/NerdMiner-CYD-Custom/`:
 
 | Fact (D-45 / TOUCH-02/03) | Check | Result |
 |---|---|---|
-| SoftSPI bus (no VSPI bind) — D-42 | `grep -q 'digitalRead(TOUCH_MISO' src/ui_nm/nm_touch.cpp && ! grep -q 'SPIClass\|#include <xpt2046' src/ui_nm/nm_touch.cpp` | PENDING |
+| SoftSPI bus (no VSPI bind in nm_touch) — D-42 | `grep -q 'digitalRead(TOUCH_MISO' src/ui_nm/nm_touch.cpp && ! grep -q 'SPIClass\|#include <xpt2046' src/ui_nm/nm_touch.cpp` | PENDING |
 | Touch enabled for CYD env — D-41 | `grep -v '^#' platformio.ini \| grep -A40 '\[env:ESP32-2432S028R\]' \| grep -q TOUCH_ENABLE` | PENDING |
 | Short touch → next page | `grep -q 'nm_uimanager_next_page' src/ui_nm/nm_uimanager.cpp` | PENDING |
 | Long-press → config mode | `grep -q 'reset_configuration' src/ui_nm/nm_uimanager.cpp` | PENDING |
 | Tap → wake (re-ramp brightness) | `grep -q 'nm_display_wake' src/ui_nm/nm_uimanager.cpp` | PENDING |
 | Boot button → nm_ui (CYD) | `grep -q 'nm_uimanager_on_button_next\|nm_uimanager_on_touch' src/NerdMinerV2.ino.cpp` | PENDING |
 | Auto-advance OFF by default | `grep -A3 'ifndef NM_UI_AUTOADVANCE' src/ui_nm/nm_uimanager.cpp \| grep -q 'NM_UI_AUTOADVANCE 0'` | PENDING |
-| Single CYD touch path (no legacy VSPI handler) | `grep -q 'nm_touch_init' src/NerdMinerV2.ino.cpp` | PENDING |
+| nm_touch is the sole ACTIVE CYD touch path | `grep -q 'nm_touch_init' src/NerdMinerV2.ino.cpp` (and legacy `touchHandler.isTouched()` not referenced for the CYD env) | PENDING |
+| Shared long-press constant (no drift) | `grep -q 'NM_TOUCH_LONG_MS' src/ui_nm/nm_uimanager.h && grep -q 'setPressMs(NM_TOUCH_LONG_MS' src/NerdMinerV2.ino.cpp` | PENDING |
+
+### Dormant legacy HSPI touch object (plan-check MEDIUM — must be addressed, not glossed)
+
+`src/drivers/displays/esp23_2432s028r.cpp:30-31` instantiates `SPIClass hSPI(HSPI)` +
+`TFT_eTouch<TFT_eSPI> touch(tft, ETOUCH_CS, 0xFF, hSPI)` and calls `touch.init()` /
+`touch.setCalibration()` / `touch.getXY()`. This file is compiled under the CYD env macro, so
+the object **links into the binary**. It is reached only inside `esp32_2432S028R_Init()` and the
+cyclic-screen functions, which run via `currentDisplayDriver->init()` inside `initDisplay()`.
+The CYD env **skips** `initDisplay()` (ino.cpp 120-125 calls `nm_uimanager_init()` instead), so
+`touch.init()` **never executes** → HSPI is never bound at runtime → D-42 not violated.
+
+**Confirm and record here:** (a) `initDisplay()` is not called on the CYD boot path; (b) no other
+CYD-active code path calls `esp32_2432S028R_Init()` / `touch.*`. Scope the "single touch path"
+claim to the **active runtime path** — do NOT assert "no HSPI/VSPI touch binding exists anywhere
+in the binary" (the dormant object is still linked). Flag for the SD phase (6): any future call to
+`esp32_2432S028R_Init()` would double-bind HSPI.
 
 ## Gate C — Raw-Z diagnosis path (D-43 gate evidence)
 
