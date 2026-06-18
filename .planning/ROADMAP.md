@@ -100,7 +100,10 @@ Plans:
   1. Touch works on SoftSPI (moved off hardware VSPI, leaving VSPI free for SD), diagnosed via raw-Z pressure first to separate bus vs calibration faults.
   2. Short touch = next page, long-press (10s) = config mode, tap wakes a sleeping screen.
   3. Boot button: double-click = next page, long-press = force config, single-click = wake screen.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 04-01-PLAN.md — Enable touch for CYD env + SoftSPI bit-bang XPT2046 driver (nm_touch) + raw-Z diagnosis + rotation-1 calibration; build gate (TOUCH-01)
+- [ ] 04-02-PLAN.md — nm_display wake API + nm_uimanager touch/button nav + idle-dim + autoadvance OFF + boot-button re-point + final build gate + 04-VALIDATION (TOUCH-02, TOUCH-03)
 **UI hint**: yes
 
 ### Phase 5: Data-Driven Screens + HTTP API Parity
@@ -154,9 +157,9 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. RE-Spec the UI | 0/3 | Planned | - |
-| 2. Recover Fonts/Assets | 0/0 | Not started | - |
-| 3. Core Screens + Carousel | 0/0 | Not started | - |
-| 4. Restore Touch (SoftSPI) | 0/0 | Not started | - |
+| 2. Recover Fonts/Assets | 0/2 | Planned | - |
+| 3. Core Screens + Carousel | 0/6 | Planned | - |
+| 4. Restore Touch (SoftSPI) | 0/2 | Planned | - |
 | 5. Data Screens + API | 0/0 | Not started | - |
 | 6. Custom Features | 0/0 | Not started | - |
 | 7. On-Device Validation | 0/0 | Blocked (/dev/ttyUSB0) | - |
