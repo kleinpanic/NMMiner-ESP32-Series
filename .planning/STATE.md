@@ -21,8 +21,8 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 - Live firmware at 2026-11-25 00:27: fork `4b93f0b`, flashed as `v4-pipelined`. It has the
   v2 UI (Afterglow theme), panicminer branding, the mempool.space chain feed, the SHA
-  instrumentation and the pipelined hardware SHA loop. Boot banner `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`,
-  password `panicminer`.
+  instrumentation and the pipelined hardware SHA loop. Boot banner
+  `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`, password `panicminer`.
 - Wi-Fi is down at 2026-11-24 23:34. Router 2.4 GHz radio `14:91:82:B0:04:E5` (SSID
   Homebase, the same box as Homebase5 `…:E7`) rejects the unit. Reason codes: 15
   4WAY_HANDSHAKE_TIMEOUT and 202 AUTH_FAIL, then 2 AUTH_EXPIRE on every later try.
@@ -30,6 +30,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
     against the 22:07 and 22:24 backups).
   - Restoring the 22:24 backup image fails the same way. The firmware is not the cause.
   - The 2.4 GHz radio drops in and out of scans from both the laptop and the unit.
+  - 2026-11-25 00:50 rescan from the laptop: 3 neighbouring 2.4 GHz networks and both
+    Homebase5 radios (`…:E6` ch 40, `…:E7` ch 132) are visible; `…:E5` is not.
+  - The laptop cannot stand in as a hotspot. Its card allows 1 channel with an AP up, and
+    it uses that channel for Homebase5 (5 GHz ch 132).
   - Next step: reboot the router, or provision a 2.4 GHz hotspot.
 - Wi-Fi config: `secrets/device.json` (gitignored, mode 600). Push it with
   `.venv/bin/python scripts/provision_fork_serial.py --log logs/provision.log`.
@@ -42,8 +46,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
 - Serial commands: `PMDUMP` (framebuffer to `scripts/fbdump.py`), `PMNEXT` (next page),
   `PMFEED` (chain fetch now). `PMLOCK` reports "all" and changes nothing on the pipelined
-  build. `NMCFG {json}` in the 6 s
-  boot window sets Wi-Fi and pool.
+  build. `NMCFG {json}` in the 6 s boot window sets Wi-Fi and pool.
 
 ## Done this phase (fork `v4/panicminer`)
 
