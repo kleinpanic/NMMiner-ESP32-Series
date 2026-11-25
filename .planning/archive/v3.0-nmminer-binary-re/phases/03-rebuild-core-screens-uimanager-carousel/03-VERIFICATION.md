@@ -1,7 +1,8 @@
 ---
 phase: 03-rebuild-core-screens-uimanager-carousel
 verified: 2026-06-18T01:30:00Z
-status: code_build_passed_hardware_failed
+status: gaps_found
+status_detail: code_build_passed_hardware_failed
 hardware_verified: false
 hardware_status: failed_on_device_before_07_02_repair
 superseded_by: ".planning/phases/07-on-device-validation/07-VERIFICATION.md"

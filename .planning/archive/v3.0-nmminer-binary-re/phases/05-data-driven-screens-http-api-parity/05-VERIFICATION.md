@@ -1,7 +1,8 @@
 ---
 phase: 05-data-driven-screens-http-api-parity
 verified: 2026-06-18T00:00:00Z
-status: code_build_passed_hardware_unverified
+status: human_needed
+status_detail: code_build_passed_hardware_unverified
 hardware_verified: false
 hardware_status: unverified_on_device_until_phase_7
 superseded_by: ".planning/phases/07-on-device-validation/07-VERIFICATION.md"
