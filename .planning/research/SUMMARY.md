@@ -5,6 +5,16 @@
 **Researched:** 2026-06-17
 **Confidence:** HIGH (stack/architecture/pitfalls verified against the real 4 MB backup + current upstream sources; features grounded in stock binary strings + saved API reference)
 
+> Supersession, 2026-06-19: this is now a historical research snapshot. The
+> active route is official NMMiner `v2.0.02` `esp32-2432s028r-st7789` binary
+> decompilation/custom-edit, documented in
+> `.planning/phases/07-on-device-validation/07-AUTHORITY-INDEX.md`,
+> `07-BINARY-BASELINE-ROUTE.md`, `07-BINARY-DECOMP-TASKS.md`, and
+> `07-BINARY-EDIT-TARGET-MAP.md`. Do not follow this file's old recommendation
+> to make the fork rebuild primary. The locked workbench is Ghidra `11.3.1` plus
+> dynacylabs loader `v11.3.1`, not `v12.0`; the active `v2.0.02` LittleFS
+> geometry is `spiffs@0x390000` size `0x60000`.
+
 ## Executive Summary
 
 This milestone recovers the *look and feel* of the closed NMMiner v2.0.02 firmware and re-adds our custom hardware features (speaker, SD, LED, kleinpanic branding) on top. The decisive research finding reshapes the strategy: **NMMiner's screens are runtime-drawn LVGL widgets, not stored bitmaps** — they cannot be lifted out as files. The "8 recovered PNGs" in `hardware/recovered-assets/` are mis-carved noise, and the v8 `lv_img_dsc_t` scan returned zero matches because the screen art lives in *code* (widget-construction calls), not in a scannable asset table. What *is* recoverable from the binary is the **design contract**: screen inventory (6 named LVGL pages), fonts/glyphs (extractable as LVGL C-arrays), per-screen layout geometry, the Binance/open-meteo data shapes, and the `.ss` screensaver format. The screensaver `.ss` format is NMMiner's own `SN@` RLE+LZSS encoding, already partly reverse-engineered by this project (`scripts/nmminer_screensaver.py`).

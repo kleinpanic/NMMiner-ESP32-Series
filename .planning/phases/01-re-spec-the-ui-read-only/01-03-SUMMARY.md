@@ -16,7 +16,7 @@ The functions located via the class-name string xref (`Clock320x240`@`0x400d1864
 | Config320x240 | FUN_400f2b58 | 2 labels; `nmap-2.4g`/`192.168.4.1` confirmed HTTP-layer, NOT on display |
 | Weather320x240 | FUN_400f3a34→FUN_401f2fc0 | dynamically built (accessor-class); static frame partial; cb3 HH:MM row decoded |
 
-Plus: **share-accept seam** `FUN_400f1620` (DROM `0x3f4736c8`, lit `0x400d1800`) — Phase 6 speaker hook; **ss_render** `0x400f6ff4` `(char* buf, uint w, uint h)` — Phase 5 screensaver.
+Plus: **share-accept seam** `0x400f1620` (DROM `0x3f4736c8`, lit `0x400d1800`) — later corrected to a mid-block Serial/UART log seam, not a function hook; **ss_render** `0x400f6ff4` `(char* path, uint w, uint h)` — opens/decodes a screensaver asset and writes through the display vtable.
 
 ## Method (fan-out)
 One Ghidra extraction pass per concern (vtable trace, Clock force-resolve, missing-builder dumps), then **7 parallel agents** (one per screen) parsed the decompiled C into per-screen SPEC sections using the shared `LVGL_API_MAP.md` — text parsing, no Ghidra-lock contention. Sections merged into the unified `SPEC.md`.

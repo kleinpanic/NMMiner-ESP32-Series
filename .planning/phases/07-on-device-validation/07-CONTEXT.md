@@ -1,30 +1,40 @@
 # Phase 7: On-Device Validation - Context
 
 **Gathered:** 2026-06-18 (auto mode; grounded in the existing fork FLASH_GUIDE.md + live device probe)
-**Status:** Ready for planning. Device PRESENT and reachable — ESP32-D0WD-V3 (rev 3.1), MAC d4:e9:f4:a7:de:0c, CH340 on /dev/ttyUSB0. The "BLOCKED on /dev/ttyUSB0" roadmap label is STALE; the port is present.
+**Status:** SUPERSEDED BY 07-02 REPAIR + 07-VERIFICATION. Phase 7 is not ready to advance; it is parked on physical panel/touch proof, operator-confirmed hard power-cycle, 2.4 GHz Wi-Fi/pool/mining proof, API/dashboard checks, and restore proof. Device is present, but any future firmware write still requires explicit operator intent and a fresh full 4 MB backup first.
+
+> Current executor note (2026-06-18): This context captured the original Phase 7 hardware run before
+> the 07-02 software repair pass and before the later stock baseline restore, custom decoded-spec
+> ST7789 reflash, decoded LittleFS preservation pass, current app reflash, user-report recheck,
+> no-flash touch software review, and 2026-06-19T02:06Z read-only serial continuation.
+> The live device is now custom decoded-spec ST7789 in WiFiManager recovery AP mode, not stock and
+> not mining. Use `07-VALIDATION.md` and `07-VERIFICATION.md` as the current authority for artifact
+> size, repaired-build status, live state, and remaining gates. This file is retained for D-70..D-76
+> decision history.
 
 <domain>
 ## Phase Boundary
 
-Flash the validated v3.0 fork firmware (fork HEAD `9a476e7`, firmware.bin 2,852,928 B,
-flash 90.5%) onto the physical CYD and prove it works: a fresh 4 MB esptool backup BEFORE
-the flash, `verify_flash` + a hard USB power-cycle AFTER, a serial boot confirmation, a
-visual parity checklist against stock, mining confirmed active on-device, and a documented +
-proven-reversible restore path. This is the ONLY phase that touches the user's physical,
-currently-mining hardware. Closes VALID-01/02/03.
+Flash the post-07-02 repaired v3.0 fork firmware (current 07-VALIDATION.md records
+`firmware.bin` payload 2,855,344 B from the final pre-flash repair build) onto the physical
+CYD and prove it works: a fresh 4 MB esptool backup BEFORE the flash, `verify_flash` + a hard
+USB power-cycle AFTER, a serial boot confirmation, a visual parity checklist against stock,
+mining confirmed active on-device, and a documented + proven-reversible restore path. This is
+the phase that touches the user's physical hardware; future firmware writes still require a fresh
+full backup and explicit operator intent even though the device is no longer currently mining.
+Closes
+VALID-01/02/03 only after hardware evidence exists.
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
 ### USER GO-AHEAD GATE before any write (D-70 — load-bearing)
-- **D-70:** The device is the user's PHYSICAL miner, actively mining the OLD fork right now.
-  Even the *backup* (esptool read_flash) resets the chip into download mode and interrupts
-  mining for ~45–60s before it reboots. The user previously chose "leave the device, keep
-  building." Therefore: ALL non-destructive prep (backup, build confirm, runbook, restore-
-  validation plan) is autonomous, but the **actual flash write requires the user's explicit
-  "flash it" go-ahead.** Do not write to the device without it. The backup is the first
-  irreversible-state-touch (brief mining interruption) and is bundled into the same go-ahead.
+- **D-70:** Historical context: this gate was written when the device was believed to be
+  actively mining the old fork. Current context: the live device is custom decoded-spec ST7789 in
+  recovery AP mode. The gate still stands because every firmware write and full backup changes
+  device state or resets the chip. Do not write to the device without explicit operator intent,
+  and take a fresh full backup before any future firmware write.
 
 ### Fresh 4 MB backup BEFORE flash (D-71 → VALID-01)
 - **D-71:** Immediately before flashing, take a fresh full-flash backup:
@@ -36,10 +46,11 @@ currently-mining hardware. Closes VALID-01/02/03.
 
 ### Flash the validated build (D-72 → VALID-02)
 - **D-72:** Flash via PlatformIO so the 3 images land at the right offsets:
-  `pio run -e ESP32-2432S028R -t upload --upload-port /dev/ttyUSB0` (bootloader@0x1000,
-  partitions@0x8000, boot_app0@0xe000, firmware@0x10000). Do NOT rebuild first unless the
-  tree changed — flash the exact validated artifact (firmware.bin built 12:11, fork 9a476e7).
-  upload_speed 921600.
+  `.venv/bin/pio run -d firmware/custom/NerdMiner-CYD-Custom -e ESP32-2432S028R -t upload
+  --upload-port /dev/ttyUSB0` (bootloader@0x1000, partitions@0x8000, boot_app0@0xe000,
+  firmware@0x10000). Do NOT rebuild first unless the tree changed — flash the exact artifact
+  recorded in 07-VALIDATION.md. upload_speed 921600. The active board-driver decision is ST7789;
+  do not flash an ILI9341 artifact unless new physical re-identification evidence is recorded first.
 
 ### verify_flash + hard power-cycle AFTER (D-73 → VALID-01)
 - **D-73:** After upload, `esptool ... verify_flash 0x10000 .pio/build/ESP32-2432S028R/firmware.bin`
@@ -54,21 +65,21 @@ currently-mining hardware. Closes VALID-01/02/03.
   §5 checklist: 6 screens render with CORRECT colors, /api/system/info JSON, speaker test-tone,
   SD list, dashboard. Record pass/fail per item.
 
-### DISPLAY DRIVER RISK — ILI9341 vs ST7789 (D-75 — top risk)
-- **D-75 (RISK):** The `[env:ESP32-2432S028R]` builds with `ILI9341_2_DRIVER`, but this unit's
-  stock target was `esp32-2432s028r-st7789`. FLASH_GUIDE.md warns: wrong/inverted colors after
-  flash ⇒ panel is the ST7789 variant ⇒ switch the TFT_eSPI driver to ST7789 (`-DST7789_DRIVER`
-  + the right offsets/invert) and rebuild+reflash. This is the MOST LIKELY on-device failure and
-  plausibly explains the earlier "looks like shit" report. The plan MUST include this as a
-  branch: if colors are wrong, swap driver → rebuild → reflash → re-verify (a build change ⇒
-  back through the build gate). Keep `invertColors`/Brightness serial keys (Phase-6 carry) handy.
+### DISPLAY DRIVER RISK — ST7789 decision retained (D-75)
+- **D-75 (RISK):** This was originally the top risk because the old `[env:ESP32-2432S028R]`
+  build used `ILI9341_2_DRIVER` while this unit's stock target was
+  `esp32-2432s028r-st7789`. That decision is now resolved in source: the active env uses
+  `-DST7789_DRIVER=1`, `TFT_BGR`, and inversion-off. Keep the driver branch only as a
+  physical re-identification contingency: if the panel shows wrong/inverted colors, record the
+  evidence, edit only justified driver/RGB/inversion/geometry flags, rebuild, reflash after a
+  fresh backup, and re-verify.
 
 ### Restore reversibility (D-76 → VALID-03)
 - **D-76:** Document + PROVE the restore path:
   `esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 hardware/backups/cyd-backup-<ts>.bin`.
   Proof of reversibility = (a) the fresh backup is a valid 4 MB image (size + sha recorded) and
   (b) the restore command is exercised at least as a documented dry-validation; a full
-  flash→restore→reflash round-trip is OPTIONAL (costs two extra flash cycles + mining downtime)
+  flash->restore->reflash round-trip is OPTIONAL (costs two extra flash cycles + device downtime)
   and only run if the user wants belt-and-suspenders proof. Default: prove the backup integrity
   + document the one-command rollback (FLASH_GUIDE §Rollback already has it).
 
@@ -82,16 +93,18 @@ currently-mining hardware. Closes VALID-01/02/03.
 
 <canonical_refs>
 ## Canonical References
-- firmware/custom/NerdMiner-CYD-Custom/docs/FLASH_GUIDE.md (the runbook: backup → build → flash → §5 checklist → rollback + the ILI9341/ST7789 note).
-- firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/{bootloader,partitions,firmware}.bin (the validated artifacts).
+- firmware/custom/NerdMiner-CYD-Custom/docs/FLASH_GUIDE.md (the runbook: backup -> build -> flash -> §5 checklist -> rollback + the historical ILI9341/ST7789 note).
+- firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/{bootloader,partitions,firmware}.bin (current post-07-02 pre-flash build artifacts; see 07-VALIDATION.md for size/build evidence).
 - hardware/backups/ (prior 4 MB backups; gitignored, no-redistribution).
 - .planning/REQUIREMENTS.md — VALID-01/02/03.
 - .planning/phases/06-*/06-VERIFICATION.md (the static HW-01..04 results these on-device checks confirm).
+- .planning/phases/07-on-device-validation/07-VALIDATION.md — current runbook and repair evidence.
+- .planning/phases/07-on-device-validation/07-VERIFICATION.md — current verifier verdict: 0/3 VALID requirements verified until 07-01 runs.
 </canonical_refs>
 
 <code_context>
 ## Existing Code Insights
-- esptool v4.5.1 available via `.venv/bin/pio pkg exec -- esptool`. Device confirmed reachable
+- esptool v4.5.1 available via `.venv/bin/python ~/.platformio/packages/tool-esptoolpy/esptool.py`. Device confirmed reachable
   (chip_id read OK) — but every esptool op resets the chip, briefly stopping mining.
 - The FLASH_GUIDE already encodes the full runbook; Phase 7 EXECUTES it, doesn't reinvent it.
 </code_context>
@@ -100,7 +113,7 @@ currently-mining hardware. Closes VALID-01/02/03.
 ## Specific Ideas
 - Atomic, reversible, evidence-first: backup (sha recorded) BEFORE, verify_flash + power-cycle
   AFTER, serial + visual + mining evidence captured into 07-SUMMARY / a flash runbook doc.
-- The ST7789/ILI9341 driver branch is the one likely place this needs a rebuild loop — plan for it.
+- The display-driver branch is now contingency-only; current source already targets ST7789.
 </specifics>
 
 <deferred>

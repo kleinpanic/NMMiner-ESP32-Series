@@ -3,6 +3,8 @@ phase: 04-restore-interactive-touch-softspi
 verified: 2026-06-18T02:10:00Z
 status: human_needed
 score: 8/8 must-haves verified (build + code-structure layer)
+current_runtime_authority: ".planning/phases/07-on-device-validation/07-VERIFICATION.md"
+supersession_note: "Historical SoftSPI verification only; current Phase 7 runtime uses NM_TOUCH_NO_VSPI HSPI/TFT_eTouch/direct probes and still reports no contact."
 overrides_applied: 0
 build_gate: PASS
 ram_used_pct: 35.3
@@ -11,7 +13,7 @@ re_verification:
 human_verification:
   - test: "On-device single tap on the panel"
     expected: "Carousel advances one page; LastPage persists across reboot"
-    why_human: "XPT2046 bit-bang bus + calibration only confirmable on real hardware (Phase 7, gated on /dev/ttyUSB0)"
+    why_human: "Physical touch behavior only confirmable on real hardware; current Phase 7 evidence shows no raw contact"
   - test: "On-device 10s touch hold"
     expected: "Device opens WiFiManager AP captive portal (192.168.4.1) WITHOUT wiping wallet/WiFi creds"
     why_human: "Config-portal entry + non-destructiveness needs runtime + NVS inspection on device"
@@ -21,12 +23,20 @@ human_verification:
   - test: "Boot button double-click / long-press / single-click"
     expected: "double=next page, long(10s)=config portal, single=wake"
     why_human: "OneButton GPIO0 timing + physical button behavior is hardware-only"
-  - test: "Raw-Z serial diagnosis (nm_touch_log_raw)"
-    expected: "Serial prints [nm_touch] z=.. rawX=.. rawY=.. -> px=.. py=.. on first ~20 presses; z/rawX/rawY change under press vs idle (bus alive)"
-    why_human: "Requires serial monitor on /dev/ttyUSB0 (Phase 7)"
+diagnosed_runtime:
+  - test: "Raw touch serial diagnosis"
+    result: "Ran in Phase 7 and repeatedly reported irq=1, miso=0, directX=0, directY=4095, directPressed=0, libPressed=0"
+    status: "diagnosed_no_contact"
+    next_action: "Physical XPT2046/FPC/PENIRQ probe or touch-variant re-identification; not another generic serial wait"
 ---
 
 # Phase 4: Restore Interactive Touch (SoftSPI) Verification Report
+
+## 2026-06-19 Supersession Note
+
+This report is preserved as the historical Phase 4 build/code-structure verification of the earlier software-SPI touch implementation. It is not the current runtime touch authority.
+
+The live Phase 7 custom firmware is built with `TOUCH_ENABLE` and `NM_TOUCH_NO_VSPI`, gates out the legacy VSPI `TouchHandler`, and uses HSPI `TFT_eTouch` plus direct HSPI probes on the observed `esp32-2432s028r-st7789` pins. Live serial evidence still reports no touch contact (`directPressed=0` / `libPressed=0`). Any Phase 4 claims below that touch is "pure bit-bang", "SoftSPI", or hardware-verified must be read as historical and superseded by Phase 7 validation and `.planning/debug/touch-no-press.md`.
 
 **Phase Goal:** The dead CYD touch works on software SPI (VSPI free for SD) + drives the nm_uimanager carousel; boot button too.
 **Verified:** 2026-06-18
@@ -114,12 +124,14 @@ ESP32-2432S028R  SUCCESS  00:01:48
 
 ### Human Verification Required
 
-On-device confirmation is Phase 7 by design (BLOCKED on `/dev/ttyUSB0`). The five
-items in frontmatter `human_verification` are the runtime-only checks: tap→next,
-10s-hold→non-destructive portal, dim-tap→wake, boot-button mapping, and the raw-Z
-serial diagnosis stream. None are code-structure gaps — they are inherent to a
-hardware-input phase whose acceptance gate is BUILD + structure (per the phase's own
-"on-device tap is Phase 7" scoping).
+On-device confirmation is Phase 7 by design. `/dev/ttyUSB0` is no longer the blocker;
+the device has since been backed up, flashed, verified, and serial-observed. The four
+remaining items in frontmatter `human_verification` are runtime-only checks:
+tap→next, 10s-hold→non-destructive portal, dim-tap→wake, and boot-button mapping.
+
+The raw touch serial diagnosis is no longer generic pending UAT. It ran in Phase 7 and
+consistently reported no raw press/contact. The remaining action is physical
+XPT2046/FPC/PENIRQ probing or touch-variant re-identification.
 
 ### Gaps Summary
 
@@ -127,9 +139,9 @@ No gaps. All eight must-haves verified at the build + code-structure layer. The 
 code-review Criticals (CR-01 dead raw-Z diagnosis, CR-02 blocking wake delay) and the
 safety Warning WR-01 (destructive long-press) are confirmed FIXED in HEAD — the
 codebase supersedes the stale SUMMARY/VALIDATION narrative. Status is `human_needed`
-rather than `passed` solely because the goal's user-observable behaviors (actual tap
-navigation, wake, config entry) require on-device runtime confirmation scheduled for
-Phase 7.
+rather than `passed` because the goal's user-observable behaviors (actual tap
+navigation, wake, config entry, boot-button behavior) still require hardware runtime
+confirmation; the touch path is currently diagnosed as no-contact below the UI layer.
 
 ---
 

@@ -2,17 +2,32 @@
 .firecrawl/
 __pycache__/
 *.pyc
+.coverage
 
 # Contains Wi-Fi credentials, wallet/address values, device license, and full flash dumps.
 secrets/
 hardware/backups/
+hardware/generated-firmware/
 hardware/screensavers/generated*/
 logs/
+.remember/logs/
+factory_out.bin
 
 # Downloaded release binaries are reproducible from the official NMMiner repo.
-# Exception: firmware/custom/ contains our custom fork and should be tracked.
-firmware/
+# Exceptions: firmware/custom/ contains our custom fork, and
+# firmware/reconstructed/nmminer-v2-baseline/ contains source-recovery code.
+firmware/*
 !firmware/custom/
+!firmware/reconstructed/
+firmware/reconstructed/*
+!firmware/reconstructed/nmminer-v2-baseline/
+!firmware/reconstructed/nmminer-v2-baseline/**
+firmware/reconstructed/nmminer-v2-baseline/.pio/
+firmware/reconstructed/nmminer-v2-baseline/build/
+firmware/reconstructed/nmminer-v2-baseline/*.bin
+firmware/reconstructed/nmminer-v2-baseline/*.elf
+firmware/reconstructed/nmminer-v2-baseline/*.map
+firmware/reconstructed/nmminer-v2-baseline/*.uf2
 
 # Upstream source checkouts used for local audit/customization experiments.
 external/
@@ -23,3 +38,4 @@ external/
 # nested-fork build worktrees (parallel module agents)
 fork-wt/
 hardware/recovered-assets/
+.planning/research/.cache/

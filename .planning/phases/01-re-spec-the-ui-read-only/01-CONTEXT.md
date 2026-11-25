@@ -3,6 +3,14 @@
 **Gathered:** 2026-06-18
 **Status:** Ready for planning
 
+> Supersession, 2026-06-19: Phase 1 remains useful historical RE context, but
+> the active route is Phase 7 official `v2.0.02` ST7789 binary
+> decompilation/custom-edit. Use
+> `.planning/phases/07-on-device-validation/07-AUTHORITY-INDEX.md` before this
+> file. Do not follow any stale fork-primary, loader `v12.0`, old LittleFS
+> geometry, or live-oracle assumptions without checking the Phase 7 authority
+> docs first.
+
 > Gathered in autonomous (`--auto`) mode per the milestone goal's standing
 > authorization. Most technical approach is already locked by
 > `.planning/research/` (STACK/ARCHITECTURE/PITFALLS/SUMMARY); this captures the

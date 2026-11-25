@@ -9,7 +9,7 @@ overrides: []
 human_verification:
   - test: "Submit/wait for a real accepted share on hardware; listen for the 2000Hz/80ms blip"
     expected: "Single short high-pitched beep on each accepted share; distinct two-blip 700Hz alarm on pool/WiFi disconnect"
-    why_human: "Audible output requires powered hardware on /dev/ttyUSB0 (Phase 7). Static path verified."
+    why_human: "Audible output requires live hardware plus Wi-Fi/pool/mining runtime (Phase 7). Static path verified."
   - test: "Observe the CYD RGB LED while mining, on an accepted share, and during disconnect"
     expected: "Steady blue while hashing; brief green flash on accepted share; red ~1Hz blink while connecting/disconnected"
     why_human: "Visible LED behavior requires powered hardware (Phase 7). Sole-writer + logic verified statically."
@@ -121,7 +121,7 @@ human_verification:
 
 ### Human Verification Required (DEFERRED→Phase 7)
 
-Per phase scope (CONTEXT §Deferred, VALIDATION §4), on-device confirmation is explicitly Phase 7 (BLOCKED on /dev/ttyUSB0). These are NOT failures:
+Per phase scope (CONTEXT §Deferred, VALIDATION §4), on-device confirmation is explicitly Phase 7. `/dev/ttyUSB0` is now present and has been used for backup/flash/verify/serial work; the remaining gates are Wi-Fi/pool/mining runtime, physical audio/LED observation, and SD/log inspection. These are NOT Phase 6 static/build failures:
 
 1. **Audible beep** on a real accepted share + disconnect alarm.
 2. **Visible LED** — steady blue mining / green flash on share / red blink disconnect.

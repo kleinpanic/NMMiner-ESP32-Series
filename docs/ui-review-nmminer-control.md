@@ -4,6 +4,12 @@ Date: 2026-06-01.
 
 Surface audited: `apps/nmminer-control`, served at `http://127.0.0.1:8788`.
 
+> Current-state note, 2026-06-19: this is a historical local-dashboard review
+> against the official LAN baseline. The live unit is now the custom decoded-spec
+> ST7789 fork in WiFiManager recovery AP mode. Custom JSON API, dashboard,
+> screensaver upload, LAN, and mining behavior are not current validation proof
+> until Phase 7 LAN/API/mining gates pass.
+
 ## Result
 
 Overall score: 21 / 24.
@@ -43,9 +49,9 @@ Screenshots captured outside the repo:
 - `/tmp/nmminer-ui-audit-desktop.png`
 - `/tmp/nmminer-ui-audit-mobile.png`
 
-## Device UI Customization Surface
+## Historical Device UI Customization Surface
 
-Safe on-device personalization exposed by official firmware/API:
+Safe on-device personalization exposed by the official 2026-06-01 firmware/API baseline:
 
 - Hostname and time display: hostname, timezone, 12/24-hour time, date format.
 - Display behavior: brightness, rotation, LED enable, screensaver timeout, screensaver mode.
@@ -58,4 +64,4 @@ Not safely customizable from the current public source bundle:
 - Mining math, stratum internals, and share validation behavior.
 - Firmware UI assets inside `firmware.bin`.
 
-Those require upstream firmware source or risky binary/LittleFS patching. The local dashboard and `.ss` screensaver path are the sanctioned route for now.
+Those require upstream firmware source or risky binary/LittleFS patching on the stock image. For the current custom fork, treat the local dashboard and `.ss` screensaver path as historical context until Phase 7 proves LAN/API/mining behavior again.

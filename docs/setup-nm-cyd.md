@@ -1,17 +1,26 @@
 # NM-CYD / ESP32-2432S028 Setup Procedure
 
+> Current-state note, 2026-06-19: this document preserves the 2026-06-01
+> official-firmware setup baseline. It is not the current live device state.
+> The live unit is now the custom decoded-spec `ESP32-2432S028R` ST7789 fork in
+> WiFiManager recovery AP mode (`nmap-2.4g` / `192.168.4.1`), reporting recovered
+> `v2.0.02` identity. It is not currently proven on LAN, mining, or touch-working.
+> Use `.planning/phases/07-on-device-validation/07-CURRENT-FAILURE-STATE.md` for
+> the active recovery state.
+
 ## What We Know
 
 - Board: NM-CYD / ESP32-2432S028, CYD 2.8.
 - Chip from `esptool`: ESP32-D0WD-V3, 4 MB flash.
 - Original firmware from serial boot log: NMMiner `v1.8.28`.
-- Current firmware after upgrade: NMMiner `v2.0.02`.
-- Latest official release found via GitHub/API and flash manifest: `v2.0.02`, published 2026-05-09.
+- Historical official-firmware upgrade target: NMMiner `v2.0.02`.
+- Latest official release found during the 2026-06-01 baseline audit: `v2.0.02`, published 2026-05-09.
+- Current public flasher check on 2026-06-19 lists `v2.0.03` for `esp32-2432s028r-st7789`; this setup record remains scoped to the local `v2.0.02` official backup/baseline.
 - Current display firmware target: `esp32-2432s028r-st7789`.
 - Full flash backup completed before any write.
-- Current LAN address: `http://192.168.1.136`.
-- Current Wi-Fi SSID: `Homebase`.
-- Current timezone: `-4`; NTP sync observed in the serial log.
+- Historical baseline LAN address: `http://192.168.1.136`.
+- Historical baseline Wi-Fi SSID: `Homebase`.
+- Historical baseline timezone: `-4`; NTP sync observed in the serial log.
 
 The current flash backup contains the old Wi-Fi credentials, wallet, pools, and device license. Those recovered values are written in `secrets/recovered-device-config-2026-06-01.txt`, which is intentionally ignored by git.
 
@@ -41,7 +50,7 @@ The ESP32 supports 2.4 GHz Wi-Fi only. A scan from this laptop saw:
 
 The intended long-term SSID is `Homebase`, which should be the 2.4 GHz network. Do not use `Homebase5`; as scanned here, `Homebase5` is the 5 GHz network and the ESP32 cannot join it.
 
-The device is currently configured for `Homebase` and confirmed online at `192.168.1.136`. Do not connect the laptop to the miner AP (`nmap-2.4g`) while relying on the laptop's Wi-Fi for internet access; use USB serial or the LAN API instead.
+During the 2026-06-01 baseline audit, the device was configured for `Homebase` and confirmed online at `192.168.1.136`. In the current Phase 7 recovery state, the custom firmware is in WiFiManager AP mode instead. Do not connect the laptop to the miner AP (`nmap-2.4g`) while relying on the laptop's Wi-Fi for internet access; use USB serial or the LAN API when LAN mode is available.
 
 ## Pool References
 
@@ -71,18 +80,23 @@ Runtime pool check from this network:
 | `solobtc.nmminer.com:3333` | Responded to `mining.subscribe`. |
 | `au.solobtc.nmminer.com:3333` | Responded to `mining.subscribe`. |
 
-Current configured pools:
+Historical baseline configured pools:
 
 - Primary: `stratum+tcp://pool.nerdminers.org:3333`
 - Fallback: `stratum+tcp://pool.nerdminers.org:3333`
 
-Post-reboot API verification showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares. Both configured pool URLs are manual-listed; the fallback duplicates the only manual pool that completed live `mining.subscribe` testing from this network.
+The 2026-06-01 post-reboot API verification showed active mining on `pool.nerdminers.org:3333`, accepted shares increasing, and zero rejected shares. The current Phase 7 custom recovery state has not yet re-proven Wi-Fi, pool connection, hashrate, or accepted shares.
 
 ## Firmware Upgrade Notes
 
 Original: `v1.8.28`.
 
-Current/latest official manifest/release: `v2.0.02`.
+Local backed-up official baseline: `v2.0.02`.
+
+Current public flasher listing checked on 2026-06-19: `v2.0.03` is also listed
+for `esp32-2432s028r-st7789`. Do not silently switch the local RE/custom-edit
+baseline from `v2.0.02` to `v2.0.03` without a new provenance record and fresh
+extraction/decompilation pass.
 
 Downloaded local release files are under `firmware/v2.0.02/` and are gitignored. The correct target for this unit is:
 
@@ -106,10 +120,10 @@ Reflash command:
 ./scripts/flash_v2_0_02.sh
 ```
 
-Recovery command from full backup:
+Historical 2026-06-01 restore example only. For the current Phase 7 state, use the latest restore target/runbook in `.planning/STATE.md` and `.planning/phases/07-on-device-validation/07-VALIDATION.md`; do not restore or flash without a fresh full 4 MB backup and an explicit operator decision.
 
 ```bash
-.venv/bin/python -m esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 write-flash -z 0x0 hardware/backups/nmminer-esp32-d0wd-v3-full-flash-2026-06-01.bin
+.venv/bin/python -m esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash -z 0x0 hardware/backups/nmminer-esp32-d0wd-v3-full-flash-2026-06-01.bin
 ```
 
 ## Serial Configuration
@@ -141,7 +155,7 @@ The successful setup used a single timed serial write after opening `/dev/ttyUSB
 
 ## API Verification
 
-Useful readbacks:
+Historical LAN-mode readbacks from the 2026-06-01 baseline. These commands are not expected to work while the current custom firmware is in recovery AP mode:
 
 ```bash
 curl http://192.168.1.136/probe
@@ -151,7 +165,7 @@ curl http://192.168.1.136/api/setting/mining
 curl http://192.168.1.136/api/setting/time
 ```
 
-Known-good final state:
+Historical known-good final official-firmware state:
 
 - Firmware: `v2.0.02`
 - Hostname: `cyd2.8_1a76f7`

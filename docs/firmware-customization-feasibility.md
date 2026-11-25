@@ -3,6 +3,14 @@
 Date: 2026-06-03.
 Goal: add **SD card** + **speaker** support the local website/dashboard can drive. User has physically installed a microSD card and a speaker on the CYD board.
 
+> Current-state note, 2026-06-19: this is a feasibility snapshot from before the
+> v3.0 reverse-engineering/rebuild work. The project did choose a custom
+> NerdMiner-derived fork, but now uses the recovered NMMiner binary/assets as a
+> read-only spec. The live unit is the custom decoded-spec ST7789 fork in
+> WiFiManager recovery AP mode, not the old stock LAN miner at `192.168.1.136`.
+> Use `.planning/phases/07-on-device-validation/07-CURRENT-FAILURE-STATE.md` for
+> the active state.
+
 ## TL;DR
 
 The stock **NMMiner v2.0.02 firmware cannot do this and cannot be extended cleanly** — it is binary-only (no source, no license) and exposes **zero** SD or audio in its HTTP API. The realistic path is **custom firmware forked from the MIT-licensed open-source NerdMiner v2**, borrowing CYD SD + speaker code from the canonical CYD reference repo. Binary reverse-engineering of the NMMiner image is *possible* but is the worst ROI (high effort, fragile, lost on every update).
@@ -11,7 +19,7 @@ Recommendation: **Path A — fork NerdMiner v2 (MIT) + graft CYD SD/audio from w
 
 ## Verified evidence
 
-### Stock NMMiner v2.0.02 (the unit at 192.168.1.136)
+### Stock NMMiner v2.0.02 (historical unit state at 192.168.1.136)
 - Live API `storage` block = LittleFS only (`fsTotal:393216`). No SD, no audio fields.
 - Official HTTP API = 21 endpoints; **none** for SD or audio (confirmed against live `NMminer1024/NMMiner/docs/api-reference.md`).
 - Manual: "external I/O ports and TF slot will be used **next** NMMiner version."

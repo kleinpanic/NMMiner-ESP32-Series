@@ -2,9 +2,16 @@
 
 Date: 2026-06-01.
 
-## Current Working Baseline
+> Current-state note, 2026-06-19: this document describes the historical
+> official-firmware LAN baseline and local monitor work. It is not the current
+> live device state. The current unit is the custom decoded-spec ST7789 fork in
+> WiFiManager recovery AP mode, with physical touch/mining still unproven. Use
+> `.planning/phases/07-on-device-validation/07-CURRENT-FAILURE-STATE.md` for the
+> active recovery state.
 
-The miner is healthy enough to customize from a known-good state:
+## Historical Working Baseline
+
+During the 2026-06-01 official-firmware audit, the miner was healthy enough to customize from a known-good state:
 
 - Firmware: `v2.0.02`, current official release at audit time.
 - Board target: `esp32-2432s028r-st7789`.
@@ -37,7 +44,7 @@ The Amazon manual lists two centralized-monitor routes:
 - `3.1 NMController`: separate LAN monitor software.
 - `3.2 NMMiner Monitor`: the built-in monitor at the miner's IP address.
 
-The built-in route is currently the most reliable one: open `http://192.168.1.136`.
+During the 2026-06-01 baseline, the built-in route was the most reliable one: open `http://192.168.1.136`. In the current Phase 7 recovery state, LAN monitor/API proof is still pending.
 
 `NMController_web` was cloned locally under `external/NMController_web` for audit and customization experiments. A separate older instance is already running from `/home/broklein/codeWS/Python/NMController_web` on:
 
@@ -51,7 +58,7 @@ Status check on 2026-06-01:
 - Its working directory is `/home/broklein/codeWS/Python/NMController_web`.
 - Both `/home/broklein/codeWS/Python/NMController_web` and `external/NMController_web` are clean upstream checkouts at commit `ba048864f247ff4678ed75a47c00c6d88a6c23fb`.
 - No separate local dashboard app was found in this setup repo.
-- The page is the stock `NMController Web Monitor` UI and is showing stale data for old IP `10.0.0.96`, firmware `v1.8.28`, not the live miner at `192.168.1.136`, firmware `v2.0.02`.
+- The page is the stock `NMController Web Monitor` UI and was showing stale data for old IP `10.0.0.96`, firmware `v1.8.28`, not the 2026-06-01 baseline miner at `192.168.1.136`, firmware `v2.0.02`.
 
 Conclusion from the status check: NMController Web is installed and running, but it is not the canonical customized dashboard. The upstream code explains why it currently misses this device: it only listens for UDP broadcast JSON on port `12345` and does not poll `/api/system/info`.
 
@@ -102,14 +109,14 @@ Generic `ESP32-2432S028R` / CYD pinout references line up with the labels on thi
 - The microSD/TF slot is commonly wired over SPI using `GPIO5`, `GPIO18`, `GPIO19`, and `GPIO23`.
 - Display, touch, backlight, and SD functions share limited ESP32 pins, so "free" pins are not always actually safe for new use.
 
-Current NMMiner `v2.0.02` should be treated as not supporting external humidity/sensor, speaker, or SD/TF workflows. The settings/API expose internet weather, display, pool, market, and screen saver behavior, not an attached sensor readout or SD-backed asset store. Wiring a sensor can be useful for a future custom firmware branch, but this firmware will ignore it.
+Official stock NMMiner `v2.0.02` at the 2026-06-01 baseline should be treated as not supporting external humidity/sensor, speaker, or SD/TF workflows. The stock settings/API exposed internet weather, display, pool, market, and screen saver behavior, not an attached sensor readout or SD-backed asset store. The current custom fork includes SD/speaker code paths, but Phase 7 runtime validation is still pending.
 
 Practical buying guidance:
 
 - Stable USB-C power first: 5 V / 2 A adapter and a short known-good USB-C cable.
 - For speaker experiments: 2-pin 1.25 mm JST-style pigtail plus a small speaker/passive buzzer, but only after verifying the board connector and firmware support path.
 - For GPIO/sensor experiments: 4-pin 1.25 mm pigtails or 1.25 mm-to-Dupont leads, plus a 3.3 V I2C environmental sensor such as BME280, SHT31/SHT40, or AHT20. Use `CN1` only after confirming pin order.
-- For SD/TF: a small microSD card is fine to physically add, but it is not needed for the current miner or uploaded screensavers.
+- For SD/TF: a small microSD card is fine to physically add, but official stock firmware did not need it for mining or uploaded screensavers; current custom-fork SD behavior still needs Phase 7 validation.
 
 Power improvements are worth doing before signal/header mods:
 

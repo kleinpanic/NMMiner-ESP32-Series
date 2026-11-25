@@ -1,8 +1,11 @@
 ---
 phase: 05-data-driven-screens-http-api-parity
 verified: 2026-06-18T00:00:00Z
-status: passed
-score: 6/6 DATA requirements verified (24/24 plan must-have truths)
+status: code_build_passed_hardware_unverified
+hardware_verified: false
+hardware_status: unverified_on_device_until_phase_7
+superseded_by: ".planning/phases/07-on-device-validation/07-VERIFICATION.md"
+score: "6/6 DATA code/build requirements verified; live device validation pending"
 overrides_applied: 0
 re_verification:
 build:
@@ -19,10 +22,10 @@ build:
 
 **Phase Goal:** The page-gated market/weather/swarm/screensaver behaviors and the full HTTP API match stock cadence and shapes so the existing dashboard/controller contract holds.
 **Verified:** 2026-06-18
-**Status:** passed
+**Status:** passed for code/build/API-structure scope only; on-device data, render, upload, and API behavior remain Phase 7 gaps
 **Re-verification:** No — initial verification
 
-> Scope note (per phase contract): on-device live data / render / upload behavior is Phase 7 on-device validation. This report verifies the BUILD gate + code structure for each DATA requirement.
+> Current evidence boundary (2026-06-19): this report verifies the BUILD gate and code/API structure for each DATA requirement. It does not prove live CYD data fetch, rendering, upload, or API behavior. Use `07-CURRENT-FAILURE-STATE.md` and `07-VERIFICATION.md` for live hardware truth.
 
 ## Build Gate
 
@@ -33,7 +36,10 @@ Result: `[SUCCESS] Took 71.72 seconds` — all Phase-5 modules linked.
 - **Flash: 90.5%** (2,846,141 / 3,145,728 bytes) — D-58 budget respected, no overflow.
 - **RAM: 37.6%** (123,168 / 327,680 bytes).
 
-## Goal Achievement — Observable Truths (per DATA req)
+## Goal Achievement — Code/API Truths (per DATA req)
+
+These truths were verified from source and build output, not from live Wi-Fi,
+HTTP, or screen behavior on the physical miner.
 
 | # | Requirement | Status | Evidence |
 | --- | --- | --- | --- |
@@ -44,7 +50,7 @@ Result: `[SUCCESS] Took 71.72 seconds` — all Phase-5 modules linked.
 | DATA-05 | HTTP API parity (21 endpoints), additive | ✓ VERIFIED | `webapi.cpp` registers `/probe`, `/alive`, `/api/system/info`, `/api/setting/{network,mining,time,preference,market,weather}` GET+POST, `/api/market/pairs`, `/api/weather/refresh`, `/api/swarm/find`, `/api/system/restart`, `/api/update/screensaver{,/preflight}` — `/api/speaker/*` + `/api/sd/*` routes preserved. POST market/weather trigger refresh; pairs `[]` when empty; refresh 429 within 60s. |
 | DATA-06 | Branding model="NMMiner" / "Make it better" | ✓ VERIFIED | `handleProbe` model+hwModel="NMMiner"; `handleSystemInfo` identity.model/hwModel="NMMiner", tagline="Make it better". |
 
-**Score:** 6/6 DATA requirements verified.
+**Score:** 6/6 DATA code/build requirements verified; physical data/API behavior is pending Phase 7 validation.
 
 ## Required Artifacts
 
@@ -88,7 +94,7 @@ None. Zero `TBD/FIXME/XXX/PLACEHOLDER` markers across all Phase-5 files. No stub
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| DATA-01..06 | ✓ SATISFIED | See per-req table above. |
+| DATA-01..06 | code/build satisfied, hardware pending | See per-req table above and Phase 7 hardware gaps. |
 
 `mining.cpp`: untouched — `git diff` clean, zero Phase-5 symbol references; goal "additive on the fork" honored.
 
@@ -98,11 +104,19 @@ None. Zero `TBD/FIXME/XXX/PLACEHOLDER` markers across all Phase-5 files. No stub
 
 ## Human Verification Required
 
-None for this phase scope — on-device data/render/upload behavior is explicitly Phase 7 on-device validation, not a Phase-5 gap.
+Required in Phase 7 for milestone closure. No hardware test was part of this
+original code/build verifier, and live data/render/upload/API behavior remains
+unproven on the CYD.
 
 ## Gaps Summary
 
-No gaps. All 6 DATA requirements have substantive, wired, build-passing implementations. Build SUCCESS at Flash 90.5% / RAM 37.6%, within the D-58 budget. The fork's speaker/sd routes are preserved (additive); mining.cpp is untouched.
+No gaps for the original Phase 5 code/build/API-structure scope. Phase 7
+hardware gaps remain: Wi-Fi/pool/mining, live market/weather fetch, custom API
+exposure, screensaver upload, and on-device render behavior must be judged from
+`07-VERIFICATION.md`, not this report. All 6 DATA requirements have substantive,
+wired, build-passing implementations. Build SUCCESS at Flash 90.5% / RAM 37.6%,
+within the D-58 budget. The fork's speaker/sd routes are preserved (additive);
+mining.cpp is untouched.
 
 ---
 

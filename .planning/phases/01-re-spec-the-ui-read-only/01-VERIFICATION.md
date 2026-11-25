@@ -64,7 +64,7 @@ $ python3 scripts/check_spec_screens.py
       Miner/Clock>=5 rows, seam+ss_render addr+shape, LVGL 2-evidence, Confidence)
   EXIT=0
 ```
-Spot-check: all 6 exact class identifiers present in SPEC.md; Miner geometry = 22 widget rows, Clock = 9 + 4 compound rows, each with a per-row Confidence column; Share-Accept seam `FUN_400f1620` @ `0x400f1620` (marker DROM `0x3f4736c8`); ss_render `0x400f6ff4` `(char* buf, uint w, uint h)`; market field set bound to `/api/system/info` fields.
+Spot-check: all 6 exact class identifiers present in SPEC.md; Miner geometry = 22 widget rows, Clock = 9 + 4 compound rows, each with a per-row Confidence column; Share-Accept seam `0x400f1620` (marker DROM `0x3f4736c8`, later corrected to a mid-block Serial/UART log seam); ss_render `0x400f6ff4` `(char* path, uint w, uint h)`; market field set bound to `/api/system/info` fields.
 
 **RE-04 — no-redistribution boundary:**
 ```

@@ -13,41 +13,61 @@
 
 ## Core Value
 
-The device looks and behaves exactly like stock NMMiner v2.0.02 — recovered by
-reverse-engineering the closed binary as a read-only specification, rebuilt
-natively on the owned MIT `NerdMiner-CYD-Custom` fork — PLUS our custom speaker /
-SD / LED / kleinpanic branding, while mining keeps working throughout.
+The active path is the official NMMiner `v2.0.02`
+`esp32-2432s028r-st7789` binary: preserve provenance, decompile it, identify
+safe custom-edit seams, and produce local-only modified artifacts without
+touching license/activation paths, secrets, or redistributing closed firmware.
+The fork rebuild is historical context and recovery/failure evidence, not the
+primary implementation route.
 
 ## Dependency Spine
 
-RE-spec the binary → recover fonts/palette + filesystem assets → rebuild core
-screens + carousel → restore touch (SoftSPI, before SD) → add data-driven
-screens + API parity → wire custom HW at the share-accept seam → on-device
-validate → (contingency) Path-A binary-patch spike.
+Official `v2.0.02` provenance lock → Ghidra/decompiler function normalization →
+dynamic UI/update path map → binary edit target map → local-only patch tooling →
+ESP32 image validation → gated device write only after a fresh full backup.
 
 Hard ordering locks:
-- **Spec-before-build:** screens are runtime LVGL code, not stored bitmaps, so the read-only spec gates all UI work.
-- **Touch-before-SD:** touch must move to SoftSPI before SD claims hardware VSPI (CYD dual-SPI collision).
-- **Core-screens-before-data-screens:** page-gated market/weather/swarm hang off the UIManager carousel.
-- **On-device validation is BLOCKED** until `/dev/ttyUSB0` (data, not charge-only) appears. All software phases (1-6) and the fallback decision (8) are completable without the device.
+- **Version lock:** the public flasher now lists `v2.0.03`, but the repo's
+  extracted/decompiled baseline is official `v2.0.02`. Do not silently switch
+  versions.
+- **No-touch zones:** license/activation, Wi-Fi credentials, wallet values, NVS
+  secrets, and device licenses are never patch targets.
+- **No redistribution:** recovered assets, full flash backups, and modified
+  stock binaries stay local and gitignored.
+- **On-device writes are gated:** every future firmware write must preserve a
+  fresh full 4 MB backup first and verify the write afterward. The board target
+  remains `esp32-2432s028r-st7789` unless hardware is re-identified.
 
 ## Phases
 
-> ⚠️ **STATUS (2026-06-18): milestone PAUSED, on-device validation FAILED.** The `[x]` on Phases
+> ⚠️ **STATUS (2026-06-18): milestone in Phase 7, on-device validation FAILED, then software-repaired and reflashed with the custom decoded-spec ST7789 fork.** The `[x]` on Phases
 > 3–6 means **code-complete + compiled + code-reviewed**, NOT hardware-verified. On-device (Phase 7)
-> the rebuilt UI does NOT render correctly (white screen, was upside-down, config crash, boot-loop;
-> WiFi regression introduced this session). Phases 3–6 require an **on-device-gated redo** (user-approved).
+> the rebuilt UI did not render correctly before repair (boot-loop, stock-screen clobbering,
+> config crash, upside-down render, white-screen history, and Wi-Fi regression). 07-02 has
+> build-passed and flashed software repairs for
+> H1-H5, follow-up SD/RotateScreen blockers, the physical-presence API mutation gate, and the later
+> LittleFS/legacy-SD code-review fixes. 07-01 has partial hardware evidence: the custom app verifies
+> at `0x10000`, decoded LittleFS still verifies at `0x310000`, and the recovery web UI returns HTTP
+> 200. Custom physical panel/touch/mining validation is still incomplete.
 > Genuinely complete + device-independent: **Phases 1–2 only**. See STATE.md "HONEST FAILURE RECORD"
 > + `phases/07-on-device-validation/07-REVIEW.md` (H1–H5).
+>
+> Route correction (2026-06-19): fork UI/touch repair is no longer the active
+> implementation route. Continue Phase 7 as official `v2.0.02` ST7789 binary
+> decompilation/custom-edit. Use fork failures only as recovery/reversibility
+> context.
 
 - [x] **Phase 1: RE-Spec the UI (read-only)** - Ghidra/FIDB decompile the located screen funcs into SPEC.md; confirm LVGL v8 vs v9. No flashing. ✅ done (device-independent)
 - [x] **Phase 2: Recover Fonts/Glyphs + Filesystem Assets** - Extract LVGL font C-arrays + palette; unpack LittleFS; byte-accurate `.ss` decoder for all 17 screensavers. ✅ done (device-independent)
-- [~] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash. ⚠️ COMPILE-ONLY; renders BROKEN on-device (white screen) — needs on-device-gated redo (H5).
-- [~] **Phase 4: Restore Interactive Touch (SoftSPI)** - Touch on SoftSPI; nav + config entry + wake; boot-button controls. ⚠️ COMPILE-ONLY; touch calibration wrong for rotation 3 on-device (H3).
+- [~] **Phase 3: Rebuild Core Screens + UIManager Carousel** - Loading/Miner/Clock/Config screens + page list + LastPage NVS persistence + branding splash. ⚠️ COMPILE-ONLY; white-screen/render failures were repaired in code, but physical panel proof is still pending.
+- [~] **Phase 4: Restore Interactive Touch (SoftSPI)** - Historical SoftSPI touch plan; current source is no-VSPI HSPI/direct-probe touch. ⚠️ COMPILE-ONLY; current hardware evidence is no-contact/no-press below calibration, requiring physical XPT2046/PENIRQ/FPC probe or touch-variant re-identification.
 - [~] **Phase 5: Data-Driven Screens + HTTP API Parity** - SPrice/Weather/screensaver/Swarm/API. ⚠️ COMPILE-ONLY; unverified on-device (UI doesn't render to confirm).
-- [~] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker/SD/LED/branding. ⚠️ Partial on-device: SD mount + LED-blink confirmed; speaker/beep/branding unverified (UI broken). HW-04 mining core starts.
-- [ ] **Phase 7: On-Device Validation** - ❌ FAILED + PAUSED (user). Flash+backup+verify done, but visual parity FAILED. Audit → 07-REVIEW.md (2 Crit, H1–H5). Resume = on-device-gated UI redo.
-- [ ] **Phase 8: Fallback Path-A Binary-Patch Spike (contingency)** - Not started. Go/no-go pending (expected WAIVE).
+- [~] **Phase 6: Wire Custom Features at the Share-Accept Seam** - Speaker/SD/LED/branding. ⚠️ Partial on-device: SD mount confirmed; red config/connecting LED is expected but does not prove mining/share LED behavior. Speaker/beep/share LED/branding remain unverified until Wi-Fi/pool/mining runtime.
+- [~] **Phase 7: Official v2.0.02 Binary Customization** - Active. Baseline
+  provenance is locked; decompilation/custom-edit map and local patch tooling
+  are pending.
+- [ ] **Phase 8: Reserved / Superseded Fallback Slot** - Not active. The
+  former Path-A contingency is now folded into Phase 7 as the primary route.
 
 ## Phase Details
 
@@ -100,16 +120,16 @@ Plans:
 **UI hint**: yes
 
 ### Phase 4: Restore Interactive Touch (SoftSPI)
-**Goal**: The user can navigate the rebuilt UI by touch and boot button, with touch moved off hardware VSPI so SD can later own it cleanly.
-**Depends on**: Phase 3 (screens + carousel to navigate). MUST come before Phase 6 SD wiring (VSPI bus-ownership lock-in).
+**Goal**: The user can navigate the rebuilt UI by touch and boot button. Historical Phase 4 targeted software SPI to free VSPI for SD; current Phase 7 source supersedes that implementation with no-VSPI HSPI `TFT_eTouch` plus direct probes and still fails at raw no-contact.
+**Depends on**: Phase 3 (screens + carousel to navigate). MUST come before Phase 6 SD wiring / bus-ownership lock-in. Current evidence requires physical touch-controller probing before more touch-code tuning.
 **Requirements**: TOUCH-01, TOUCH-02, TOUCH-03
 **Success Criteria** (what must be TRUE):
-  1. Touch works on SoftSPI (moved off hardware VSPI, leaving VSPI free for SD), diagnosed via raw-Z pressure first to separate bus vs calibration faults.
+  1. Touch works on the current no-VSPI touch path, or the board is re-identified as a different/no-touch variant. Historical SoftSPI criteria are superseded by Phase 7 no-contact evidence.
   2. Short touch = next page, long-press (10s) = config mode, tap wakes a sleeping screen.
   3. Boot button: double-click = next page, long-press = force config, single-click = wake screen.
 **Plans**: 2 plans
 Plans:
-- [ ] 04-01-PLAN.md — Enable touch for CYD env + SoftSPI bit-bang XPT2046 driver (nm_touch) + raw-Z diagnosis + rotation-1 calibration; build gate (TOUCH-01)
+- [ ] 04-01-PLAN.md — Historical plan: enable touch for CYD env + SoftSPI bit-bang XPT2046 driver (nm_touch) + raw-Z diagnosis + rotation-1 calibration; superseded at runtime by Phase 7 no-VSPI HSPI/direct probes (TOUCH-01)
 - [ ] 04-02-PLAN.md — nm_display wake API + nm_uimanager touch/button nav + idle-dim + autoadvance OFF + boot-button re-point + final build gate + 04-VALIDATION (TOUCH-02, TOUCH-03)
 **UI hint**: yes
 
@@ -135,7 +155,7 @@ Plans:
 
 ### Phase 6: Wire Custom Features at the Share-Accept Seam
 **Goal**: Our custom speaker / SD / LED / branding light up over the recovered UI at the in-process NerdMiner share-accept seam, without breaking mining.
-**Depends on**: Phase 4 (touch on SoftSPI frees VSPI for SD), Phase 3/5 (UI to brand). Custom feature code already built+tested in the fork.
+**Depends on**: Phase 4 touch bus ownership work (historically SoftSPI; currently no-VSPI HSPI touch with SD owning VSPI), Phase 3/5 (UI to brand). Custom feature code already built+tested in the fork.
 **Requirements**: HW-01, HW-02, HW-03, HW-04
 **Success Criteria** (what must be TRUE):
   1. The speaker (LEDC GPIO26) beeps on an accepted share and alarms on pool disconnect, wired at the NerdMiner share-accept seam (in-process call, not an Xtensa hook).
@@ -148,45 +168,64 @@ Plans:
 - [ ] 06-02-PLAN.md — Graceful at-seam SD log on VSPI + full build gate + mining.cpp diff gate (HW-02, HW-04)
 **UI hint**: yes
 
-### Phase 7: On-Device Validation
-**Goal**: The rebuilt fork firmware is proven on the real device — booting, mining, and visually matching stock — with a documented reversible restore path.
-**Depends on**: Phases 3-6 (software complete). `/dev/ttyUSB0` present (CH340) — prior BLOCKED label cleared.
-**Requirements**: VALID-01, VALID-02, VALID-03
+### Phase 7: Official v2.0.02 Binary Customization
+**Goal**: The official `v2.0.02` ST7789 binary is decompiled and mapped deeply enough to support local custom edits with no license-path changes, no secrets, no redistribution, and a reversible device-write gate.
+**Depends on**: Phase 1 RE foundation, Phase 2 asset recovery, and the locked official backup/bundle provenance in `07-BINARY-BASELINE-ROUTE.md`.
+**Requirements**: BIN-01, BIN-02, BIN-03, BIN-04, BIN-05, VALID-01, VALID-03
 **Success Criteria** (what must be TRUE):
-  1. Every device flash is preceded by a fresh 4 MB esptool backup and followed by `verify_flash` plus a hard USB power-cycle (documented flash runbook).
-  2. The rebuilt fork firmware is flashed and serial-confirmed to boot, passes a visual parity checklist against stock, and has mining confirmed active on-device.
-  3. The restore-from-backup path is documented and proven reversible against the 4 MB backup.
-**Plans**: 1 plan
+  1. The official `v2.0.02` ST7789 baseline is locked to a full-device backup,
+     local bundle hashes, image metadata, and extracted DROM/IROM artifacts.
+  2. Ghidra/decompiler entries are normalized for all six screens plus dynamic
+     Miner/Clock/Loading/Weather/SPrice, `ss_render`, and share-accept paths.
+     Current status: screen builders/setters, Miner binding fan-out plus
+     candidate producer blocks, Clock BTC text route, SPrice kline/candle
+     anchors, and share-result format callsites are mapped; proof/safety gaps
+     remain before function edits.
+  3. A binary edit target map identifies safe edit sites, replacement
+     constraints, checksum/image-validation work, and explicit no-touch zones.
+     Current status: literal candidates and function/callsite navigation records
+     exist; function edits are not approved.
+  4. Local-only patch tooling can produce and validate modified artifacts while
+     keeping backups, recovered assets, and patched binaries out of git. Current
+     status: fixed-length DROM literal patching is implemented only for approved
+     targets.
+  5. Any future device write uses a fresh 4 MB backup, `verify_flash`, hard
+     power-cycle, and preserved restore command.
+**Plans**: 2 plans
 Plans:
-- [ ] 07-01-PLAN.md — Backup → flash → verify_flash + power-cycle → serial/visual/mining validation → reversible restore (VALID-01/02/03)
+- [ ] 07-01-PLAN.md — Official `v2.0.02` binary decompilation/custom-edit
+  route; original fork flash/visual runbook is superseded unless needed for
+  restore/reversibility.
+- [x] 07-02-PLAN.md — Historical fork UI/touch repair detour; keep as failure
+  evidence only.
 
-### Phase 8: Fallback Path-A Binary-Patch Spike (contingency)
-**Goal**: A recorded go/no-go verdict on the Path-A binary-patch contingency — satisfied whether the spike is executed or formally waived.
-**Depends on**: Phase 1 (RE findings determine whether any NMMiner-exclusive behavior is unreproducible on the fork)
-**Requirements**: FALLBACK-01
+### Phase 8: Reserved / Superseded Fallback Slot
+**Goal**: No active work. The old fork-era binary-patch contingency is superseded because official binary customization is now Phase 7's primary route.
+**Depends on**: Phase 7
+**Requirements**: FALLBACK-01 (superseded)
 **Success Criteria** (what must be TRUE):
-  1. A go/no-go decision on the Path-A binary-patch spike is made and recorded in writing (the decision-made-and-recorded state satisfies this phase regardless of outcome).
-  2. IF executed: integrity recon (`esptool image_info` + `espefuse summary`) ran first, the license-verification path was never touched, and nothing was redistributed.
-  3. IF waived: a written rationale is recorded (research SUMMARY identifies no NMMiner-exclusive unreproducible behavior, so a waiver is the expected outcome).
+  1. No work is routed here unless Phase 7 is explicitly replaced later.
+  2. If reused, the new scope must keep the same no-secrets, no-license-path,
+     no-redistribution constraints.
 **Plans**: TBD
 
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. RE-Spec the UI | 0/3 | Planned | - |
-| 2. Recover Fonts/Assets | 0/2 | Planned | - |
-| 3. Core Screens + Carousel | 0/6 | Planned | - |
-| 4. Restore Touch (SoftSPI) | 0/2 | Planned | - |
-| 5. Data Screens + API | 0/0 | Not started | - |
-| 6. Custom Features | 0/0 | Not started | - |
-| 7. On-Device Validation | 0/0 | Blocked (/dev/ttyUSB0) | - |
-| 8. Fallback Spike | 0/0 | Not started | - |
+| 1. RE-Spec the UI | 3/3 | Complete (device-independent) | 2026-06-18 |
+| 2. Recover Fonts/Assets | 2/2 | Complete (device-independent) | 2026-06-18 |
+| 3. Core Screens + Carousel | 6/6 | Compile/code-review complete; failed on-device in Phase 7 | 2026-06-18 |
+| 4. Restore Touch (SoftSPI) | 2/2 | Compile/code-review complete; touch no-press physical probe/re-identification pending | 2026-06-18 |
+| 5. Data Screens + API | 6/6 | Compile/code-review complete; live device validation pending | 2026-06-18 |
+| 6. Custom Features | 2/2 | Compile/code-review complete; partial live evidence only | 2026-06-18 |
+| 7. Official v2.0.02 Binary Customization | 1/2 | In progress; baseline locked, runtime anchors and candidate producer/caller blocks mapped, proof/safety decompilation active | - |
+| 8. Reserved / Superseded Fallback Slot | 0/0 | Not active | - |
 
 ## Coverage
 
-- v3.0 requirements: 30
-- Mapped to phases: 30
+- v3.0 requirements: 35
+- Mapped to phases: 35
 - Unmapped: 0 ✓
 
 Full mapping in `REQUIREMENTS.md` Traceability table.

@@ -1,8 +1,11 @@
 ---
 phase: 03-rebuild-core-screens-uimanager-carousel
 verified: 2026-06-18T01:30:00Z
-status: passed
-score: 6/6 must-haves verified
+status: code_build_passed_hardware_failed
+hardware_verified: false
+hardware_status: failed_on_device_before_07_02_repair
+superseded_by: ".planning/phases/07-on-device-validation/07-VERIFICATION.md"
+score: "6/6 code/build must-haves verified; 0 physical UI truths verified here"
 overrides_applied: 0
 build_gate: PASS
 build_command: "cd firmware/custom/NerdMiner-CYD-Custom && /home/broklein/codeWS/Projects/Devices/NMMiner-ESP32-Series/.venv/bin/pio run -e ESP32-2432S028R"
@@ -32,8 +35,10 @@ deferred:
 
 **Phase Goal:** Booting the fork reproduces the stock NMMiner structural identity — the 6 named screens, the page carousel, and last-page persistence — driven by recovered evidence (SPEC.md geometry + Phase-2 fonts/palette), with kleinpanic branding layered on. Build SUCCESS is the gate.
 **Verified:** 2026-06-18
-**Status:** passed
+**Status:** passed for code/build scope only; hardware-visible behavior later failed in Phase 7 and remains unverified
 **Re-verification:** No — initial verification
+
+> Current evidence boundary (2026-06-19): this report verifies compile/source structure only. It does not prove the CYD rendered these screens. Phase 7 later exposed on-device failures including boot-loop, clobbering, config crash, white-screen history, and touch no-contact. Use `07-CURRENT-FAILURE-STATE.md` and `07-VERIFICATION.md` for live hardware truth.
 
 ## Goal Achievement
 
@@ -50,7 +55,9 @@ Flash: 87.3% (2746797 / 3145728 bytes)
 Verifier ran the build in its own process (exit code 0). Matches VALIDATION.md
 (RAM 35.3 / Flash 87.3). **PASS.**
 
-### Observable Truths (UI-01 .. UI-06)
+### Source-Structure Truths (UI-01 .. UI-06)
+
+These truths were verified from source and build output, not from physical display observation.
 
 | # | Truth (req) | Status | Evidence |
 |---|-------------|--------|----------|
@@ -61,7 +68,7 @@ Verifier ran the build in its own process (exit code 0). Matches VALIDATION.md
 | UI-05 | Config screen config-mode indicator | ✓ VERIFIED | nm_screen_config.cpp: `Config320x240` descriptor, config-mode indicator label (countdown). AP SSID/portal IP correctly NOT screen widgets (HTTP/wManager) — see deferred |
 | UI-06 | All screens native from SPEC.md (recovered evidence, not imagination) | ✓ VERIFIED | All 6 *.cpp `#include "../../recovered/nmminer_palette.h"`; SPEC.md cited in 6 files; recovered/fonts/recovered_fonts.h + fa_nmminer_subset.c present; NMMINER_SYMBOL_* defined in recovered_fonts.h |
 
-**Score:** 6/6 truths verified
+**Score:** 6/6 code/build truths verified; 0 physical UI truths verified in this report
 
 ### Critical Fixes (from 03-REVIEW.md)
 
@@ -106,18 +113,22 @@ commit c609385. SPrice/Weather are honest stubs (Phase 5 scope).
 
 ### Human Verification Required
 
-None for this phase. On-device pixel parity + carousel-swap runtime behavior are
-explicitly Phase 7 (no hardware test in scope). The build + code-structure gate
-is fully satisfied programmatically.
+Required in Phase 7 for milestone closure. No hardware test was part of this
+original code/build verifier, but the live CYD did not later prove this report's
+display assumptions. Treat on-device pixel parity, carousel-swap runtime
+behavior, and touch-driven navigation as open Phase 7 hardware work.
 
 ### Gaps Summary
 
-No gaps. All 6 UI requirements (UI-01..UI-06) verified in code; both code-review
+No gaps for the original Phase 3 code/build scope. Hardware gaps remain and are
+superseded by Phase 7: display rendering, touch navigation, AP recovery behavior,
+and physical UI parity must be judged from `07-VERIFICATION.md`, not this report.
+All 6 UI requirements (UI-01..UI-06) were verified in code; both code-review
 Criticals (CR-01, CR-02) fixed and confirmed in source; mining.cpp untouched;
 build SUCCESS reproduced by the verifier (Flash 87.3% / RAM 35.3%). Two items are
-deferred to Phase 5 (live network/pool diff data; captive-portal AP behavior) —
+deferred to Phase 5 (live network/pool diff data; captive-portal AP behavior) -
 these are out of Phase 3's structural-identity scope per ROADMAP and do not block
-the goal.
+the code/build goal.
 
 ---
 

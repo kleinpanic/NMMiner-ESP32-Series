@@ -289,7 +289,7 @@ bool ss_decode_frame(File& f, lv_obj_t* canvas_or_null);
 // If non-NULL: decode to canvas buffer (test mode)
 ```
 
-**Gap flagged:** The signature `void ss_render(char* buf, uint w, uint h)` is inferred from call-shape (SS-ALGORITHM-SPEC.md §5 "Confidence note"). Phase 5 must not attempt to call the stock firmware symbol directly — it must port the algorithm to a new C function following the spec.
+**Superseded gap note:** Earlier notes modeled the stock function as a framebuffer decoder. Phase 7 corrected the decoded stock call shape to `ss_render(char* path, uint w, uint h)`: the stock function opens/decodes an asset and writes rows through the display vtable. Phase 5 must not attempt to call the stock firmware symbol directly — it must port the algorithm to a new C function following the spec.
 
 ### Pattern 8: Idle → screensaver state machine (extends Phase 4)
 
@@ -408,9 +408,9 @@ The fork's `TSettings` struct in `storage.h` does NOT include stock fields (Main
 
 ### Pitfall 4: ss_render signature mismatch — don't call the stock function
 
-**What goes wrong:** Code attempts to call `FUN_400f6ff4` from the stock binary as `ss_render(buf, w, h)`. The stock binary is not linked; this is a different firmware.
+**What goes wrong:** Code attempts to call `FUN_400f6ff4` from the stock binary as if it were a linked local decoder. The stock binary is not linked; this is a different firmware.
 **Why it happens:** Confusion between RE-documented stock behavior and what the fork actually compiles.
-**How to avoid:** Phase 5 PORTS the algorithm to a new C function. The signature `void ss_render(char* buf, uint w, uint h)` is the MODEL, not a linkable symbol.
+**How to avoid:** Phase 5 PORTS the algorithm to a new C function. The current stock signature evidence is `ss_render(char* path, uint w, uint h)`, but this remains RE reference material, not a linkable symbol.
 
 ### Pitfall 5: Two WebServer instances on port 80
 
@@ -489,7 +489,7 @@ The spec is **complete enough for a direct C port.** No live-device capture need
 | Dimension bounds | Complete | `height-1 <= 599`, `width <= 800`; `width != 0` |
 | Centering when smaller | Documented | `(w-width)/2`, `(h-height)/2` offsets |
 | LZSS window size | Known | 2^10 = 1024 bytes |
-| Argument signature | Inferred (ASSUMED) | `void ss_render(char* buf, uint w, uint h)` — call-shape inference from decompile, not confirmed linkage |
+| Argument signature | Corrected by Phase 7 | `void ss_render(char* path, uint w, uint h)` — stock function opens/decodes an asset; still not a linkable symbol for the fork |
 
 **One open item:** The signature is the working hypothesis. The Phase 5 port defines its own function (`nm_ss_decode()`) following the algorithm, so the inferred signature is informational only.
 
@@ -716,7 +716,7 @@ None — all required source files either exist (stubs to replace) or are new fi
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
 | A1 | `WebServer::onFileUpload` callback API works for multipart .ss upload | Pattern 9 | If wrong: need alternative multipart parsing; medium rework |
-| A2 | `ss_render` signature `(char* buf, uint w, uint h)` — Phase 5 ports the algorithm, does not call this symbol | .ss Decoder | Low risk — Phase 5 writes its own function anyway |
+| A2 | `ss_render` stock call shape `(char* path, uint w, uint h)` — Phase 5 ports the algorithm, does not call this symbol | .ss Decoder | Low risk — Phase 5 writes its own function anyway |
 | A3 | Stock firmware uses `/api/v3/ticker/price` (not exchangeInfo) for pairs list | Pattern 3 | If stock uses a different endpoint, pairs list response may differ; LOW functional risk since we control the implementation |
 | A4 | Market/weather as loop-cadence functions (not new FreeRTOS tasks) will not miss the 3s WDT | Architecture Patterns | If HTTP calls block > 3s: WDT reset; mitigation = `http.setTimeout(8000)` and verify on device |
 | A5 | `DynamicJsonDocument(10240)` heap allocation succeeds at runtime for klines | Code Examples | Heap fragmentation may fail this; mitigation = allocate at task start, reuse |

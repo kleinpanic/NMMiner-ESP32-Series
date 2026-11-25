@@ -4,6 +4,14 @@
 **Researched:** 2026-06-17
 **Confidence:** HIGH (Ghidra/loader/FIDB and filesystem facts verified against current repos + the actual 4 MB backup; LVGL specifics MEDIUM — see notes)
 
+> Supersession, 2026-06-19: this is a historical research snapshot. For current
+> work use `.planning/phases/07-on-device-validation/07-AUTHORITY-INDEX.md` and
+> `docs/nmminer-re-pipeline.md`. The locked workbench is Ghidra `11.3.1` plus
+> dynacylabs `ghidra-esp32-flash-loader` `v11.3.1` prebuilt. Do not follow old
+> `v12.0` install notes. The active official `v2.0.02` ST7789 LittleFS geometry
+> is `spiffs@0x390000` size `0x60000`; `0x3e0000/0x10000` belongs to the older
+> June 1 `v1.8.28` snapshot.
+
 ---
 
 ## TL;DR — What changed vs. the assumptions in the brief

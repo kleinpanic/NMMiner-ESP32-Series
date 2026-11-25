@@ -7,8 +7,10 @@
     "research_before_planning": true,
     "verify_plans": true,
     "verify_work": true,
+    "nyquist_validation": true,
     "commit_docs": true,
-    "use_worktrees": true
+    "use_worktrees": false,
+    "_auto_chain_active": false
   },
   "git": {
     "initialized": true,

@@ -2,9 +2,16 @@
 
 Date: 2026-06-01.
 
-## Current Miner Health
+> Current-state note, 2026-06-19: this is a historical audit of the official
+> `v2.0.02` LAN-mining baseline. The live bench state has changed. The current
+> unit is the custom decoded-spec ST7789 fork in WiFiManager recovery AP mode,
+> not yet proven mining/touch-working. Use
+> `.planning/phases/07-on-device-validation/07-CURRENT-FAILURE-STATE.md` for the
+> active state.
 
-Live API checks on `http://192.168.1.136` show:
+## Historical Miner Health
+
+Live API checks on `http://192.168.1.136` during the 2026-06-01 audit showed:
 
 - Firmware: `v2.0.02`
 - Hardware target: `esp32-2432s028r-st7789`
@@ -215,6 +222,8 @@ High-risk / not recommended without upstream source:
 - Erase full flash without first preserving NVS/license/config backup.
 
 ## Recommended Next Customization Plan
+
+Historical 2026-06-01 recommendation, before the v3.0 decoded-spec rebuild and current Phase 7 recovery state:
 
 1. Keep the miner on `pool.nerdminers.org:3333` while it is submitting accepted shares.
 2. Create a small local dashboard that polls `http://192.168.1.136/api/system/info`.

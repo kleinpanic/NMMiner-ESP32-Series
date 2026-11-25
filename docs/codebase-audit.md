@@ -2,6 +2,11 @@
 
 Detailed current audit: [customization-audit.md](customization-audit.md).
 
+> Current-state note, 2026-06-19: this is a historical audit of the
+> 2026-06-01 official-stock LAN baseline. The live unit is now the custom
+> decoded-spec ST7789 fork in WiFiManager recovery AP mode. Runtime LAN/API,
+> dashboard, mining, touch, and restore behavior still need Phase 7 validation.
+
 ## Initial Finding
 
 The official `NMminer1024/NMMiner` repository is not a full firmware source tree. The current tree is mainly:
