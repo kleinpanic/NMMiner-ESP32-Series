@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-11-25T06:03:06.965Z",
+  "phase": "1",
+  "phase_name": "Base + See",
+  "phase_dir": null,
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "v2 UI on every page, Afterglow and Hazard themes", "status": "done", "commit": "577759c"},
+    {"id": 2, "name": "802.11 disconnect reason codes in the log", "status": "done", "commit": "d21ded3"},
+    {"id": 3, "name": "Prefilter software verify and SHA lock-all", "status": "done", "commit": "fe46f9d"},
+    {"id": 4, "name": "panicminer AP, hostname, pool agent and portal; pool password field fix", "status": "done", "commit": "f64ae84"},
+    {"id": 5, "name": "mempool.space chain feed with a pinned root CA", "status": "done", "commit": "1ed0887"},
+    {"id": 6, "name": "Boot log first line split", "status": "done", "commit": "83edb33"},
+    {"id": 7, "name": "Pipelined classic-ESP32 SHA loop (HenrysCat, MIT), self-test, core 1 for the HW miner", "status": "done", "commit": "4b93f0b"},
+    {"id": 8, "name": "On-chip bench: V0/V2/V3 OK under all 9 stress modes, 247.2 cycles per nonce", "status": "done", "commit": "1e2bddf"},
+    {"id": 9, "name": "uisim renders 968 kH/s and the MH/s branch", "status": "done", "commit": "efcc201"},
+    {"id": 10, "name": "Review fixes: 8-digit nonce, quiet-loop demotion, header-keyed reseed, dropped count", "status": "done", "commit": "4c1ecc7"},
+    {"id": 11, "name": "Online verification on the unit", "status": "in_progress", "progress": "watcher armed on /dev/ttyUSB0; waits for Wi-Fi"}
+  ],
+  "remaining_tasks": [
+    {"id": 11, "name": "Online verification: screens via fbdump, self-test line, [CHAIN] lines, candidate-rate hashrate, accepted share", "status": "blocked"},
+    {"id": 12, "name": "Phase 1 criterion 4: operator photo for panel driver, inversion, colour order, rotation", "status": "not_started"},
+    {"id": 13, "name": "UI-05: hashrate drop with the UI running under 5 %", "status": "not_started"},
+    {"id": 14, "name": "Open review findings F2, F4 rest, F5, F6, F7, F8 SW path", "status": "not_started"},
+    {"id": 15, "name": "Phase 3: egress capture, primary and fallback pool from the portal", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Router 2.4 GHz radio 14:91:82:B0:04:E5 rejects the unit (reasons 15/202, then 2 AUTH_EXPIRE) and is missing from laptop scans", "type": "external", "workaround": "Reboot the router, or put a 2.4 GHz hotspot in secrets/device.json and run scripts/provision_fork_serial.py"}
+  ],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {"action": "Reboot the Linksys router, or provide a 2.4 GHz hotspot in secrets/device.json", "context": "The unit cannot reach a pool; every online check waits on this", "blocking": true},
+    {"action": "Take a photo of the panel showing a known screen", "context": "Settles ST7789 vs ILI9341_2, inversion, colour order, rotation (Phase 1 criterion 4)", "blocking": false},
+    {"action": "Decide whether to delete branding/logo_test.png in the fork and build_fidb_examples.py in the parent root", "context": "Both untracked, both predate this session; the logo is preserved on origin/archive/nmminer-clone-lvgl", "blocking": false}
+  ],
+  "decisions": [
+    {"decision": "Port HenrysCat's pipelined loop instead of re-deriving SHA timings", "rationale": "MIT, same upstream, ships an on-chip bench that checks every hash; bench passed on this unit", "phase": "1"},
+    {"decision": "Leave HenrysCat's BUSY-polling loop out", "rationale": "His notes measure wrong hashes with it under core-0 load", "phase": "1"},
+    {"decision": "Core 1 runs MinerHw-0 alone; Monitor, Stratum, ChainFeed and the SW miner run on core 0", "rationale": "The counted-delay loop needs an uncontended core", "phase": "1"},
+    {"decision": "Chain data from mempool.space only, TLS pinned to USERTrust RSA root", "rationale": "One known data host; price moved off coingecko", "phase": "1"},
+    {"decision": "Afterglow is the default theme; Hazard stays selectable with PM_THEME=2", "rationale": "Design review in the simulator", "phase": "2"},
+    {"decision": "Do not run a laptop hotspot for the unit", "rationale": "The card allows 1 channel with an AP up and uses it for Homebase5 at 5 GHz ch 132; switching would drop this session", "phase": "1"},
+    {"decision": "Keep review finding F2 (plain fallback store spacing) open", "rationale": "plain is upstream's long-running loop, and this rev 3 unit reaches it only if both fast variants fail", "phase": "1"}
+  ],
+  "uncommitted_files": [" M firmware/custom/NerdMiner-CYD-Custom (untracked branding/ inside; commit matches 4c1ecc7)", "?? build_fidb_examples.py"],
+  "next_action": "Check whether the watcher (python await_online.py) still runs and read its log /home/broklein/.cache/claude-tmp/claude-1000/-home-broklein-codeWS-Projects-Devices-NMMiner-ESP32-Series/59ef99d0-75d7-4d72-8c30-96c3858d0763/scratchpad/online.log. If the unit got online, review device-page0..2.png beside it, the self-test line, [CHAIN] lines and the candidate-rate hashrate, and record them in STATE.md. If not, ask whether the router was rebooted.",
+  "context_notes": "Firmware on the unit is fork 4c1ecc7 (v4-review-fixes), backup hardware/backups/cyd-backup-20261125-005533-pre-v4-review-fixes.bin. Everything that needs no network is built, benched and pushed. The remaining Phase 1 and 2 checks all need the unit online."
+}
