@@ -48,8 +48,14 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
     unit mined on it before 23:00. Either its password changed, or the radio is in a bad state.
   - Also seen: an ad-hoc (IBSS) network named Homebase, `DE:86:7F:08:AB:D2`, on ch 1. It is
     not the router, and the ESP32 cannot join IBSS.
-  - Next step (operator): check the 2.4 GHz password in the Linksys app and reboot the
-    router. Then enter the right password in the unit's portal, or in `secrets/device.json`.
+  - 2026-11-25 13:45, the unit's NVS (backup `…-133426-…`): `sta.ssid` is `Homebase`,
+    `sta.pswd` equals `secrets/device.json`, and `sta.apinfo` holds
+    PBKDF2(password, "Homebase"). That is the right key, not a stale Homebase5 one. The
+    operator confirms the password.
+  - Router: Linksys EA8300, firmware 1.1.6.216940. The admin password is not the default,
+    so the agent cannot change or restart the radio.
+  - Next step (operator): restart the router. If the unit still fails afterwards, check the
+    2.4 GHz settings in the Linksys app.
 - Wi-Fi config: `secrets/device.json` (gitignored, mode 600). Push it with
   `.venv/bin/python scripts/provision_fork_serial.py --log logs/provision.log`.
   Homebase5 is 5 GHz only and cannot work.
