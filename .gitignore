@@ -38,4 +38,4 @@ external/
 # nested-fork build worktrees (parallel module agents)
 fork-wt/
 hardware/recovered-assets/
-.planning/research/.cache/
+.planning/**/research/.cache/
