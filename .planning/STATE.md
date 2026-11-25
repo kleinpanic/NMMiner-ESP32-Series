@@ -41,7 +41,8 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   To restore a backup:
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
 - Serial commands: `PMDUMP` (framebuffer to `scripts/fbdump.py`), `PMNEXT` (next page),
-  `PMFEED` (chain fetch now), `PMLOCK` (toggle SHA lock-all). `NMCFG {json}` in the 6 s
+  `PMFEED` (chain fetch now). `PMLOCK` reports "all" and changes nothing on the pipelined
+  build. `NMCFG {json}` in the 6 s
   boot window sets Wi-Fi and pool.
 
 ## Done this phase (fork `v4/panicminer`)
