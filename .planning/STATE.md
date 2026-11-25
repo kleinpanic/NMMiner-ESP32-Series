@@ -5,7 +5,7 @@ milestone_name: PanicMiner — owned open firmware
 current_phase: 1
 current_phase_name: Base + See
 status: executing
-last_updated: "2026-11-25T00:35:00-05:00"
+last_updated: "2026-11-25T15:15:00-05:00"
 progress:
   total_phases: 5
   completed_phases: 0
@@ -19,49 +19,30 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Live firmware at 2026-11-25 00:55: fork `4c1ecc7`, flashed as `v4-review-fixes`. It has
-  the v2 UI (Afterglow theme), panicminer branding, the mempool.space chain feed, the SHA
+- Live firmware at 2026-11-25 15:07: fork `ef5e330` config, flashed as `wifi-tx13-11b-test`.
+  It has the v2 UI (Afterglow theme), panicminer branding, the chain feed, the SHA
   instrumentation, the pipelined hardware SHA loop and the review fixes. Boot banner
   `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`, password `panicminer`.
-- Wi-Fi is down at 2026-11-24 23:34. Router 2.4 GHz radio `14:91:82:B0:04:E5` (SSID
-  Homebase, the same box as Homebase5 `…:E7`) rejects the unit. Reason codes: 15
-  4WAY_HANDSHAKE_TIMEOUT and 202 AUTH_FAIL, then 2 AUTH_EXPIRE on every later try.
-  - The password is the one the unit held while it mined earlier that evening (byte compare
-    against the 22:07 and 22:24 backups).
-  - Restoring the 22:24 backup image fails the same way. The firmware is not the cause.
-  - The 2.4 GHz radio drops in and out of scans from both the laptop and the unit.
-  - 2026-11-25 00:50 rescan from the laptop: 3 neighbouring 2.4 GHz networks and both
-    Homebase5 radios (`…:E6` ch 40, `…:E7` ch 132) are visible; `…:E5` is not.
-  - The laptop cannot stand in as a hotspot. Its card allows 1 channel with an AP up, and
-    it uses that channel for Homebase5 (5 GHz ch 132).
-  - 2026-11-25 13:22: `…:E5` is back in laptop scans (ch 5) and the unit still fails.
-  - Diagnosis, 2026-11-25 13:28: the password exchange fails, and the router then ignores
-    the station for a while.
-    - A test build with a locally administered station MAC (`D6:E9:F4:A7:DE:0C`) got past
-      authentication and then failed the 4-way handshake (reason 15).
-    - After that, the router ignored the new MAC as well (reason 2).
-    - Overnight, the factory MAC reached the handshake once (01:06:17) and failed it too;
-      all 650 other attempts were ignored.
-  - The radio is plain WPA2-PSK with CCMP and no required MFP. The board's password
-    matches the laptop's saved Homebase5 PSK.
-  - Conclusion: the 2.4 GHz radio does not accept the Homebase5 password now, though the
-    unit mined on it before 23:00. Either its password changed, or the radio is in a bad state.
-  - Also seen: an ad-hoc (IBSS) network named Homebase, `DE:86:7F:08:AB:D2`, on ch 1. It is
-    not the router, and the ESP32 cannot join IBSS.
-  - 2026-11-25 13:45, the unit's NVS (backup `…-133426-…`): `sta.ssid` is `Homebase`,
-    `sta.pswd` equals `secrets/device.json`, and `sta.apinfo` holds
-    PBKDF2(password, "Homebase"). That is the right key, not a stale Homebase5 one. The
-    operator confirms the password.
-  - Router: Linksys EA8300, firmware 1.1.6.216940. The admin password is not the default,
-    so the agent cannot change or restart the radio.
-  - Next step (operator): restart the router. If the unit still fails afterwards, check the
-    2.4 GHz settings in the Linksys app.
+- Wi-Fi works again since 2026-11-25 15:07 (IP 192.168.1.144). Cause: this unit's radio
+  is not heard by the router at full transmit power.
+  - At full power the router ignored nearly every auth request (reason 2 AUTH_EXPIRE) from
+    2026-11-24 23:34 on, on any MAC and after a router restart. One join got through at
+    15:00:51 with the router reading the unit at the weakest signal of all its clients.
+  - At 7 dBm the router answered auth and association every time; the WPA2 handshake
+    then timed out (reason 15).
+  - 13 dBm with 802.11b-only rates joined on the first try. Fix `ef5e330`: build flags
+    `PM_WIFI_TXPOWER` and `PM_WIFI_11B` on the ESP32-2432S028R env.
+  - Ruled out: the password (NVS and the router's JNAP settings match), MAC filtering
+    (off), band steering (5 GHz only), the router's 2.4 GHz radio (5 other clients rejoined
+    after the restart), and the firmware (the 22:24 image failed the same way).
+  - Router: Linksys EA8300, JNAP at `192.168.1.1/JNAP/`, admin password in
+    `secrets/router.json` (gitignored, mode 600). No router setting was changed.
 - Wi-Fi config: `secrets/device.json` (gitignored, mode 600). Push it with
   `.venv/bin/python scripts/provision_fork_serial.py --log logs/provision.log`.
   Homebase5 is 5 GHz only and cannot work.
 - The setup portal re-opens for 180 s after a failed join, then the unit restarts and
   retries. It recovers by itself once the router accepts it.
-- Latest full backup: `hardware/backups/cyd-backup-20261125-133426-pre-v4-review-fixes.bin`
+- Latest full backup: `hardware/backups/cyd-backup-20261125-150556-pre-wifi-tx13-11b-test.bin`
   (checksum sidecar beside it). `scripts/flash_fork_build.sh` takes one before every write.
   To restore a backup:
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
