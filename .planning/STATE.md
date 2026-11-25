@@ -34,13 +34,28 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
     Homebase5 radios (`…:E6` ch 40, `…:E7` ch 132) are visible; `…:E5` is not.
   - The laptop cannot stand in as a hotspot. Its card allows 1 channel with an AP up, and
     it uses that channel for Homebase5 (5 GHz ch 132).
-  - Next step: reboot the router, or provision a 2.4 GHz hotspot.
+  - 2026-11-25 13:22: `…:E5` is back in laptop scans (ch 5) and the unit still fails.
+  - Diagnosis, 2026-11-25 13:28: the password exchange fails, and the router then ignores
+    the station for a while.
+    - A test build with a locally administered station MAC (`D6:E9:F4:A7:DE:0C`) got past
+      authentication and then failed the 4-way handshake (reason 15).
+    - After that, the router ignored the new MAC as well (reason 2).
+    - Overnight, the factory MAC reached the handshake once (01:06:17) and failed it too;
+      all 650 other attempts were ignored.
+  - The radio is plain WPA2-PSK with CCMP and no required MFP. The board's password
+    matches the laptop's saved Homebase5 PSK.
+  - Conclusion: the 2.4 GHz radio does not accept the Homebase5 password now, though the
+    unit mined on it before 23:00. Either its password changed, or the radio is in a bad state.
+  - Also seen: an ad-hoc (IBSS) network named Homebase, `DE:86:7F:08:AB:D2`, on ch 1. It is
+    not the router, and the ESP32 cannot join IBSS.
+  - Next step (operator): check the 2.4 GHz password in the Linksys app and reboot the
+    router. Then enter the right password in the unit's portal, or in `secrets/device.json`.
 - Wi-Fi config: `secrets/device.json` (gitignored, mode 600). Push it with
   `.venv/bin/python scripts/provision_fork_serial.py --log logs/provision.log`.
   Homebase5 is 5 GHz only and cannot work.
 - The setup portal re-opens for 180 s after a failed join, then the unit restarts and
   retries. It recovers by itself once the router accepts it.
-- Latest full backup: `hardware/backups/cyd-backup-20261125-005533-pre-v4-review-fixes.bin`
+- Latest full backup: `hardware/backups/cyd-backup-20261125-133426-pre-v4-review-fixes.bin`
   (checksum sidecar beside it). `scripts/flash_fork_build.sh` takes one before every write.
   To restore a backup:
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
