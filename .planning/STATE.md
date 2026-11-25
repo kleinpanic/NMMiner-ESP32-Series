@@ -19,9 +19,9 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Live firmware at 2026-11-25 00:27: fork `4b93f0b`, flashed as `v4-pipelined`. It has the
-  v2 UI (Afterglow theme), panicminer branding, the mempool.space chain feed, the SHA
-  instrumentation and the pipelined hardware SHA loop. Boot banner
+- Live firmware at 2026-11-25 00:55: fork `4c1ecc7`, flashed as `v4-review-fixes`. It has
+  the v2 UI (Afterglow theme), panicminer branding, the mempool.space chain feed, the SHA
+  instrumentation, the pipelined hardware SHA loop and the review fixes. Boot banner
   `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`, password `panicminer`.
 - Wi-Fi is down at 2026-11-24 23:34. Router 2.4 GHz radio `14:91:82:B0:04:E5` (SSID
   Homebase, the same box as Homebase5 `…:E7`) rejects the unit. Reason codes: 15
@@ -40,7 +40,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   Homebase5 is 5 GHz only and cannot work.
 - The setup portal re-opens for 180 s after a failed join, then the unit restarts and
   retries. It recovers by itself once the router accepts it.
-- Latest full backup: `hardware/backups/cyd-backup-20261125-002645-pre-v4-pipelined.bin`
+- Latest full backup: `hardware/backups/cyd-backup-20261125-005533-pre-v4-review-fixes.bin`
   (checksum sidecar beside it). `scripts/flash_fork_build.sh` takes one before every write.
   To restore a backup:
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
@@ -70,6 +70,11 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   - The controls work: V1 always reads BAD, and V4 to V10 go BAD under DPORT stress.
   - V0 runs at 247.2 cycles per nonce, a ceiling of about 971 kH/s at 240 MHz. The old
     loop measured 345 kH/s.
+- Code review of the port: `.planning/audits/2026-11-25-pipelined-sha-review.md`. No
+  blocker in how the C code drives the loop. Fixed: `96f2b62` (nonce submitted without
+  zero padding, inherited from upstream), `0bd8907` (demote a loop that goes quiet),
+  `ce04d99` (reseed on a new header only), `4c1ecc7` (count dropped ring slots).
+  The open findings are listed in the audit.
 
 ## Repos
 
@@ -84,8 +89,9 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   - chain feed `[CHAIN]` lines;
   - `[SHA]` mismatch counts (lock-all is always on in the pipelined build);
   - the boot self-test line and the loop the miner picks;
-  - real hashrate. To measure it, use the change in `[SHA] checked` × 65536 ÷ seconds, since
-    the attempt counter moves in 256K-nonce chunks.
+  - real hashrate. To measure it, use the change in `[SHA]` checked + dropped, × 65536 ÷
+    seconds, since the attempt counter moves in 256K-nonce chunks;
+  - the first accepted share with the zero-padded nonce.
 - Panel driver: the base uses `ILI9341_2_DRIVER`; the stock identity says ST7789. Settle
   with a photo.
 - Touch: XPT2046 answers with no-press readings. Needs a press test.
