@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """Provision the fork firmware over USB serial, then log its boot.
 
-Reads the NMCFG JSON from stdin so secrets never reach argv or the shell
-history. Resets the board, waits for the firmware's serial-config window,
-sends one `NMCFG {json}` line, and logs serial output with every secret
-value replaced by <redacted>.
+Reads the NMCFG JSON from --config (default secrets/device.json, which git
+ignores), or from stdin with --config -, so secrets never reach argv or the
+shell history. Resets the board, waits for the firmware's serial-config
+window, sends one `NMCFG {json}` line, and logs serial output with every
+secret value replaced by <redacted>.
 
-Usage: <json on stdin> | provision_fork_serial.py --log out.log --seconds 120
+Keys: SSID, WifiPW, PoolUrl, PoolPort, BtcWallet, PoolPassword, Timezone.
+The board keeps its stored value for any key the file leaves out. The board
+is 2.4 GHz only: a 5 GHz SSID never connects.
+
+Usage: provision_fork_serial.py --log out.log [--config secrets/device.json]
 """
 import argparse
 import json
+import pathlib
 import sys
 import time
 
@@ -21,9 +27,15 @@ def main() -> int:
     ap.add_argument("--port", default="/dev/ttyUSB0")
     ap.add_argument("--log", required=True)
     ap.add_argument("--seconds", type=float, default=120)
+    ap.add_argument("--config", default=str(pathlib.Path(__file__).resolve().parent.parent
+                                            / "secrets" / "device.json"))
     args = ap.parse_args()
 
-    cfg = json.load(sys.stdin)
+    if args.config == "-":
+        cfg = json.load(sys.stdin)
+    else:
+        with open(args.config) as f:
+            cfg = json.load(f)
     secrets = [str(v) for k, v in cfg.items() if k in ("SSID", "WifiPW", "BtcWallet") and v]
     line = ("NMCFG " + json.dumps(cfg, separators=(",", ":")) + "\n").encode()
 
