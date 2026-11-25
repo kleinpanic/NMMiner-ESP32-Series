@@ -5,7 +5,7 @@ milestone_name: PanicMiner — owned open firmware
 current_phase: 1
 current_phase_name: Base + See
 status: executing
-last_updated: "2026-11-24T23:36:00-05:00"
+last_updated: "2026-11-25T00:35:00-05:00"
 progress:
   total_phases: 5
   completed_phases: 0
@@ -19,9 +19,9 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Live firmware at 2026-11-24 23:34: fork `1ed0887`, flashed as `v4-ui-v2g`. It has the v2
-  UI (Afterglow theme), panicminer branding, the mempool.space chain feed and the SHA
-  instrumentation. Boot banner `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`,
+- Live firmware at 2026-11-25 00:27: fork `4b93f0b`, flashed as `v4-pipelined`. It has the
+  v2 UI (Afterglow theme), panicminer branding, the mempool.space chain feed, the SHA
+  instrumentation and the pipelined hardware SHA loop. Boot banner `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`,
   password `panicminer`.
 - Wi-Fi is down at 2026-11-24 23:34. Router 2.4 GHz radio `14:91:82:B0:04:E5` (SSID
   Homebase, the same box as Homebase5 `…:E7`) rejects the unit. Reason codes: 15
@@ -36,7 +36,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   Homebase5 is 5 GHz only and cannot work.
 - The setup portal re-opens for 180 s after a failed join, then the unit restarts and
   retries. It recovers by itself once the router accepts it.
-- Latest full backup: `hardware/backups/cyd-backup-20261124-233327-pre-v4-ui-v2g.bin`
+- Latest full backup: `hardware/backups/cyd-backup-20261125-002645-pre-v4-pipelined.bin`
   (checksum sidecar beside it). `scripts/flash_fork_build.sh` takes one before every write.
   To restore a backup:
   `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
@@ -56,6 +56,16 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - `f64ae84`: panicminer AP name, hostname, pool user agent and portal. Fixes the pool
   password field missing from the portal.
 - `1ed0887`: mempool.space chain feed with a pinned root CA.
+- `d24c187`..`4b93f0b`: HenrysCat's pipelined classic-ESP32 SHA loop (MIT), with a boot
+  self-test and a runtime fallback. The HW miner has core 1 to itself; Monitor, Stratum,
+  ChainFeed and the SW miner run on core 0. `d24c187` fixes `[SHA]` counting every hit as
+  a mismatch, because the worker published the engine's word-swapped header.
+- Bench, 2026-11-25 00:15, env `ESP32-2432S028R-bench` (`SHA_BENCH=2`), on this unit (rev 3):
+  - The shipping variants V0, V2 and V3 read `OK` with `A0 B0 C0` in all 9 stress modes.
+    There are no `K 0`, `K 2` or `K 3` lines.
+  - The controls work: V1 always reads BAD, and V4 to V10 go BAD under DPORT stress.
+  - V0 runs at 247.2 cycles per nonce, a ceiling of about 971 kH/s at 240 MHz. The old
+    loop measured 345 kH/s.
 
 ## Repos
 
@@ -68,8 +78,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - Not verified on the unit yet; each needs Wi-Fi:
   - the v2 screens read back with `scripts/fbdump.py`;
   - chain feed `[CHAIN]` lines;
-  - `[SHA]` mismatch counts with lock-all on and off;
-  - hashrate against the 344 kH/s baseline.
+  - `[SHA]` mismatch counts (lock-all is always on in the pipelined build);
+  - the boot self-test line and the loop the miner picks;
+  - real hashrate. To measure it, use the change in `[SHA] checked` × 65536 ÷ seconds, since
+    the attempt counter moves in 256K-nonce chunks.
 - Panel driver: the base uses `ILI9341_2_DRIVER`; the stock identity says ST7789. Settle
   with a photo.
 - Touch: XPT2046 answers with no-press readings. Needs a press test.
