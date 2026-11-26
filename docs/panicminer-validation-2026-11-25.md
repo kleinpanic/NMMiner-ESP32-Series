@@ -6,16 +6,37 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current fixed-job and nonblocking-export qualification
+### Current SD fragmentation-floor qualification
+
+Installed application: **1,781,488 bytes**, SHA-256
+`eb2b2c88bd07da16278e9e6e5cf86170cf1bd324aa5c24842eeb7812f8056ca2`,
+firmware source `c2b86f3`. A fresh full 4 MB backup passed checksum/full-flash
+comparison; all four written images verified. Exact application, ELF and all
+four factory-image inputs are archived locally. Native feed/export pressure,
+page/reconnect, strict 20-minute and full-hour qualification are running.
+
+The contiguous heap floor is now **2 KB**, retaining the **16 KB** aggregate
+reserve and one nonblocking send of at most 512 bytes per loop. The regression
+uses the prior native 21,224-byte free / 4,084-byte largest-block reading:
+the former 4,096-byte cutoff waits at that fragmentation plateau, while the
+repaired policy can progress. Exact bounds, the smaller low-memory wait state
+and the unchanged total deadline are covered. Full ASan/UBSan tests and the
+board build pass. No overall hardware PASS is claimed before native acceptance.
+
+### Previous fixed-job and nonblocking-export qualification
 
 Installed application: **1,781,488 bytes**, SHA-256
 `e25408f421249e7fba83e63b911f0bd0649d0ac409b9c14a014eb088926f73de`,
 firmware source `aa23288`. A fresh full 4 MB backup passed checksum/full-flash
 comparison; all four written images verified. The exact application, ELF and
 four factory-image inputs are archived locally. Three complete native feed
-cycles passed after saved-settings startup. Export pressure, page/reconnect,
-strict 20-minute and full-hour qualification remain in progress. No overall
-hardware PASS is claimed.
+cycles, 24 private-path denials and three complete CSV downloads passed after
+saved-settings startup. A later concurrent-download body timed out before its
+first 512 bytes. A subsequent memory reading showed 21,224 bytes free with a
+4,084-byte largest block, below the 4,096-byte transfer cutoff. Mining and
+complete feeds continued with one boot and no native fault. This candidate
+failed prequalification; no timed endurance run started. Its original evidence
+is preserved.
 
 ### Previous SD private-path qualification
 

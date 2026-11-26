@@ -63,8 +63,10 @@ image was interrupted for an independently verified SD API private-path alias re
 The repaired source 6cf06a7 is installed as f9c8fe99 after full verified backup;
 that image was rejected after a post-window SD export triggered a JobPush
 allocation abort. Fixed request queues/nonblocking exports (aa23288) are now
-installed as e25408f4 after verified full backup; fresh native qualification is
-running. Charger
+installed as e25408f4 after verified full backup, but concurrent-export
+prequalification timed out at a fragmented-heap plateau. The corrected 2 KB
+contiguous floor / 16 KB aggregate reserve (c2b86f3) is installed as eb2b2c88
+after another verified full backup; fresh native qualification is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still

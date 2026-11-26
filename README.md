@@ -39,7 +39,8 @@ screen. Recovery tools take and verify a full backup before every firmware write
 
 **Hardware acceptance is still open.** The newest installed image uses fixed
 mining-job queues and nonblocking SD exports with retained bytes and a larger
-memory reserve. It also protects private SD paths against case and filename
+memory reserve. Its contiguous reserve also handles the observed 4,084-byte
+fragmentation plateau without stalling. It protects private SD paths against case and filename
 aliases. A fresh verified backup preceded installation; native export pressure
 and fresh endurance qualification are running. The preceding image maintained
 **968.153 kH/s** for a full 20-minute window, but its post-run SD download timed
