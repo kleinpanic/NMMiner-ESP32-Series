@@ -77,14 +77,17 @@ static void sendSdFile(fs::File& file, const char* contentType) {
   const size_t sent = transferBlocks(length,
     [&](uint8_t* buffer, size_t count) { return file.read(buffer, count); },
     [&](const uint8_t* buffer, size_t count) { return client.write(buffer, count); },
-    [&]() { return client.connected() && uint32_t(millis() - started) < 30000; },
+    [&]() { return client.connected() && uint32_t(millis() - started) < 30000 &&
+                   ESP.getFreeHeap() >= 8192 &&
+                   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT) >= 2048; },
     []() { vTaskDelay(1); });
   if (sent != length) {
     // An incomplete Content-Length response must close, rather than hanging
     // this API task or allowing a client to mistake it for a complete file.
     client.stop();
-    Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes\n",
-                  (unsigned)sent, (unsigned)length);
+    Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes; heap %u, largest %u\n",
+                  (unsigned)sent, (unsigned)length, (unsigned)ESP.getFreeHeap(),
+                  (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
   }
 }
 
