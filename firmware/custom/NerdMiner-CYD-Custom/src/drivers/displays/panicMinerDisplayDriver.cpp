@@ -22,6 +22,9 @@
 #include "version.h"
 #include "touchPager.h"
 #include "systemHealth.h"
+#include "statusLed.h"
+#include "egressAudit.h"
+#include <soc/gpio_struct.h>
 #include "sdstore.h"
 #include "wManager.h"
 #include "drivers/storage/nvMemory.h"
@@ -136,6 +139,13 @@ static void poll_serial_command(void)
         } else if (strcmp(s_cmd, "PMNET") == 0) {
             Serial.printf("[NET] wifi %d RSSI %d channel %d sleep %d tx %d\n",
                 WiFi.status(), WiFi.RSSI(), WiFi.channel(), WiFi.getSleep(), WiFi.getTxPower());
+        } else if (strcmp(s_cmd, "PMEGRESS") == 0) {
+            egressAuditDump();
+        } else if (strcmp(s_cmd, "PMLEDS") == 0) {
+            Serial.printf("[LED] red %d green %d blue %d authorized %d accepted %lu\n",
+                !(GPIO.out & (1UL << LED_PIN)), !(GPIO.out & (1UL << LED_PIN_G)),
+                !(GPIO.out & (1UL << LED_PIN_B)), minerIsSubscribed(),
+                (unsigned long)minerAcceptedShares());
         } else if (strcmp(s_cmd, "PMWIFIDROP") == 0) {
             Serial.println("[WIFI] controlled disconnect test; saved settings preserved");
             WiFi.disconnect(false, false);
@@ -327,7 +337,7 @@ static void refresh(unsigned long mElapsed)
     m.sd_rows = sdStore.loggedRows();
     m.pool_diff = minerPoolDifficulty();
     m.wallet_set = Settings.BtcWallet[0] != '\0';
-    snprintf(m.pool, sizeof(m.pool), "%s:%d", Settings.PoolAddress.c_str(), Settings.PoolPort);
+    snprintf(m.pool, sizeof(m.pool), "%s:%d", minerPoolHost(), minerPoolPort());
 
     bool linked = minerIsSubscribed();
     uint32_t now = millis();
@@ -340,7 +350,7 @@ static void refresh(unsigned long mElapsed)
     }
 
     if (linked != s_was_linked) {
-        if (linked) set_log("subscribed to %s", Settings.PoolAddress.c_str());
+        if (linked) set_log("subscribed to %s", minerPoolHost());
         else set_log("pool link down, reconnecting");
     } else if (m.best_diff > s_last_best) {
         char d[16];
@@ -472,7 +482,14 @@ static void pm_animate(unsigned long frame)
     lv_timer_handler();
 }
 
-static void pm_leds(unsigned long frame) {}
+static void pm_leds(unsigned long frame) {
+    static StatusLed state;
+    const auto color = state.sample(millis(), WiFi.status() == WL_CONNECTED,
+                                    minerIsSubscribed(), minerAcceptedShares());
+    digitalWrite(LED_PIN, color.red ? LOW : HIGH);
+    digitalWrite(LED_PIN_G, color.green ? LOW : HIGH);
+    digitalWrite(LED_PIN_B, color.blue ? LOW : HIGH);
+}
 
 // One per page, in ui_page_t order: Mine, Hash, Chain, Clock, Stats.
 static CyclicScreenFunction s_screens[] = {pm_tick, pm_tick, pm_tick, pm_tick, pm_tick};

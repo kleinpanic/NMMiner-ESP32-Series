@@ -21,6 +21,7 @@
 #include "i2c_master.h"
 #include "speaker.h"
 #include "poolWatchdog.h"
+#include "poolFailover.h"
 #include "miningJobQueue.h"
 #include "miningTarget.h"
 #include "wManager.h"
@@ -296,6 +297,20 @@ int currentIntervalIndex = 0;
 
 bool minerIsSubscribed(void) { return isMinerSuscribed && s_pool_authorized && WiFi.status() == WL_CONNECTED; }
 
+static PoolFailover s_pool_failover;
+bool minerUsingFallback(void) { return s_pool_failover.usingFallback(); }
+const char* minerPoolHost(void) {
+  return minerUsingFallback() ? Settings.FallbackPoolAddress.c_str() : Settings.PoolAddress.c_str();
+}
+int minerPoolPort(void) { return minerUsingFallback() ? Settings.FallbackPoolPort : Settings.PoolPort; }
+static void poolConnectionFailed() {
+  if (s_pool_failover.failed(Settings.FallbackPoolAddress.length() > 0)) {
+    serverIP = IPAddress(1, 1, 1, 1);
+    Serial.printf("[POOL] switching to %s endpoint %s:%d\n",
+                  minerUsingFallback() ? "fallback" : "primary", minerPoolHost(), minerPoolPort());
+  }
+}
+
 bool checkPoolConnection(void) {
   
   if (client.connected()) {
@@ -303,21 +318,25 @@ bool checkPoolConnection(void) {
   }
   
   isMinerSuscribed = false;
+  if (s_pool_authorized) poolConnectionFailed();
   s_pool_authorized = false;
 
   Serial.println("Client not connected, trying to connect..."); 
   
   //Resolve first time pool DNS and save IP
   if(serverIP == IPAddress(1,1,1,1)) {
-    WiFi.hostByName(Settings.PoolAddress.c_str(), serverIP);
+    if (!WiFi.hostByName(minerPoolHost(), serverIP)) {
+      poolConnectionFailed();
+      return false;
+    }
     Serial.printf("Resolved DNS and save ip (first time) got: %s\n", serverIP.toString());
   }
 
   //Try connecting pool IP
-  if (!client.connect(serverIP, Settings.PoolPort, 5000)) {
-    Serial.println("Imposible to connect to : " + Settings.PoolAddress);
-    WiFi.hostByName(Settings.PoolAddress.c_str(), serverIP);
-    Serial.printf("Resolved DNS got: %s\n", serverIP.toString());
+  if (!client.connect(serverIP, minerPoolPort(), 5000)) {
+    Serial.printf("[POOL] connection failed: %s:%d\n", minerPoolHost(), minerPoolPort());
+    serverIP = IPAddress(1, 1, 1, 1);
+    poolConnectionFailed();
     return false;
   }
 
@@ -527,6 +546,7 @@ void runStratumWorker(void *name) {
 #endif
     if(WiFi.status() != WL_CONNECTED){
       client.stop();
+      s_pool_authorized = false; // a radio loss is not an endpoint failure
       isMinerSuscribed = false;
       pending_line = "";
       s_progress_watchdog.reset();
@@ -563,13 +583,15 @@ void runStratumWorker(void *name) {
 
       // STEP 1: Pool server connection (SUBSCRIBE)
       if(!tx_mining_subscribe(client, mWorker)) { 
+        poolConnectionFailed();
         client.stop();
         MiningJobStop(job_pool, s_submition_map);
         continue; 
       }
       
       snprintf(mWorker.wName, sizeof(mWorker.wName), "%s", Settings.BtcWallet);
-      snprintf(mWorker.wPass, sizeof(mWorker.wPass), "%s", Settings.PoolPassword);
+      snprintf(mWorker.wPass, sizeof(mWorker.wPass), "%s",
+               minerUsingFallback() ? Settings.FallbackPoolPassword : Settings.PoolPassword);
       // STEP 2: Pool authorize work (Block Info)
       s_pool_authorized = false; // confirmed by this request's response below
       tx_mining_auth(client, mWorker.wName, mWorker.wPass);
@@ -586,6 +608,8 @@ void runStratumWorker(void *name) {
 
     //Check if pool is down for almost 5minutes and then restart connection with pool (1min=600000ms)
     if(checkPoolInactivity(KEEPALIVE_TIME_ms, POOLINACTIVITY_TIME_ms)){
+      poolConnectionFailed();
+      s_pool_authorized = false;
       //Restart connection
       Serial.println("  Detected more than 2 min without data form stratum server. Closing socket and reopening...");
       client.stop();
@@ -748,6 +772,7 @@ void runStratumWorker(void *name) {
                                         unsigned long id = parse_extract_id(line);
                                         if (id == stratumAuthRequestId()) {
                                           s_pool_authorized = true;
+                                          s_pool_failover.healthy();
                                           Serial.println("[POOL] wallet worker authorized by pool");
                                         }
                                         auto itt = s_submition_map.find(id);
@@ -776,6 +801,8 @@ void runStratumWorker(void *name) {
                                         unsigned long id = parse_extract_id(line);
                                         if (id == stratumAuthRequestId()) {
                                           Serial.println("[POOL] authorization rejected; check wallet configuration");
+                                          poolConnectionFailed();
+                                          s_pool_authorized = false;
                                           client.stop();
                                           isMinerSuscribed = false;
                                           MiningJobStop(job_pool, s_submition_map);

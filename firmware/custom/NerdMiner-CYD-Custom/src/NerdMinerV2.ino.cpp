@@ -21,6 +21,7 @@
 #include "webapi.h"
 #ifdef PANICMINER_UI
 #include "systemHealth.h"
+#include "egressAudit.h"
 #endif
 
 #ifdef TOUCH_ENABLE
@@ -163,6 +164,7 @@ void setup()
   /******** INIT WIFI ************/
   init_WifiManager();
 #ifdef PANICMINER_UI
+  egressAuditStart();
   systemHealthStart();
 #endif
 

@@ -28,7 +28,7 @@ bool nvMemory::saveConfig(TSettings* Settings)
         Serial.println(F("SPIFS: Saving configuration."));
 
         // Create a JSON document
-        StaticJsonDocument<512> json;
+        StaticJsonDocument<1024> json;
         json[JSON_KEY_SSID] = Settings->WifiSSID;   // persist WiFi creds so the unit is self-contained
         json[JSON_KEY_PASW] = Settings->WifiPW;
         json[JSON_SPIFFS_KEY_POOLURL] = Settings->PoolAddress;
@@ -39,6 +39,10 @@ bool nvMemory::saveConfig(TSettings* Settings)
         json[JSON_SPIFFS_KEY_STATS2NV] = Settings->saveStats;
         json[JSON_SPIFFS_KEY_INVCOLOR] = Settings->invertColors;
         json[JSON_SPIFFS_KEY_BRIGHTNESS] = Settings->Brightness;
+        json[JSON_KEY_FALLBACKURL] = Settings->FallbackPoolAddress;
+        json[JSON_KEY_FALLBACKPORT] = Settings->FallbackPoolPort;
+        json[JSON_KEY_FALLBACKPASS] = Settings->FallbackPoolPassword;
+        if (json.overflowed()) return false;
 
         // Open config file
         File configFile = SPIFFS.open(JSON_CONFIG_FILE, "w");
@@ -83,7 +87,7 @@ bool nvMemory::loadConfig(TSettings* Settings)
             if (configFile)
             {
                 Serial.println("SPIFS: Loading config file");
-                StaticJsonDocument<512> json;
+                StaticJsonDocument<1024> json;
                 DeserializationError error = deserializeJson(json, configFile);
                 configFile.close();
                 if (!error)
@@ -91,6 +95,10 @@ bool nvMemory::loadConfig(TSettings* Settings)
                     if (json.containsKey(JSON_KEY_SSID)) Settings->WifiSSID = (const char*)json[JSON_KEY_SSID];
                     if (json.containsKey(JSON_KEY_PASW)) Settings->WifiPW   = (const char*)json[JSON_KEY_PASW];
                     Settings->PoolAddress = json[JSON_SPIFFS_KEY_POOLURL] | Settings->PoolAddress;
+                    Settings->FallbackPoolAddress = json[JSON_KEY_FALLBACKURL] | "";
+                    Settings->FallbackPoolPort = json[JSON_KEY_FALLBACKPORT] | 3333;
+                    snprintf(Settings->FallbackPoolPassword, sizeof(Settings->FallbackPoolPassword), "%s",
+                             json[JSON_KEY_FALLBACKPASS] | "x");
                     strcpy(Settings->PoolPassword, json[JSON_SPIFFS_KEY_POOLPASS] | Settings->PoolPassword);
                     strcpy(Settings->BtcWallet, json[JSON_SPIFFS_KEY_WALLETID] | Settings->BtcWallet);
                     if (json.containsKey(JSON_SPIFFS_KEY_POOLPORT))

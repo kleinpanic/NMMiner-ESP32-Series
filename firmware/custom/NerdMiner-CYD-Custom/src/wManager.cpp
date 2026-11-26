@@ -17,6 +17,7 @@
 #include "timeconst.h"
 #include "speaker.h"
 #include "wifiRecovery.h"
+#include "provisionedConfig.h"
 #ifdef PANICMINER_UI
 #include "sdstore.h"
 extern SDStore sdStore;
@@ -193,47 +194,6 @@ void request_configuration()
 // --- USB/serial provisioning -------------------------------------------------
 // SD and serial provisioning share bounded, typed keys. Apply to a temporary
 // copy so an invalid field never partly changes the running configuration.
-static bool applyProvisionedConfig(JsonObjectConst json, TSettings* settings)
-{
-    if (json.isNull()) return false;
-    const char* stringKeys[] = {"SSID", "WifiPW", "PoolUrl", "BtcWallet", "PoolPassword"};
-    const size_t stringLimits[] = {32, 64, 80, sizeof(settings->BtcWallet) - 1,
-                                  sizeof(settings->PoolPassword) - 1};
-    for (unsigned i = 0; i < 5; i++) {
-        if (!json.containsKey(stringKeys[i])) continue;
-        if (!json[stringKeys[i]].is<const char*>()) return false;
-        size_t length = strlen(json[stringKeys[i]].as<const char*>());
-        if (length > stringLimits[i]) return false;
-        if (!length && i != 1 && i != 4) return false;
-    }
-    if (json.containsKey("PoolPort") && (!json["PoolPort"].is<int>() ||
-        json["PoolPort"].as<int>() < 1 || json["PoolPort"].as<int>() > 65535)) return false;
-    if (json.containsKey("Timezone") && (!json["Timezone"].is<int>() ||
-        json["Timezone"].as<int>() < -12 || json["Timezone"].as<int>() > 14)) return false;
-    if (json.containsKey("Brightness") && (!json["Brightness"].is<int>() ||
-        json["Brightness"].as<int>() < 0 || json["Brightness"].as<int>() > 255)) return false;
-    const char* boolKeys[] = {"SaveStats", "saveStatsToNVS", "invertColors"};
-    for (const char* key : boolKeys)
-        if (json.containsKey(key) && !json[key].is<bool>()) return false;
-    if (json.containsKey("SaveStats") && json.containsKey("saveStatsToNVS") &&
-        json["SaveStats"].as<bool>() != json["saveStatsToNVS"].as<bool>()) return false;
-
-    TSettings candidate = *settings;
-    if (json.containsKey("SSID")) candidate.WifiSSID = json["SSID"].as<const char*>();
-    if (json.containsKey("WifiPW")) candidate.WifiPW = json["WifiPW"].as<const char*>();
-    if (json.containsKey("PoolUrl")) candidate.PoolAddress = json["PoolUrl"].as<const char*>();
-    if (json.containsKey("BtcWallet")) snprintf(candidate.BtcWallet, sizeof(candidate.BtcWallet), "%s", json["BtcWallet"].as<const char*>());
-    if (json.containsKey("PoolPassword")) snprintf(candidate.PoolPassword, sizeof(candidate.PoolPassword), "%s", json["PoolPassword"].as<const char*>());
-    if (json.containsKey("PoolPort")) candidate.PoolPort = json["PoolPort"].as<int>();
-    if (json.containsKey("Timezone")) candidate.Timezone = json["Timezone"].as<int>();
-    if (json.containsKey("SaveStats")) candidate.saveStats = json["SaveStats"].as<bool>();
-    if (json.containsKey("saveStatsToNVS")) candidate.saveStats = json["saveStatsToNVS"].as<bool>();
-    if (json.containsKey("invertColors")) candidate.invertColors = json["invertColors"].as<bool>();
-    if (json.containsKey("Brightness")) candidate.Brightness = json["Brightness"].as<int>();
-    if (!candidate.WifiSSID.length()) return false;
-    *settings = candidate;
-    return true;
-}
 
 #ifdef PANICMINER_UI
 static bool restoreConfigFromSD(TSettings* settings)
@@ -298,7 +258,7 @@ static bool tryConfigOverSerial(TSettings* settings, uint32_t window_ms)
                 if (line.startsWith("NMCFG")) {
                     int brace = line.indexOf('{');
                     if (brace < 0) { Serial.println(F("[CFG] no JSON object")); line = ""; continue; }
-                    StaticJsonDocument<512> doc;
+                    StaticJsonDocument<1024> doc;
                     DeserializationError err = deserializeJson(doc, line.substring(brace));
                     if (err) { Serial.printf("[CFG] JSON error: %s\n", err.c_str()); line = ""; continue; }
                     if (!applyProvisionedConfig(doc.as<JsonObjectConst>(), settings)) {
@@ -525,6 +485,14 @@ void init_WifiManager()
   wm.addParameter(&port_text_box_num);
   wm.addParameter(&password_text_box);
   wm.addParameter(&addr_text_box);
+  WiFiManagerParameter fallback_host("Fallbackurl", "Fallback pool host (empty disables)", Settings.FallbackPoolAddress.c_str(), 80);
+  char fallbackPort[6];
+  snprintf(fallbackPort, sizeof(fallbackPort), "%d", Settings.FallbackPoolPort);
+  WiFiManagerParameter fallback_port("Fallbackport", "Fallback pool port", fallbackPort, 5);
+  WiFiManagerParameter fallback_password("Fallbackpassword", "Fallback pool password (optional)", Settings.FallbackPoolPassword, 79);
+  wm.addParameter(&fallback_host);
+  wm.addParameter(&fallback_port);
+  wm.addParameter(&fallback_password);
   wm.addParameter(&time_text_box_num);
   wm.addParameter(&features_html);
   wm.addParameter(&save_stats_to_nvs);
@@ -558,6 +526,17 @@ void init_WifiManager()
         wm.setConfigPortalBlocking(true); //Hacemos que el portal SI bloquee el firmware
         drawSetupScreen();
         mMonitor.NerdStatus = NM_Connecting;
+#ifdef PANICMINER_UI
+        // Setup remains available on its AP. If the saved LAN is reachable,
+        // expose the same portal there without moving the laptop off Wi-Fi.
+        if (Settings.WifiSSID.length()) {
+            WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
+            uint32_t began = millis();
+            while (WiFi.status() != WL_CONNECTED && millis() - began < 8000) delay(50);
+            if (WiFi.status() == WL_CONNECTED)
+                Serial.printf("[CFG] Setup also available on LAN %s\n", WiFi.localIP().toString().c_str());
+        }
+#endif
         wm.startConfigPortal(apName, DEFAULT_WIFIPW);
 
 #ifdef PANICMINER_UI
@@ -568,6 +547,36 @@ void init_WifiManager()
 
         if (shouldSaveConfig)
         {
+#ifdef PANICMINER_UI
+            StaticJsonDocument<1024> update;
+            update["SSID"] = wm.getWiFiSSID(true).length() ? wm.getWiFiSSID(true) : Settings.WifiSSID;
+            update["WifiPW"] = wm.getWiFiSSID(true).length() ? wm.getWiFiPass(true) : Settings.WifiPW;
+            update["PoolUrl"] = pool_text_box.getValue();
+            update["PoolPassword"] = password_text_box.getValue();
+            update["BtcWallet"] = addr_text_box.getValue();
+            update[JSON_KEY_FALLBACKURL] = fallback_host.getValue();
+            update[JSON_KEY_FALLBACKPASS] = fallback_password.getValue();
+            char* end = nullptr;
+            long primaryPort = strtol(port_text_box_num.getValue(), &end, 10);
+            bool portsValid = *port_text_box_num.getValue() && end && !*end && primaryPort > 0 && primaryPort <= 65535;
+            long secondaryPort = strtol(fallback_port.getValue(), &end, 10);
+            portsValid = portsValid && *fallback_port.getValue() && end && !*end && secondaryPort > 0 && secondaryPort <= 65535;
+            update["PoolPort"] = primaryPort;
+            update[JSON_KEY_FALLBACKPORT] = secondaryPort;
+            update["Timezone"] = atoi(time_text_box_num.getValue());
+            update["SaveStats"] = strncmp(save_stats_to_nvs.getValue(), "T", 1) == 0;
+            update["invertColors"] = strncmp(invertColors.getValue(), "T", 1) == 0;
+            update["Brightness"] = atoi(brightness_text_box_num.getValue());
+            TSettings candidate = Settings;
+            if (!portsValid || update.overflowed() || !applyProvisionedConfig(update.as<JsonObjectConst>(), &candidate) || !nvMem.saveConfig(&candidate)) {
+                Serial.println("[CFG] Invalid or unsaved portal configuration; previous app settings retained");
+                ESP.restart();
+            }
+            Settings = candidate;
+            Serial.println("[CFG] Primary/fallback configuration saved; restarting");
+            delay(300);
+            ESP.restart();
+#else
             // WiFiManager owns the newly saved STA credentials. Keep the app's
             // copy in sync so the next cold boot tries the new location first.
             Settings.WifiSSID = wm.getWiFiSSID(true);
@@ -591,6 +600,7 @@ void init_WifiManager()
             delay(3*SECOND_MS);
             //reset and try again, or maybe put it to deep sleep
             ESP.restart();            
+#endif
         };
     }
     else

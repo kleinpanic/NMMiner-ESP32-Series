@@ -53,6 +53,9 @@
 #define JSON_SPIFFS_KEY_STATS2NV	"saveStatsToNVS"
 #define JSON_SPIFFS_KEY_INVCOLOR	"invertColors"
 #define JSON_SPIFFS_KEY_BRIGHTNESS	"Brightness"
+#define JSON_KEY_FALLBACKURL "FallbackPoolUrl"
+#define JSON_KEY_FALLBACKPORT "FallbackPoolPort"
+#define JSON_KEY_FALLBACKPASS "FallbackPoolPassword"
 
 // settings
 struct TSettings
@@ -63,6 +66,9 @@ struct TSettings
 	char BtcWallet[80]{ DEFAULT_WALLETID };
 	char PoolPassword[80]{ DEFAULT_POOLPASS };
 	int PoolPort{ DEFAULT_POOLPORT };
+	String FallbackPoolAddress{}; // empty disables fallback; primary always starts first
+	char FallbackPoolPassword[80]{ "x" };
+	int FallbackPoolPort{ 3333 };
 	int Timezone{ DEFAULT_TIMEZONE };
 	bool saveStats{ DEFAULT_SAVESTATS };
 	bool invertColors{ DEFAULT_INVERTCOLORS };

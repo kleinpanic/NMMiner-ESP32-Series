@@ -35,6 +35,9 @@ void runMiner(void *name);
 void minerWorkerSw(void * task_id);
 void minerWorkerHw(void * task_id);
 bool minerIsSubscribed(void);
+const char* minerPoolHost(void);
+int minerPoolPort(void);
+bool minerUsingFallback(void);
 uint32_t minerRejectedShares(void); // rejected tracked pool submissions this boot
 uint32_t minerAcceptedShares(void); // every pool-confirmed share, this boot
 double minerBestDifficulty(void); // best verified candidate, includes saved best

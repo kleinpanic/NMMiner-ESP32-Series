@@ -12,10 +12,13 @@ fi
 COMMON=(-std=c++17 -g -O1 -Wall -Wextra -Wno-format -fsanitize=address,undefined -fno-omit-frame-pointer)
 "$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_touch.cpp" -o "$BUILD/test_touch"
 "$BUILD/test_touch"
-for TEST in sd_path pool_watchdog mining_target mining_batches mining_job_queue wifi_recovery wallet_stats tls_record_buffers chain_http bounded_transfer sd_pending_transfer wifi_buffer_budget sd_transfer_policy socket_error_state socket_peer pending_response; do
+for TEST in sd_path pool_watchdog pool_failover status_led egress_audit mining_target mining_batches mining_job_queue wifi_recovery wallet_stats tls_record_buffers chain_http bounded_transfer sd_pending_transfer wifi_buffer_budget sd_transfer_policy socket_error_state socket_peer pending_response; do
   "$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_$TEST.cpp" -o "$BUILD/test_$TEST"
   "$BUILD/test_$TEST"
 done
+"$CXX" "${COMMON[@]}" -I"$ROOT/tools/tests/stubs" -I"$ROOT/src" -I"$JSON" \
+  "$ROOT/tools/tests/test_provisioned_config.cpp" -o "$BUILD/test_provisioned_config"
+"$BUILD/test_provisioned_config"
 LVGL="$ROOT/.pio/libdeps/ESP32-2432S028R/lvgl"
 TLSF_FLAGS=(-DLV_CONF_INCLUDE_SIMPLE -I"$ROOT/src/ui" -I"$LVGL")
 "${CC:-gcc}" -std=c11 -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer -ffunction-sections \

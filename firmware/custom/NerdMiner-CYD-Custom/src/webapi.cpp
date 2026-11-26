@@ -241,6 +241,7 @@ static void handleStatus() {
   miner["sharesAccepted"] = minerAcceptedShares();
   miner["sharesRejected"] = minerRejectedShares();
   miner["poolAuthorized"] = minerIsSubscribed();
+  miner["usingFallback"] = minerUsingFallback();
   miner["bestVerifiedDifficulty"] = minerBestDifficulty();
   miner["poolDifficulty"] = minerPoolDifficulty();
   hash_rate_stats_t rates = getHashRateStats();
