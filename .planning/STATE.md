@@ -110,6 +110,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   - real hashrate. To measure it, use the change in `[SHA]` checked + dropped, × 65536 ÷
     seconds, since the attempt counter moves in 256K-nonce chunks;
   - the first accepted share with the zero-padded nonce.
-- Panel driver: the base uses `ILI9341_2_DRIVER`; the stock identity says ST7789. Settle
-  with a photo.
+- Panel: settled 2026-11-25 by photo. It needs INVON (fork `0f0cc75`, flashed 20:15 as
+  `panel-invon`; owner confirmed the colours). Backup before it:
+  `cyd-backup-20261125-201431-pre-panel-invon.bin`.
+- Chain feed: mbedTLS reports "X509 - Certificate verification failed" on the unit. Notes
+  in `.planning/debug/chain-feed-x509-verify.md`. The fork's uncommitted `src/chainFeed.cpp`
+  diff is the error logging that found it.
 - Touch: XPT2046 answers with no-press readings. Needs a press test.
