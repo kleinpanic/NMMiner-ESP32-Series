@@ -3,8 +3,8 @@ import subprocess
 Import("env")
 
 def get_firmware_specifier_build_flag():
-    ret = subprocess.run(["git", "describe"], stdout=subprocess.PIPE, text=True) #Uses only annotated tags
-    #ret = subprocess.run(["git", "describe", "--tags"], stdout=subprocess.PIPE, text=True) #Uses any tags
+    ret = subprocess.run(["git", "describe", "--always", "--dirty"],
+                         stdout=subprocess.PIPE, text=True, check=True)
     build_version = ret.stdout.strip()
     # fix unwanted and verbose tags
     build_version = build_version.replace('Release', '')

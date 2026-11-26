@@ -19,6 +19,9 @@ done
 "$CXX" "${COMMON[@]}" -DPANICMINER_UI -I"$ROOT/tools/tests/stubs" -I"$ROOT/src" -I"$JSON" \
   "$ROOT/src/stratum.cpp" "$ROOT/tools/tests/test_stratum.cpp" -o "$BUILD/test_stratum"
 "$BUILD/test_stratum"
+"$CXX" "${COMMON[@]}" -DPANICMINER_UI -I"$ROOT/tools/tests/stubs" -I"$ROOT/src" -I"$JSON" \
+  "$ROOT/src/utils.cpp" "$ROOT/tools/tests/test_mining_data.cpp" -lcrypto -o "$BUILD/test_mining_data"
+"$BUILD/test_mining_data"
 if [[ -f "$ROOT/tools/tests/run_speaker.sh" ]]; then
   bash "$ROOT/tools/tests/run_speaker.sh"
 fi

@@ -559,10 +559,10 @@ void init_WifiManager()
             WiFi.setAutoReconnect(false);
             struct Profile { uint8_t protocols; wifi_power_t power; };
             const Profile profiles[] = {
-                {WIFI_PROTOCOL_11B, WIFI_POWER_13dBm},
-                {WIFI_PROTOCOL_11B, WIFI_POWER_8_5dBm},
                 {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N, WIFI_POWER_13dBm},
-                {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N, WIFI_POWER_19_5dBm}
+                {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N, WIFI_POWER_19_5dBm},
+                {WIFI_PROTOCOL_11B, WIFI_POWER_13dBm},
+                {WIFI_PROTOCOL_11B, WIFI_POWER_8_5dBm}
             };
             for (unsigned i = 0; i < sizeof(profiles) / sizeof(profiles[0]); i++) {
                 WiFi.disconnect(false, false); // preserve all saved credentials

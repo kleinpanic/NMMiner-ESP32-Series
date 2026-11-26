@@ -4,7 +4,12 @@
 # Usage: scripts/flash_fork_build.sh <label> [build_dir]
 set -euo pipefail
 
-PORT="${PORT:-/dev/ttyUSB0}"
+# USB re-enumeration can change ttyUSB0 to ttyUSB1 after a power cycle.
+# Prefer this unit's udev link, while preserving an explicit operator choice.
+if [[ -z "${PORT:-}" ]]; then
+  PORT="/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"
+  [[ -e "$PORT" ]] || PORT="/dev/ttyUSB0"
+fi
 BAUD="${BAUD:-460800}"
 LABEL="${1:?usage: $0 <label> [build_dir]}"
 BUILD="${2:-firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R}"

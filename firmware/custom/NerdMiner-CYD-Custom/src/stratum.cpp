@@ -168,7 +168,9 @@ bool tx_mining_auth(WiFiClient& client, const char * user, const char * pass)
 stratum_method parse_mining_method(String line)
 {
     if(!verifyPayload(&line)) return STRATUM_PARSE_ERROR;
+    #ifdef DEBUG_MINING
     Serial.print("  Receiving: "); Serial.println(line);
+    #endif
     
     DeserializationError error = deserializeJson(doc, line);
 
@@ -195,7 +197,9 @@ stratum_method parse_mining_method(String line)
 
 bool parse_mining_notify(String line, mining_job& mJob)
 {
+    #ifdef DEBUG_MINING
     Serial.println("    Parsing Method [MINING NOTIFY]");
+    #endif
     if(!verifyPayload(&line)) return false;
    
     DeserializationError error = deserializeJson(doc, line);

@@ -347,7 +347,7 @@ mining_data getMiningData(unsigned long mElapsed)
   sprintf(timeMining, "%01d  %02d:%02d:%02d", days, hours, mins, secs);
 
   data.completedShares = shares;
-  data.totalMHashes = Mhashes;
+  data.totalMHashes = minerTotalHashes() / 1000000;
   data.totalKHashes = totalKHashes;
   data.currentHashRate = getCurrentHashRate(mElapsed);
   data.templates = templates;

@@ -81,7 +81,7 @@ static void handleStatus() {
   miner["heapFreeBytes"] = ESP.getFreeHeap();
   miner["heapTotalBytes"] = ESP.getHeapSize();
   miner["chipTempC"] = temperatureRead();
-  miner["totalMHashes"] = Mhashes;
+  miner["totalMHashes"] = minerTotalHashes() / 1000000.0;
   miner["uptimeSeconds"] = upTime;
 
   SDStatus st = sdStore.getStatus();

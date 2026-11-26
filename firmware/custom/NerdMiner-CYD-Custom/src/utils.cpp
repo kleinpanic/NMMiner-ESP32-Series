@@ -202,27 +202,9 @@ miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob){
     }
     //mWorker.extranonce2 = "00000002";
     
-    //get coinbase - coinbase_hash_bin = hashlib.sha256(hashlib.sha256(binascii.unhexlify(coinbase)).digest()).digest()
-    // Use char buffer instead of String concatenation to avoid memory leaks
-    static char coinbase_buffer[512]; // Static buffer to avoid repeated allocation
-    snprintf(coinbase_buffer, sizeof(coinbase_buffer), "%s%s%s%s", 
-             mJob.coinb1.c_str(), mWorker.extranonce1.c_str(), 
-             mWorker.extranonce2.c_str(), mJob.coinb2.c_str());
-    Serial.print("    coinbase: "); Serial.println(coinbase_buffer);
-    size_t str_len = strlen(coinbase_buffer)/2;
-    uint8_t bytearray[str_len];
-
-    size_t res = to_byte_array(coinbase_buffer, str_len*2, bytearray);
-
-    #ifdef DEBUG_MINING
-    Serial.print("    extranonce2: "); Serial.println(mWorker.extranonce2);
-    Serial.print("    coinbase: "); Serial.println(coinbase_buffer);
-    Serial.print("    coinbase bytes - size: "); Serial.println(res);
-    for (size_t i = 0; i < res; i++)
-        Serial.printf("%02x", bytearray[i]);
-    Serial.println("---");
-    #endif
-
+    // Hash every coinbase byte without a fixed-size concatenation buffer.
+    // Pools can send more than 511 hex characters; truncating them changes the
+    // merkle root and silently makes every share for that job invalid.
     mbedtls_sha256_context ctx;
     mbedtls_sha256_init(&ctx);
   
@@ -230,7 +212,20 @@ miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob){
     byte shaResult[32]; // 256 bit
   
     mbedtls_sha256_starts_ret(&ctx,0);
-    mbedtls_sha256_update_ret(&ctx, bytearray, str_len);
+    const String* parts[] = {&mJob.coinb1, &mWorker.extranonce1,
+                             &mWorker.extranonce2, &mJob.coinb2};
+    uint8_t decoded[64];
+    for (const String* part : parts) {
+        size_t offset = 0;
+        while (offset + 1 < part->length()) {
+            size_t count = 0;
+            while (count < sizeof(decoded) && offset + 1 < part->length()) {
+                decoded[count++] = (hex((*part)[offset]) << 4) | hex((*part)[offset + 1]);
+                offset += 2;
+            }
+            mbedtls_sha256_update_ret(&ctx, decoded, count);
+        }
+    }
     mbedtls_sha256_finish_ret(&ctx, interResult);
 
     mbedtls_sha256_starts_ret(&ctx,0);
@@ -253,7 +248,7 @@ miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob){
     for (size_t k=0; k < mJob.merkle_branch.size(); k++) {
         const char* merkle_element = (const char*) mJob.merkle_branch[k];
         uint8_t bytearray[32];
-        size_t res = to_byte_array(merkle_element, 64, bytearray);
+        to_byte_array(merkle_element, 64, bytearray);
 
         #ifdef DEBUG_MINING
         Serial.print("    merkle element    "); Serial.print(k); Serial.print(": "); Serial.println(merkle_element);
@@ -291,22 +286,21 @@ miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob){
     }
     // merkle root from merkle_result
     
-    Serial.print("    merkle sha         : ");
     char merkle_root[65];
-    for (int i = 0; i < 32; i++) {
-      Serial.printf("%02x", mMiner.merkle_result[i]);
-      snprintf(&merkle_root[i*2], 3, "%02x", mMiner.merkle_result[i]);
+    static const char hex_digits[] = "0123456789abcdef";
+    for (size_t i = 0; i < sizeof(mMiner.merkle_result); i++) {
+        merkle_root[i * 2] = hex_digits[mMiner.merkle_result[i] >> 4];
+        merkle_root[i * 2 + 1] = hex_digits[mMiner.merkle_result[i] & 15];
     }
-    merkle_root[65] = 0;
-    Serial.println("");
+    merkle_root[sizeof(merkle_root) - 1] = '\0';
 
     // calculate blockheader
     // j.block_header = ''.join([j.version, j.prevhash, merkle_root, j.ntime, j.nbits])
     String blockheader = mJob.version + mJob.prev_block_hash + String(merkle_root) + mJob.ntime + mJob.nbits + "00000000";
-    str_len = blockheader.length()/2;
+    size_t str_len = blockheader.length()/2;
     
     //uint8_t bytearray_blockheader[str_len];
-    res = to_byte_array(blockheader.c_str(), str_len*2, mMiner.bytearray_blockheader);
+    to_byte_array(blockheader.c_str(), str_len*2, mMiner.bytearray_blockheader);
 
     #ifdef DEBUG_MINING
     Serial.println("    blockheader: "); Serial.print(blockheader);

@@ -109,6 +109,11 @@ static bool s_stats_ready;
 uint32_t templates = 0;
 uint32_t hashes = 0;
 uint32_t Mhashes = 0;
+static std::mutex s_work_mutex;
+uint64_t minerTotalHashes(void) {
+  std::lock_guard<std::mutex> lock(s_work_mutex);
+  return (uint64_t)Mhashes * 1000000ULL + hashes;
+}
 uint32_t totalKHashes = 0;
 uint32_t elapsedKHs = 0;
 uint64_t upTime = 0;
@@ -304,7 +309,7 @@ unsigned long mStart0Hashrate = 0;
 static PoolProgressWatchdog s_progress_watchdog;
 bool checkPoolInactivity(unsigned int keepAliveTime, unsigned long inactivityTime){ 
 
-    unsigned long currentKHashes = (Mhashes*1000) + hashes/1000;
+    unsigned long currentKHashes = (uint32_t)(minerTotalHashes() / 1000);
 
     uint32_t time_now = millis();
 
@@ -615,9 +620,12 @@ void runStratumWorker(void *name) {
                                           last_job_time = millis();
                                           mLastTXtoPool = last_job_time;
 
-                                          uint32_t mh = hashes/1000000;
-                                          Mhashes += mh;
-                                          hashes -= mh*1000000;
+                                          {
+                                            std::lock_guard<std::mutex> lock(s_work_mutex);
+                                            uint32_t mh = hashes/1000000;
+                                            Mhashes += mh;
+                                            hashes -= mh*1000000;
+                                          }
 
                                           //Prepare data for new jobs
                                           mMiner=calculateMiningData(mWorker, mJob);
@@ -760,7 +768,10 @@ void runStratumWorker(void *name) {
       vTaskDelay(5 / portTICK_PERIOD_MS);
       uint32_t nonces_done = 0;
       std::vector<uint32_t> nonce_vector = i2c_harvest_slaves(i2c_slave_vector, job_pool & 0xFF, nonces_done);
-      hashes += nonces_done;
+      {
+        std::lock_guard<std::mutex> lock(s_work_mutex);
+        hashes += nonces_done;
+      }
       for (size_t n = 0; n < nonce_vector.size(); ++n)
       {
         std::shared_ptr<JobResult> result = std::make_shared<JobResult>();
@@ -830,7 +841,10 @@ void runStratumWorker(void *name) {
       std::shared_ptr<JobResult> res = job_result_list.front();
       job_result_list.pop_front();
 
-      hashes += res->nonce_count;
+      {
+        std::lock_guard<std::mutex> lock(s_work_mutex);
+        hashes += res->nonce_count;
+      }
       if (res->difficulty > currentPoolDifficulty && job_pool == res->id && res->nonce != 0xFFFFFFFF)
       {
         if (!client.connected())
@@ -1777,7 +1791,8 @@ void restoreStat() {
 
   size_t required_size = sizeof(double);
   nvs_get_blob(stat_handle, "best_diff", &best_diff, &required_size);
-  nvs_get_u32(stat_handle, "Mhashes", &Mhashes);
+  uint32_t restored_mhashes = 0;
+  nvs_get_u32(stat_handle, "Mhashes", &restored_mhashes);
   uint32_t nv_shares = 0, nv_valids = 0;
   nvs_get_u32(stat_handle, "shares", &nv_shares);
   nvs_get_u32(stat_handle, "valids", &nv_valids);
@@ -1788,7 +1803,7 @@ void restoreStat() {
 
   uint32_t crc = crc32_reset();
   crc = crc32_add(crc, &best_diff, sizeof(best_diff));
-  crc = crc32_add(crc, &Mhashes, sizeof(Mhashes));
+  crc = crc32_add(crc, &restored_mhashes, sizeof(restored_mhashes));
   crc = crc32_add(crc, &nv_shares, sizeof(nv_shares));
   crc = crc32_add(crc, &nv_valids, sizeof(nv_valids));
   crc = crc32_add(crc, &templates, sizeof(templates));
@@ -1800,11 +1815,15 @@ void restoreStat() {
   if (crc_result != ESP_OK || nv_crc != crc || !isfinite(best_diff) || best_diff < 0)
   {
     best_diff = 0.0;
-    Mhashes = 0;
+    restored_mhashes = 0;
     shares = 0;
     valids = 0;
     templates = 0;
     upTime = 0;
+  }
+  {
+    std::lock_guard<std::mutex> lock(s_work_mutex);
+    Mhashes = restored_mhashes;
   }
   uint32_t accepted = 0, rejected = 0;
   nvs_get_u32(stat_handle, "accepted", &accepted);
@@ -1819,7 +1838,7 @@ void saveStat() {
   if(!Settings.saveStats || !s_stats_ready) return;
   best_diff = minerBestDifficulty();
   const double saved_best = best_diff;
-  const uint32_t saved_mhashes = Mhashes, saved_templates = templates;
+  const uint32_t saved_mhashes = minerTotalHashes() / 1000000, saved_templates = templates;
   const uint64_t saved_uptime = upTime;
   const uint32_t nv_shares = shares, nv_valids = valids;
   esp_err_t result = ESP_OK;
@@ -1849,7 +1868,11 @@ void saveStat() {
 
 void resetStat() {
     Serial.printf("[MONITOR] Resetting NVS stats\n");
-    templates = hashes = Mhashes = totalKHashes = elapsedKHs = upTime = shares = valids = 0;
+    {
+      std::lock_guard<std::mutex> lock(s_work_mutex);
+      hashes = Mhashes = 0;
+    }
+    templates = totalKHashes = elapsedKHs = upTime = shares = valids = 0;
     best_diff = 0.0;
     s_best_hash_diff = 0.0;
     s_accepted_submissions = 0;
@@ -1871,7 +1894,7 @@ void runMonitor(void *name)
 
   uint32_t seconds_elapsed = 0;
 
-  totalKHashes = (Mhashes * 1000) + hashes / 1000;
+  totalKHashes = (uint32_t)(minerTotalHashes() / 1000);
   uint32_t last_update_millis = millis();
   uint32_t uptime_frac = 0;
 
@@ -1889,7 +1912,7 @@ void runMonitor(void *name)
     { 
       mLastCheck = now_millis;
       last_update_millis = now_millis;
-      unsigned long currentKHashes = (Mhashes * 1000) + hashes / 1000;
+      unsigned long currentKHashes = (uint32_t)(minerTotalHashes() / 1000);
       elapsedKHs = currentKHashes - totalKHashes;
       totalKHashes = currentKHashes;
 

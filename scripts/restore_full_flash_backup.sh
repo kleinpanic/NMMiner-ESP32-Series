@@ -2,7 +2,11 @@
 set -euo pipefail
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-PORT="${PORT:-/dev/ttyUSB0}"
+# The CH340 can return with a different ttyUSB number after USB is reconnected.
+if [[ -z "${PORT:-}" ]]; then
+  PORT="/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0"
+  [[ -e "$PORT" ]] || PORT="/dev/ttyUSB0"
+fi
 BAUD="${BAUD:-460800}"
 BACKUP="${1:?usage: $0 <full-flash-backup.bin>}"
 ESPTOOL=("$ROOT/.venv/bin/python" -m esptool --chip esp32 --port "$PORT" --baud "$BAUD")

@@ -63,11 +63,15 @@ int main() {
     ++cases;
 
     mining_job job;
+    Serial.output.clear();
     assert(parse_mining_notify(R"({"method":"mining.notify","params":["job-123","0000000000000000000000000000000000000000000000000000000000000000","00","00",[],"20000000","17012345","6b123456",true]})", job));
     assert(job.job_id == "job-123");
     assert(job.nbits == "17012345");
     assert(job.ntime == "6b123456");
     assert(job.clean_jobs);
+    assert(Serial.output.empty());
+    assert(parse_mining_method(job_with_bits("1d00ffff")) == MINING_NOTIFY);
+    assert(Serial.output.empty());
     ++cases;
     assert(!parse_mining_notify(R"({"method":"mining.notify","params":[]})", job));
     assert(!parse_mining_notify(R"({"method":"mining.notify","params":["job-123","0000000000000000000000000000000000000000000000000000000000000000","00","00","not-an-array","20000000","17012345","6b123456",true]})", job));

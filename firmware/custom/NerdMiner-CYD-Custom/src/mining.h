@@ -39,6 +39,7 @@ uint32_t minerRejectedShares(void); // rejected tracked pool submissions this bo
 uint32_t minerAcceptedShares(void); // every pool-confirmed share, this boot
 double minerBestDifficulty(void); // best verified candidate, includes saved best
 float minerPoolDifficulty(void);
+uint64_t minerTotalHashes(void); // coherent lifetime work, including current job
 bool minerLiveHash(uint8_t out[32]);   // newest verified prefilter hash, big-endian
 bool minerBestHash(uint8_t out[32]);   // best verified hash since boot, big-endian
 void minerShaStats(uint32_t* checked, uint32_t* mismatched);

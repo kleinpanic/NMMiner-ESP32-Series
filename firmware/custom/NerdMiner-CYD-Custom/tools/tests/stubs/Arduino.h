@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <string>
 using std::isfinite;
+using byte = uint8_t;
+#define unlikely(x) __builtin_expect(!!(x), 0)
 
 // Host substitutes only the Arduino transport/runtime boundary. Tests compile
 // the real firmware parser and use the same ArduinoJson headers as PlatformIO.
