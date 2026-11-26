@@ -21,6 +21,8 @@ typedef struct {
     uint32_t heap_total, sd_rows;
     float cpu_pct[2], pool_diff;
     bool cpu_valid, sd_ready, wallet_set;
+    bool wallet_valid, wallet_fresh, wallet_attempted;
+    int64_t wallet_sats, wallet_pending_sats;
     uint32_t shares;        // accepted shares
     uint32_t blocks;        // blocks found
     uint32_t jobs;          // stratum jobs received

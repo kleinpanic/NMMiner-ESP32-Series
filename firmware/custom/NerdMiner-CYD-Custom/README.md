@@ -44,11 +44,14 @@ restart. Failed automatic joins also open the portal temporarily before retrying
 - **Chain:** verified HTTPS data from mempool.space: price, height, difficulty,
   network hashrate, fees and the 2,016-block adjustment period.
 - **Clock:** local time and mining status.
-- **Stats:** 10-sample and 60-sample time-weighted rates (about 10 seconds and one
-  minute), average and work since boot, one-second min/max over the last minute,
-  every pool-confirmed accepted share, rejected tracked submissions, jobs,
-  SHA checks/errors, sampled busy percentage for both CPU cores, RAM usage,
-  chip temperature, Wi-Fi signal and SD rows saved. CPU and internal-chip
+- **Stats:** confirmed balance of the configured Bitcoin address, USD value and
+  pending transaction delta; 10-sample and 60-sample time-weighted rates (about
+  10 seconds and one minute), pool-confirmed accepted/rejected submissions,
+  best and pool difficulty, SHA checks/errors, sampled busy percentage for both
+  CPU cores, RAM usage, chip temperature, Wi-Fi signal and SD rows saved.
+  Wallet data uses verified HTTPS and shows unavailable/stale states when needed.
+  Address funds can include other transfers; shares do not imply payment.
+  CPU and internal-chip
   temperature readings are estimates. Share/reject counts are separate
   counters, not an acceptance percentage. Saved lifetime counters can outlive a boot;
   rate windows, work and SHA checks start fresh.

@@ -11,6 +11,7 @@
 #include "sdstore.h"
 #include "mining.h"
 #include "monitor.h"
+#include "chainFeed.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -68,7 +69,7 @@ static std::string apiSafePath(const String& raw) {
 // --- handlers --------------------------------------------------------------
 
 static void handleStatus() {
-  StaticJsonDocument<1024> doc;
+  StaticJsonDocument<1280> doc;
   JsonObject miner = doc.createNestedObject("miner");
   miner["sharesAccepted"] = minerAcceptedShares();
   miner["sharesRejected"] = minerRejectedShares();
@@ -95,6 +96,18 @@ static void handleStatus() {
   JsonObject sp = doc.createNestedObject("speaker");
   sp["volume"] = Speaker::getVolume();
   sp["mute"] = Speaker::isMuted();
+
+#ifdef PANICMINER_UI
+  chain_snapshot_t snapshot{};
+  chainFeedGet(&snapshot);
+  JsonObject wallet = doc.createNestedObject("wallet");
+  wallet["valid"] = snapshot.wallet_valid;
+  if (snapshot.wallet_valid) {
+    wallet["balanceSats"] = snapshot.wallet_sats;
+    wallet["pendingSats"] = snapshot.wallet_pending_sats;
+    wallet["ageSeconds"] = (millis() - snapshot.wallet_updated_ms) / 1000;
+  }
+#endif
 
   String out;
   serializeJson(doc, out);

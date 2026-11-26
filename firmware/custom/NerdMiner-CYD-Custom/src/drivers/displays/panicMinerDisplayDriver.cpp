@@ -50,7 +50,8 @@ static const uint32_t PAGE_INTERVAL_MS = 20000;
 static uint32_t s_touch_events;
 static bool s_touch_enabled = true;
 static lv_disp_draw_buf_t s_draw_buf;
-static lv_color_t s_lines[320 * 20];
+// Ten rows keep 6.4 KB available for verified TLS while SD is mounted.
+static lv_color_t s_lines[320 * 4];
 static lv_disp_drv_t s_disp;
 static ui_model_t s_model;
 static bool s_backlight_on = true;
@@ -135,6 +136,9 @@ static void poll_serial_command(void)
         } else if (strcmp(s_cmd, "PMNET") == 0) {
             Serial.printf("[NET] wifi %d RSSI %d channel %d sleep %d tx %d\n",
                 WiFi.status(), WiFi.RSSI(), WiFi.channel(), WiFi.getSleep(), WiFi.getTxPower());
+        } else if (strcmp(s_cmd, "PMWIFIDROP") == 0) {
+            Serial.println("[WIFI] controlled disconnect test; saved settings preserved");
+            WiFi.disconnect(false, false);
         } else if (strcmp(s_cmd, "PMSETUP") == 0) {
             request_configuration(); // same non-destructive path as BOOT hold
         } else if (strcmp(s_cmd, "PMSAVE") == 0) {
@@ -366,8 +370,13 @@ static void refresh(unsigned long mElapsed)
 
     m.chain_enabled = true;
     if (WiFi.status() == WL_CONNECTED) chainFeedStart();
-    chain_snapshot_t c;
+    chain_snapshot_t c{};
     m.chain_valid = chainFeedGet(&c);
+    m.wallet_valid = c.wallet_valid;
+    m.wallet_attempted = c.wallet_attempted;
+    m.wallet_fresh = c.wallet_valid && millis() - c.wallet_updated_ms < 300000;
+    m.wallet_sats = c.wallet_sats;
+    m.wallet_pending_sats = c.wallet_pending_sats;
     if (m.chain_valid) {
         m.block_height = c.height;
         m.price_usd = c.price_usd;

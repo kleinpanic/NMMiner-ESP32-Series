@@ -57,7 +57,8 @@ bool SDStore::mount() {
 #endif
 
   // Attempt to mount SD card with VSPI at specified frequency
-  if (!SD.begin(SD_CS_PIN, cardSPI(), SD_FREQUENCY_MHZ * 1000000)) {
+  if (!SD.begin(SD_CS_PIN, cardSPI(), SD_FREQUENCY_MHZ * 1000000,
+                "/sd", SD_MAX_OPEN_FILES, false)) {
     Serial.println("[SD] Failed to mount SD card on VSPI");
     mounted_ = false;
     return false;

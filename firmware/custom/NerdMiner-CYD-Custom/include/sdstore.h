@@ -14,6 +14,9 @@
 #define SD_MISO_PIN GPIO_NUM_19
 #define SD_MOSI_PIN GPIO_NUM_23
 #define SD_FREQUENCY_MHZ 20
+// The dashboard needs at most a directory/file pair. Each extra FAT file slot
+// reserves a sector cache; five default slots starve TLS on this ESP32.
+#define SD_MAX_OPEN_FILES 2
 
 // CSV rotation settings
 #define SD_CSV_MAX_SIZE (1024 * 1024)  // 1 MB before rotation

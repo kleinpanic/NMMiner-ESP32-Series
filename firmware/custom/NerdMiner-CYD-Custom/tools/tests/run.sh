@@ -12,7 +12,7 @@ fi
 COMMON=(-std=c++17 -g -O1 -Wall -Wextra -Wno-format -fsanitize=address,undefined -fno-omit-frame-pointer)
 "$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_touch.cpp" -o "$BUILD/test_touch"
 "$BUILD/test_touch"
-for TEST in sd_path pool_watchdog mining_target; do
+for TEST in sd_path pool_watchdog mining_target wifi_recovery wallet_stats; do
   "$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_$TEST.cpp" -o "$BUILD/test_$TEST"
   "$BUILD/test_$TEST"
 done

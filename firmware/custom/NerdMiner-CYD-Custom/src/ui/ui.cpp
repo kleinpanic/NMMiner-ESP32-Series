@@ -204,7 +204,7 @@ static struct {
     lv_obj_t* scr;
     header_t head;
     lv_obj_t* rate[2];
-    lv_obj_t* value[12];
+    lv_obj_t* value[10];
 } stats;
 
 static struct {
@@ -1183,24 +1183,22 @@ void ui_show_setup(const char* ap_name, const char* ap_password, const char* ap_
 
 static void build_stats(void)
 {
-    static const char* caps[] = {"session avg kH/s", "1s min-max kH/s",
-        "accepted / rejected", "pool share difficulty", "best verified diff", "jobs received",
-        "CPU 0 / CPU 1", "RAM used", "chip temp / Wi-Fi", "SD stats log",
-        "SHA checked / bad", "wallet / pool"};
+    static const char* caps[] = {"10s / 60s kH/s", "accepted / rejected",
+        "best / pool difficulty", "CPU 0 / CPU 1", "RAM used", "chip temp / Wi-Fi",
+        "SD statistics", "SHA checked / bad", "pending wallet sats", "wallet / pool"};
     stats.scr = themed_screen();
     stats.head = header(stats.scr);
     for (int i = 0; i < 2; i++) {
         int x = i ? RX : M;
-        text(stats.scr, &pm_text_14, T_DIM, x, 31, i ? "60s mean kH/s" : "10s mean kH/s");
-        stats.rate[i] = text(stats.scr, &pm_wide_32, T_HERO, x - 1, 51, "-");
+        text(stats.scr, &pm_text_14, T_DIM, x, 31, i ? "wallet USD value" : "wallet BTC balance");
+        stats.rate[i] = text(stats.scr, &pm_mono_22, T_HERO, x, 51, "loading");
     }
-    rect(stats.scr, M, 91, W - 2 * M, 1, T_FAINT);
-    for (int i = 0; i < 12; i++) {
-        int x = i % 2 ? RX : M, y = 94 + (i / 2) * 21;
+    rect(stats.scr, M, 77, W - 2 * M, 1, T_FAINT);
+    for (int i = 0; i < 10; i++) {
+        int x = i % 2 ? RX : M, y = 82 + (i / 2) * 30;
         text(stats.scr, &pm_text_11, T_DIM, x, y, caps[i]);
-        stats.value[i] = text(stats.scr, &pm_text_14, T_VALUE, x, y + 9, "-");
+        stats.value[i] = text(stats.scr, &pm_text_14, T_VALUE, x, y + 12, "-");
     }
-    text(stats.scr, &pm_text_11, T_DIM, M, 224, "solo: accepted shares are work, not payouts");
 }
 
 static void update_stats(const ui_model_t* m)
@@ -1208,41 +1206,46 @@ static void update_stats(const ui_model_t* m)
     char buf[64], a[16], b[16];
     set_text(stats.head.left, "miner statistics  5/5");
     header_update(&stats.head, m);
-    snprintf(buf, sizeof(buf), "%.0f", m->hashrate_khs);
+    if (m->wallet_valid) snprintf(buf, sizeof(buf), "%lld.%08lld",
+        (long long)(m->wallet_sats / 100000000), (long long)(m->wallet_sats % 100000000));
+    else snprintf(buf, sizeof(buf), "%s", !m->wallet_set ? "not set" : m->wallet_attempted ? "unavailable" : "loading");
     set_text(stats.rate[0], buf);
-    snprintf(buf, sizeof(buf), "%.0f", m->hashrate_60s_khs);
+    if (m->wallet_valid && m->chain_valid) snprintf(buf, sizeof(buf), "%.2f", m->wallet_sats / 100000000.0 * m->price_usd);
+    else snprintf(buf, sizeof(buf), "%s", m->wallet_attempted ? "unavailable" : "loading");
     set_text(stats.rate[1], buf);
-    snprintf(buf, sizeof(buf), "%.1f", m->hashrate_session_khs);
+    snprintf(buf, sizeof(buf), "%.0f / %.0f", m->hashrate_khs, m->hashrate_60s_khs);
     set_text(stats.value[0], buf);
-    snprintf(buf, sizeof(buf), "%.0f - %.0f", m->hashrate_min_khs, m->hashrate_max_khs);
-    set_text(stats.value[1], buf);
     snprintf(buf, sizeof(buf), "%lu / %lu", (unsigned long)m->shares, (unsigned long)m->rejected);
+    set_text(stats.value[1], buf);
+    ui_fmt_si(m->best_diff, a, sizeof(a));
+    ui_fmt_si(m->pool_diff, b, sizeof(b));
+    snprintf(buf, sizeof(buf), "%s / %s", a, b);
     set_text(stats.value[2], buf);
-    ui_fmt_si(m->pool_diff, buf, sizeof(buf));
-    set_text(stats.value[3], buf);
-    ui_fmt_si(m->best_diff, buf, sizeof(buf));
-    set_text(stats.value[4], buf);
-    ui_fmt_commas(m->jobs, buf, sizeof(buf));
-    set_text(stats.value[5], buf);
     if (m->cpu_valid) snprintf(buf, sizeof(buf), "%.0f%% / %.0f%%", m->cpu_pct[0], m->cpu_pct[1]);
     else snprintf(buf, sizeof(buf), "measuring");
-    set_text(stats.value[6], buf);
+    set_text(stats.value[3], buf);
     uint32_t used = m->heap_total > m->heap_free ? m->heap_total - m->heap_free : 0;
     if (m->heap_total) snprintf(buf, sizeof(buf), "%.0f%%  %lu/%lu KB", 100.0f * used / m->heap_total,
         (unsigned long)(used / 1024), (unsigned long)(m->heap_total / 1024));
     else snprintf(buf, sizeof(buf), "measuring");
-    set_text(stats.value[7], buf);
+    set_text(stats.value[4], buf);
     snprintf(buf, sizeof(buf), "%.0f C / %d dBm", m->temp_c, m->rssi_dbm);
-    set_text(stats.value[8], buf);
+    set_text(stats.value[5], buf);
     if (m->sd_ready) snprintf(buf, sizeof(buf), "%lu rows saved", (unsigned long)m->sd_rows);
     else snprintf(buf, sizeof(buf), "unavailable");
-    set_text(stats.value[9], buf);
+    set_text(stats.value[6], buf);
     ui_fmt_si(m->sha_checked, a, sizeof(a));
     ui_fmt_si(m->sha_mismatched, b, sizeof(b));
     snprintf(buf, sizeof(buf), "%s / %s", a, b);
-    set_text(stats.value[10], buf);
-    set_color(stats.value[10], m->sha_mismatched ? C_ALARM : T_VALUE);
-    set_text(stats.value[11], !m->wallet_set ? "not configured" : m->link == UI_LINK_MINING ? "set / authorized" : "set / connecting");
+    set_text(stats.value[7], buf);
+    set_color(stats.value[7], m->sha_mismatched ? C_ALARM : T_VALUE);
+    if (m->wallet_valid) snprintf(buf, sizeof(buf), "%+lld", (long long)m->wallet_pending_sats);
+    else snprintf(buf, sizeof(buf), "loading");
+    set_text(stats.value[8], buf);
+    snprintf(buf, sizeof(buf), "%s", !m->wallet_set ? "not configured" :
+        m->wallet_valid && !m->wallet_fresh ? "stale balance" :
+        m->link == UI_LINK_MINING ? "set / authorized" : "set / connecting");
+    set_text(stats.value[9], buf);
 }
 
 /* ---- motion and pages --------------------------------------------------- */

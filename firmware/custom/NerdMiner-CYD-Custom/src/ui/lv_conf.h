@@ -10,13 +10,14 @@
 /* Leave room for the TLS record buffers and RSA certificate verification.
  * Reserving 56 KB here fragmented the remaining heap enough for RSA to fail
  * allocation, reported by mbedTLS as an untrusted certificate. The screens
- * need about 33 KB on ESP32; 44 KB retains animation/setup headroom.
+ * use at most about 36 KB on ESP32; 40 KB retains animation/setup headroom
+ * while leaving certificate-verification space when FAT is mounted.
  * The 64-bit renderer needs a larger pool for its larger LVGL structs. */
 #include <stdint.h>
 #if UINTPTR_MAX > 0xFFFFFFFFu
 #define LV_MEM_SIZE (80U * 1024U)
 #else
-#define LV_MEM_SIZE (44U * 1024U)
+#define LV_MEM_SIZE (40U * 1024U)
 #endif
 #ifdef ARDUINO
 /* A static pool this size overflows the ESP32's static DRAM segment, so the

@@ -22,6 +22,7 @@
 #include "speaker.h"
 #include "poolWatchdog.h"
 #include "miningTarget.h"
+#include "wManager.h"
 
 //10 Jobs per second
 #define NONCE_PER_JOB_SW 4096
@@ -497,6 +498,9 @@ void runStratumWorker(void *name) {
 
   while(true) {
 
+#ifdef PANICMINER_UI
+    wifiRecoverConnection();
+#endif
     if(WiFi.status() != WL_CONNECTED){
       client.stop();
       isMinerSuscribed = false;
@@ -511,7 +515,9 @@ void runStratumWorker(void *name) {
 #endif
         wifiWasConnected = false;
       }
+#ifndef PANICMINER_UI
       WiFi.reconnect();
+#endif
       vTaskDelay(5000 / portTICK_PERIOD_MS);
       continue;
     }

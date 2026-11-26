@@ -12,6 +12,7 @@ int main() {
     {
         SDStore store;
         assert(store.mount());
+        assert(SD.max_files==2 && !SD.format_requested);
         assert(SD.last_bus==&host_tft_bus && host_tft_bus.resets==1);
         assert(host_routes.at(14)==VSPICLK_OUT_IDX && host_routes.at(13)==VSPID_OUT_IDX);
         assert(host_routes.at(18)==VSPICLK_OUT_IDX && host_routes.at(23)==VSPID_OUT_IDX);

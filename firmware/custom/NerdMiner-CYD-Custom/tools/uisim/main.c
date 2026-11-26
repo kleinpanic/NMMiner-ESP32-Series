@@ -82,6 +82,9 @@ static ui_model_t fixture(void)
     m.cpu_pct[1] = 99.8f;
     m.pool_diff = 0.00015f;
     m.wallet_set = true;
+    m.wallet_valid = m.wallet_fresh = true;
+    m.wallet_sats = 123456;
+    m.wallet_pending_sats = 700;
     m.sd_ready = true;
     m.sd_rows = 48;
     m.shares = 1284;
@@ -269,7 +272,8 @@ int main(int argc, char** argv)
     save(out, "clock-cold");
 
     ui_set_page(UI_PAGE_STATS);
-    ui_update(&m);
+    cold.wallet_set = true;
+    ui_update(&cold);
     run(900);
     save(out, "stats-cold");
     m = fixture();

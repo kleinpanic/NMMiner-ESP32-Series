@@ -16,6 +16,7 @@
 #include "mining.h"
 #include "timeconst.h"
 #include "speaker.h"
+#include "wifiRecovery.h"
 #ifdef PANICMINER_UI
 #include "sdstore.h"
 extern SDStore sdStore;
@@ -629,7 +630,8 @@ void init_WifiManager()
                 }
                 if (WiFi.status() == WL_CONNECTED) break;
             }
-            WiFi.setAutoReconnect(true);
+            // Runtime recovery is owned by the Stratum task below.
+            WiFi.setAutoReconnect(false);
 #else
             WiFi.persistent(true);
             WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
@@ -686,9 +688,9 @@ void init_WifiManager()
     //Conectado a la red Wifi
     if (WiFi.status() == WL_CONNECTED) {
 #ifdef PANICMINER_UI
-        // Serial provisioning and Setup can join without entering the saved-
-        // network retry loop; every successful path must restore recovery.
-        WiFi.setAutoReconnect(true);
+        // One owner retries after startup, without racing the event callback
+        // or interrupting an in-flight association every five seconds.
+        WiFi.setAutoReconnect(false);
 #endif
         //tft.pushImage(0, 0, MinerWidth, MinerHeight, MinerScreen);
         Serial.println("");
@@ -783,6 +785,26 @@ void init_WifiManager()
 }
 
 //----------------- MAIN PROCESS WIFI MANAGER --------------
+void wifiRecoverConnection() {
+#ifdef PANICMINER_UI
+    static WifiRecovery recovery;
+    if (!recovery.due(millis(), WiFi.status() == WL_CONNECTED)) return;
+    if (!Settings.WifiSSID.length()) return;
+    WiFi.setAutoReconnect(false);
+    WiFi.disconnect(false, false);
+    delay(120);
+    WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
+    WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
+    esp_err_t mode = esp_wifi_set_protocol(WIFI_IF_STA,
+        WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
+    // Startup's explicit BSSID/channel was only for trying candidate APs.
+    // Rebuild the config without that restriction after a runtime drop.
+    wl_status_t status = WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
+    Serial.printf("[WIFI] runtime recovery: unpinned all-channel join, mode %s, status %d\n",
+                  esp_err_to_name(mode), status);
+#endif
+}
+
 int oldStatus = 0;
 
 void wifiManagerProcess() {

@@ -14,6 +14,9 @@
 #include "chainFeed.h"
 #include "mining.h"
 #include "monitor.h"
+#include "walletStats.h"
+#include "drivers/storage/storage.h"
+extern TSettings Settings;
 
 #define PRICE_API "https://mempool.space/api/v1/prices"
 #define PERIOD_MS (2 * 60 * 1000)
@@ -63,7 +66,8 @@ static TaskHandle_t s_task;
 static chain_snapshot_t s_snap;
 static std::atomic<bool> s_pause_test{false};
 
-static bool get_body(HTTPClient& http, WiFiClientSecure& tls, const char* url, String& body)
+static bool get_body(HTTPClient& http, WiFiClientSecure& tls, const char* url, String& body,
+                     const char* label = nullptr)
 {
     if (!http.begin(tls, url)) return false;
     int code = http.GET();
@@ -74,7 +78,7 @@ static bool get_body(HTTPClient& http, WiFiClientSecure& tls, const char* url, S
         // mbedTLS's own error and the heap tell them apart.
         char err[100] = "";
         tls.lastError(err, sizeof(err));
-        Serial.printf("[CHAIN] %s -> %d %s; heap %u free, largest block %u\n", url, code, err,
+        Serial.printf("[CHAIN] %s -> %d %s; heap %u free, largest block %u\n", label ? label : url, code, err,
                       (unsigned)ESP.getFreeHeap(), (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
     }
     http.end();   // keeps the connection open for the next request (setReuse)
@@ -101,7 +105,7 @@ static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
         uint32_t h = strtoul(body.c_str(), NULL, 10);
         if (h) { n.height = h; ok++; }
     }
-    StaticJsonDocument<64> filter;
+    StaticJsonDocument<192> filter;
     filter["currentHashrate"] = true;
     filter["currentDifficulty"] = true;
     if (get_body(http, tls, getGlobalHash, body)
@@ -122,6 +126,32 @@ static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
         n.fee_eco = doc["economyFee"] | n.fee_eco;
         ok++;
     }
+    char address[91];
+    if (walletAddress(Settings.BtcWallet, address, sizeof(address))) {
+        char url[140];
+        snprintf(url, sizeof(url), "https://mempool.space/api/address/%s", address);
+        doc.clear();
+        filter.clear();
+        filter["chain_stats"]["funded_txo_sum"] = true;
+        filter["chain_stats"]["spent_txo_sum"] = true;
+        filter["mempool_stats"]["funded_txo_sum"] = true;
+        filter["mempool_stats"]["spent_txo_sum"] = true;
+        n.wallet_attempted = true;
+        if (get_body(http, tls, url, body, "wallet balance") &&
+            !deserializeJson(doc, body, DeserializationOption::Filter(filter))) {
+            JsonObject chain = doc["chain_stats"], pending = doc["mempool_stats"];
+            int64_t balance, delta;
+            if (chain["funded_txo_sum"].is<uint64_t>() && chain["spent_txo_sum"].is<uint64_t>() &&
+                pending["funded_txo_sum"].is<uint64_t>() && pending["spent_txo_sum"].is<uint64_t>() &&
+                walletNetSats(chain["funded_txo_sum"], chain["spent_txo_sum"], balance) && balance >= 0 &&
+                walletNetSats(pending["funded_txo_sum"], pending["spent_txo_sum"], delta)) {
+                n.wallet_valid = true;
+                n.wallet_sats = balance;
+                n.wallet_pending_sats = delta;
+                n.wallet_updated_ms = millis();
+            }
+        }
+    }
     tls.stop();
 
     n.valid = n.height && n.price_usd > 0 && n.difficulty > 0;
@@ -131,6 +161,8 @@ static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
     Serial.printf("[CHAIN] %d/5 ok in %lu ms: block %lu, $%.0f, difficulty %.4g, fees %d/%d/%d\n",
                   ok, (unsigned long)(millis() - t0), (unsigned long)n.height, n.price_usd,
                   n.difficulty, n.fee_fast, n.fee_hour, n.fee_eco);
+    Serial.printf("[CHAIN] stack minimum free %u bytes; wallet %s\n",
+                  (unsigned)uxTaskGetStackHighWaterMark(NULL), n.wallet_valid ? "loaded" : "unavailable");
 }
 
 static void feed_loop(void*)
@@ -166,7 +198,7 @@ void chainFeedStart(void)
     // the miner's SHA-256 engine. With every engine held per job, mbedTLS finds
     // them busy and hashes in software instead (see minerShaLockAll).
     minerShaLockAll(true);
-    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 12288, NULL, 2, &s_task, APP_TASK_CORE);
+    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 8192, NULL, 2, &s_task, APP_TASK_CORE);
 }
 
 void chainFeedPoke(void)

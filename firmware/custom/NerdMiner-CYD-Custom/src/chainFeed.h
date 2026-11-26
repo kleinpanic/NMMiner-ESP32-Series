@@ -13,6 +13,9 @@ typedef struct {
     float retarget_change_pct;
     uint32_t retarget_blocks;
     int fee_fast, fee_hour, fee_eco;  // sat/vB
+    bool wallet_valid, wallet_attempted;
+    int64_t wallet_sats, wallet_pending_sats;
+    uint32_t wallet_updated_ms;
 } chain_snapshot_t;
 
 void chainFeedStart(void);    // idempotent; call once Wi-Fi is up

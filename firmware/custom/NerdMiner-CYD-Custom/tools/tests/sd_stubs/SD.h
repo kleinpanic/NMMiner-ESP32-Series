@@ -5,8 +5,12 @@ constexpr int CARD_NONE=0, CARD_SDHC=3;
 struct HostSD {
     bool mount_ok=true;
     int type=CARD_SDHC, ends=0;
+    unsigned max_files=0;
+    bool format_requested=false;
     SPIClass* last_bus=nullptr;
-    bool begin(int,SPIClass& bus,unsigned) { last_bus=&bus;bus.begin();return mount_ok; }
+    bool begin(int,SPIClass& bus,unsigned,const char* = "/sd",unsigned slots=5,bool format=false) {
+        max_files=slots;format_requested=format;last_bus=&bus;bus.begin();return mount_ok;
+    }
     void end() { ++ends; }
     int cardType() const { return type; }
     uint64_t totalBytes() const { return 8192; }
