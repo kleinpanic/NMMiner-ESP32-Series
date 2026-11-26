@@ -37,19 +37,16 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**Hardware acceptance is still open.** The newest image adds case-insensitive
-SD private-path protection and rejects FAT filename aliases. It was installed
-after a fresh verified full backup; fresh native qualification is running.
-The previous image passed a strict 20-minute speed test at **967.639 kH/s**
-against the 994 kH/s baseline, with all sampled rolling rates in the required
-944.3–1043.7 band and all 17 checks passing. Complete SD downloads passed,
-including cancellation recovery and simultaneous status requests. Its first
-hour attempt encountered an API timeout and a partial feed cycle; automatic
-recovery worked, but that attempt failed. A repeat was interrupted for the
-verified SD privacy repair. Charger cold boot with the SD card inserted still
-requires the owner's physical test. Publication remains on hold.
-Exact binary digests and all failed/interrupted attempts are preserved in
-[runtime validation](docs/panicminer-validation-2026-11-25.md).
+**Hardware acceptance is still open.** The newest installed image uses fixed
+mining-job queues and nonblocking SD exports with retained bytes and a larger
+memory reserve. It also protects private SD paths against case and filename
+aliases. A fresh verified backup preceded installation; native export pressure
+and fresh endurance qualification are running. The preceding image maintained
+**968.153 kH/s** for a full 20-minute window, but its post-run SD download timed
+out and triggered a mining-job allocation abort; that composite attempt failed.
+Charger cold boot with the SD card inserted still requires the owner's physical
+test. Publication remains on hold. Exact digests, tests and failed attempts are
+preserved in [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
 Wallet BTC/USD values come from the **configured payout address**, after removing
 its worker suffix. They describe that address's funds, including other transfers;

@@ -6,7 +6,18 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current SD private-path qualification
+### Current fixed-job and nonblocking-export qualification
+
+Installed application: **1,781,488 bytes**, SHA-256
+`e25408f421249e7fba83e63b911f0bd0649d0ac409b9c14a014eb088926f73de`,
+firmware source `aa23288`. A fresh full 4 MB backup passed checksum/full-flash
+comparison; all four written images verified. The exact application, ELF and
+four factory-image inputs are archived locally. Three complete native feed
+cycles passed after saved-settings startup. Export pressure, page/reconnect,
+strict 20-minute and full-hour qualification remain in progress. No overall
+hardware PASS is claimed.
+
+### Previous SD private-path qualification
 
 Installed application: **1,782,816 bytes**, SHA-256
 `f9c8fe99b59c91f396a5e54d0880c13e55aa068ff700bd04b260e3dfee22fba8`,

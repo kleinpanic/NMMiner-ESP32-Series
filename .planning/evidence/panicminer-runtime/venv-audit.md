@@ -56,3 +56,10 @@ The download-completeness repair also uses only the standard library. Its full
 root-venv suite passes 99 tests and 27 subtests, including truncated CSV and
 invalid Content-Length rejection. All build, flash, capture and qualification
 commands continue to use the root virtual environment.
+
+The feed-window checker repair uses only the standard library and adds two
+regressions for out-of-window and untimestamped feed evidence. The complete
+root-venv pytest suite and unittest discovery pass. A repeated tracked-source
+forbidden-invocation scan found zero matches; no dependency or environment
+change was needed. Builds, capture, installation and qualification continue
+through the root virtual environment.

@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: SD API private-path alias repair 6cf06a7 installed as f9c8fe99 after fresh verified full backup; native preflight and fresh endurance qualification running. Previous hour FAIL and reset retry INTERRUPTED preserved. Physical SD charger and publication held.
-last_updated: "2026-11-26T12:06:07.685Z"
-state_head: 6cf06a7829b205185c48276850d5049bf69f43fb
+stopped_at: Fixed mining requests and nonblocking SD exports aa23288 installed as e25408f4 after verified full backup. Feed smoke passed; pressure and fresh endurance checks running. Previous image rejected after post-window JobPush abort. Physical SD charger/publication held.
+last_updated: "2026-11-26T12:44:18.618Z"
+state_head: aa232886f58d7cfb6d135e7684b3d55fbd4e17bc
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application f9c8fe99b59c91f396a5e54d0880c13e55aa068ff700bd04b260e3dfee22fba8 (1,782,816 bytes), source 6cf06a7. Fresh full 4 MB backup/checksum/full-flash comparison and all four written images verified; exact factory inputs and matching ELF archived. This candidate repairs case-sensitive SD API privacy checks and rejects filename aliases. The full sanitizer suite, 68 SD path scenarios, four-alias old-code negative control and board build pass. Fresh native rejection, feed/export/page/reconnect checks and timed/one-hour qualification are running.
+- Current installed application e25408f421249e7fba83e63b911f0bd0649d0ac409b9c14a014eb088926f73de (1,781,488 bytes), source aa23288. Fresh verified full 4 MB backup and all four written images verified; exact factory inputs and ELF archived. Fixed four-entry job queues remove request allocation; exports retain partial bytes across one nonblocking send per pass with a 16 KB / 4 KB heap reserve. Full sanitizer and Python suites, allocation/backpressure regressions and board build pass. Native feed smoke passed; pressure/page/reconnect and fresh endurance qualification are running. The previous f9c8fe99 image held 968.153 kH/s over 1,204.836 seconds, but its post-window export timed out and triggered an ELF-decoded JobPush allocation abort. Original failed/interrupted evidence is preserved.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Finish native qualification of the SD API privacy repair image f9c8fe99/source 6cf06a7. Preserve the previous complete hour FAIL and interrupted reset retry. Keep the unchanged 944.3–1043.7 kH/s band, native/wallet/SD gates and a newly accepted pool share.
+- Finish native pressure and endurance qualification of e25408f4/source aa23288. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T12:06:07.666Z
-**Stopped at:** SD API private-path alias repair 6cf06a7 installed as f9c8fe99 after fresh verified full backup; native preflight and fresh endurance qualification running. Previous hour FAIL and reset retry INTERRUPTED preserved. Physical SD charger and publication held.
+**Last session:** 2026-11-26T12:44:18.599Z
+**Stopped at:** Fixed mining requests and nonblocking SD exports aa23288 installed as e25408f4 after verified full backup. Feed smoke passed; pressure and fresh endurance checks running. Previous image rejected after post-window JobPush abort. Physical SD charger/publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification of installed f9c8fe99 remains open. Charger cold boot with SD requires owner availability; publication held.
+- Clean full-hour USB/SD qualification of installed e25408f4 remains open. Charger cold boot with SD requires owner availability; publication held.
