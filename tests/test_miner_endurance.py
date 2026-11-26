@@ -1,11 +1,14 @@
 import copy
 import importlib.util
+import sys
 import unittest
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location("endurance", Path(__file__).parents[1] / "scripts/check_miner_endurance.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
+import sample_miner_api
 
 
 class EnduranceEvidenceTests(unittest.TestCase):
@@ -106,6 +109,30 @@ class NativeCaptureParserTests(unittest.TestCase):
             module.record_native_line(state, f"avg. hashrate {value} KH/s", 1)
         self.assertFalse(state["rates"])
         self.assertGreaterEqual(len(state["faults"]), 3)
+
+
+class ApiSamplerTests(unittest.TestCase):
+    def test_selected_fields_exclude_wallet_values_and_settings(self):
+        data = {"miner": {"hashrate10sKhs": 980, "hashrate60sKhs": 980, "totalMHashes": 100,
+            "poolAuthorized": True, "heapFreeBytes": 25000, "chipTempC": 45,
+            "sharesAccepted": 0, "sharesRejected": 0, "bestVerifiedDifficulty": 0, "poolDifficulty": 1},
+            "sd": {"mounted": True, "rowsSaved": 2},
+            "wallet": {"valid": True, "ageSeconds": 10, "balanceSats": 123456, "pendingSats": 654321},
+            "settings": {"password": "synthetic-unused"}}
+        point = sample_miner_api.status_point(data, 1000, .1)
+        self.assertTrue(sample_miner_api.ready(point))
+        self.assertNotIn(123456, point.values())
+        self.assertNotIn(654321, point.values())
+        self.assertNotIn("settings", point)
+
+    def test_warmup_rejects_missing_data_bad_rates_and_disconnected_devices(self):
+        good = {"rate10_khs": 980, "rate60_khs": 980, "pool_authorized": True,
+                "sd_mounted": True, "wallet_valid": True, "wallet_age_seconds": 0}
+        for key, value in (("rate10_khs", float("nan")), ("rate60_khs", 944.2),
+                           ("pool_authorized", False), ("sd_mounted", False),
+                           ("wallet_valid", False), ("wallet_age_seconds", -1), ("wallet_age_seconds", 181)):
+            with self.subTest(key=key, value=value):
+                self.assertFalse(sample_miner_api.ready({**good, key: value}))
 
 
 if __name__ == "__main__":

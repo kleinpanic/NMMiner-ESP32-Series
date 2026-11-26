@@ -47,6 +47,19 @@ newline to `logs/<run>/command.txt` sends that diagnostic through the existing
 serial owner. Avoid `PMDUMP` during performance measurements. Ctrl-C stops
 capture without erasing or reconfiguring the miner.
 
+In a second terminal, collect the API evidence using the miner's current LAN
+address and the same capture directory:
+
+```bash
+./.venv/bin/python scripts/sample_miner_api.py --host <miner-ip> --out logs/<run>
+```
+
+The sampler waits for stable readings, records a full 20 minutes, stops on a
+rate/data/native fault and downloads the measured SD CSV after the timed window.
+It keeps wallet amounts and configuration out of the report. Optional
+`--image-sha256` records a digest from the separately verified flash manifest;
+the sampler itself does not establish which image was flashed.
+
 `scripts/check_miner_endurance.py` independently validates the API sample JSON,
 native observer JSON and raw serial log from a qualification run:
 

@@ -5,6 +5,7 @@ stay in ignored logs/. --reset pulses EN without erasing saved settings.
 """
 import argparse
 import json
+import os
 import signal
 import time
 from pathlib import Path
@@ -24,7 +25,9 @@ def main():
     out = args.out.resolve()
     if not out.is_relative_to(root / "logs") or args.duration <= 0:
         parser.error("Use an output directory inside ignored logs/ and a positive duration.")
-    out.mkdir(parents=True, exist_ok=True)
+    os.umask(0o077)
+    out.mkdir(parents=True, exist_ok=True, mode=0o700)
+    out.chmod(0o700)
     if (out / "serial.log").exists() or (out / "result.json").exists():
         parser.error("Use a fresh evidence directory; existing captures are preserved.")
 
