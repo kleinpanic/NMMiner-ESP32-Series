@@ -12,6 +12,7 @@
 #include "mining.h"
 #include "monitor.h"
 #include "chainFeed.h"
+#include "boundedTransfer.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -64,6 +65,27 @@ static std::string apiSafePath(const String& raw) {
   std::string s = SDStore::sanitizePath(raw.c_str());
   if (s == SD_CONFIG_PATH || s == "/sd/secrets" || s.compare(0, 12, "/sd/secrets/") == 0) return "";
   return s;
+}
+
+static void sendSdFile(fs::File& file, const char* contentType) {
+  const size_t length = file.size();
+  apiServer.setContentLength(length);
+  apiServer.send(200, contentType, "");
+  WiFiClient client = apiServer.client();
+  client.setTimeout(2);
+  const uint32_t started = millis();
+  const size_t sent = transferBlocks(length,
+    [&](uint8_t* buffer, size_t count) { return file.read(buffer, count); },
+    [&](const uint8_t* buffer, size_t count) { return client.write(buffer, count); },
+    [&]() { return client.connected() && uint32_t(millis() - started) < 30000; },
+    []() { vTaskDelay(1); });
+  if (sent != length) {
+    // An incomplete Content-Length response must close, rather than hanging
+    // this API task or allowing a client to mistake it for a complete file.
+    client.stop();
+    Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes\n",
+                  (unsigned)sent, (unsigned)length);
+  }
 }
 
 // --- handlers --------------------------------------------------------------
@@ -191,7 +213,7 @@ static void handleSdDownload() {
   std::string safeBase = headerSafeName(base);
   apiServer.sendHeader("Content-Disposition", String("attachment; filename=\"") + safeBase.c_str() + "\"");
   apiServer.sendHeader("X-Content-Type-Options", "nosniff");
-  apiServer.streamFile(file, "application/octet-stream");
+  sendSdFile(file, "application/octet-stream");
   file.close();
 }
 
@@ -211,7 +233,7 @@ static void handleSdDelete() {
 static void handleSdLog() {
   fs::File file = sdStore.openRead(SD_CSV_PATH);
   if (!file) { sendError(404, "no log"); return; }
-  apiServer.streamFile(file, "text/csv");
+  sendSdFile(file, "text/csv");
   file.close();
 }
 
