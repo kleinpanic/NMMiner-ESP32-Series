@@ -67,6 +67,12 @@ requires all 17 images when present or explicitly requested; public checkouts
 report its absence as a skip. The updated local suite passes 108 tests and 29
 subtests; public CI runs 107 with one explicit private-fixture skip. Firmware
 source and the hardware-tested application are unchanged by this test repair.
+The [public CI run](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/runs/45873084629)
+passed both board builds, sanitizers, restore safety, Python tests, both UI
+themes and artifact uploads. The [release](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1)
+was published on November 26 after history/private-value/binary scans passed.
+All six uploaded assets were downloaded again; their bytes and both external
+and bundled checksums matched the local release inputs.
 
 | Same-unit measurement | Hashrate | Evidence boundary |
 | --- | --- | --- |

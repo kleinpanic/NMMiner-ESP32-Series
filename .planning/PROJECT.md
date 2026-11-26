@@ -61,12 +61,17 @@ new accepted share, 60 SD records, 78 complete in-window feeds and no reboot,
 API gap, radio drop, SHA mismatch or uncommanded navigation. Complete exports,
 blocked-client pressure, 65-second source-port reuse and controlled recovery
 passed. A separate saved-settings EN reset with SD restored pool authorization,
-wallet data and lifetime counters. Full sanitizer suite/build and 105 Python
-tests / 29 subtests pass. Exact identity, snapshots and original failures are
+wallet data and lifetime counters. Full sanitizer suite/build and 108 local Python
+tests / 29 subtests pass. Public CI passed both firmware targets, sanitizers,
+restore safety, 107 Python tests / 29 subtests (one private-fixture skip),
+both UI themes and artifact uploads. Exact identity, snapshots and original failures are
 in [the validation record](../docs/panicminer-validation-2026-11-25.md).
 
-The owner authorized publishing the single repository and releasing the project
-after these results. Version v4.0.0-rc.1 is a hardware-specific release candidate;
+The owner authorized publication after these results. The canonical source is
+public and [v4.0.0-rc.1](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1)
+is published with six downloaded, checksum-verified assets. Release CI at
+`8d24cd1` passed and history, private-value and binary secret scans were clean.
+Version v4.0.0-rc.1 is a hardware-specific release candidate;
 the full milestone remains open. Charger cold boot with SD, complete egress
 capture, portal/fallback-pool persistence and observed audio/LED events still
 require acceptance. Panel settings were already confirmed (SEE-03). The owned

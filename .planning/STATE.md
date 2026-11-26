@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: USB/SD endurance and saved-settings reboot PASS on 23236906 / source 49afce5. Owner authorized public source and release; final secret scan, publication and release verification are underway. Remaining hardware checks are explicitly release-candidate limitations.
-last_updated: "2026-11-26T17:56:42.617Z"
-state_head: e15c836dc3d8b96ee4af5b4d7d2634cdd200d9bd
+stopped_at: Published v4.0.0-rc.1 with six verified assets; source public, release CI green at 8d24cd1, secret scans PASS. Installed 23236906 / source 49afce5 passed USB/SD endurance and saved-settings reboot. Remaining physical/egress/portal checks are documented RC limitations.
+last_updated: "2026-11-26T18:09:42.985Z"
+state_head: 8d24cd14d06e1cf5ba71558c458417aa904df9bd
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,11 +24,11 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application 23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986 (1,781,040 bytes), firmware source 49afce5. Fresh full 4 MB backup and all four written images verified; matching factory inputs/ELF archived. USB/SD composite qualification PASS: strict 1,203.988 seconds / 222 samples / 967.899 kH/s, all 17 checks; same-boot hour 3,614.418 seconds / 236 samples / 967.925 kH/s, one new pool-accepted share, 60 SD records and 78 complete in-window feeds. All 23 continuous checks passed: zero API errors, reboots, native faults, radio drops, SHA mismatches or uncommanded navigation. Full post-window CSV contained 409 nine-column records. Smoke/private paths, complete/half-closed exports, immediate follow-up/cancellation, ten pressure exports / 66 status requests and 65-second JSON/SD port reuse passed. Five pages and controlled Wi-Fi recovery passed in 36.216 seconds. Subsequent observation reached 164.51 minutes on one boot without native faults. A separate saved-settings EN reset with SD passed: pool, wallet data and persisted lifetime 3 accepted / best 3.077973282 restored. This is laptop USB restart evidence, not charger cold boot. C++ sanitizers/build and 105 Python tests / 29 subtests pass. Earlier rejected images and failures remain in the validation record. No firmware changed after source 49afce5.
+- Current installed application 23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986 (1,781,040 bytes), firmware source 49afce5. Fresh full 4 MB backup and all four written images verified; matching factory inputs/ELF archived. USB/SD composite qualification PASS: strict 1,203.988 seconds / 222 samples / 967.899 kH/s, all 17 checks; same-boot hour 3,614.418 seconds / 236 samples / 967.925 kH/s, one new pool-accepted share, 60 SD records and 78 complete in-window feeds. All 23 continuous checks passed: zero API errors, reboots, native faults, radio drops, SHA mismatches or uncommanded navigation. Full post-window CSV contained 409 nine-column records. Smoke/private paths, complete/half-closed exports, immediate follow-up/cancellation, ten pressure exports / 66 status requests and 65-second JSON/SD port reuse passed. Five pages and controlled Wi-Fi recovery passed in 36.216 seconds. Subsequent observation reached 164.51 minutes on one boot without native faults. A separate saved-settings EN reset with SD passed: pool, wallet data and persisted lifetime 3 accepted / best 3.077973282 restored. This is laptop USB restart evidence, not charger cold boot. C++ sanitizers/build and 108 local Python tests / 29 subtests pass. Public CI at 8d24cd1 passed both firmware builds, sanitizer/restore tests, 107 Python tests plus 29 subtests (one explicit private-fixture skip), both UI themes and artifact uploads. Earlier rejected images and failures remain in the validation record. No firmware changed after source 49afce5.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
-- Current evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). SD/card-removed results are separate; no composite SD-enabled qualification PASS is established yet.
+- Current evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). Current SD-enabled composite qualification passed; earlier card-removed and rejected-image runs remain separate historical evidence.
 - The parser-memory image 696e07eb avoided the earlier heap abort and recovered after a controlled Wi-Fi drop in 44.047 seconds, but failed a strict 10-second rate reading (932.41 kH/s). Its timed run and soak are preserved as failed/interrupted.
 - The earlier experiment e5ab82cf (1,779,840 bytes) mounted SD and authorized the pool, but equal feed/software-miner priority produced repeated TLS connection resets and the feed smoke check timed out. It is rejected.
 - Earlier application 4f318f75542122b963d6303676ac025550609cc995854066f6da00887b1e87f4 (1,779,856 bytes) retains authenticated HTTPS across 45-second updates at feed priority 2. Fresh full 4 MB backup checksum/flash comparison and all four installed images verified. Repeated 5/5 Chain/wallet cycles passed; reuse reduced fetch time from 10.0 to 1.3–1.6 seconds with stable active TLS scratch and zero SDK fallbacks.
@@ -80,16 +80,18 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - Canonical repository: https://github.com/kleinpanic/NMMiner-ESP32-Series (root branch `main`). Firmware, tooling, tests and reverse-engineering notes are ordinary tracked files in this repository.
 - Source consolidation is commit `a730def`; the previous nested Git history is preserved locally under ignored `external/`.
 - The former `kleinpanic/NerdMiner-CYD-Custom` repository is historical. The owner requests one canonical public repository, with no release claim before hardware acceptance.
-- GitHub description and topics have been updated. Secrets and raw hardware evidence remain local and excluded from publication.
+- GitHub description and topics are set; the canonical source is public. Published [v4.0.0-rc.1](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1) after CI and secret scans passed; all six assets were downloaded and checksum-verified. Secrets and raw hardware evidence remain local and excluded from publication.
 
 ## Open questions
 
-- Finish native pressure and endurance qualification of d67f5107/source d5a39e4. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
+- USB/SD pressure, strict Mine run and hour qualification are complete on 23236906 / source 49afce5. Rejected images and all prior failures are preserved; they do not describe the released image.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
-- One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
+- Complete native egress capture remains a broader milestone gate; the one-hour USB/SD soak passed. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
 
 ## Decisions
+
+Historical entries below retain their original context; current acceptance and publication status above supersede their earlier holds.
 
 - [Phase 1]: 2026-11-25 hardware update supersedes the earlier Device/Open questions: Chain TLS fixed by freeing 12 KB of LVGL reservation; matching screens flashed; four native captures complete; two automatic restart recoveries passed. Full evidence: docs/panicminer-validation-2026-11-25.md. — RSA verification failed on fragmented heap, including with the HW miner paused. The 20-minute mean was 972.624 kH/s against 994 (minus 2.151%); 11 rolling readings reached below the 5% band, so per-reading acceptance remains open.
 - [Phase 1]: 2026-11-25 latest runtime work supersedes earlier device notes: manual debounced touch, verified block targets, honest pool acceptance, CPU/RAM/SD stats, nonblocking audio, and five-minute enabled NVS checkpoints are implemented with 126 passing native host cases plus audio tests. Runtime-stats firmware flashed with verified full backup; automatic Wi-Fi association is currently failing. Adaptive radio-profile recovery build is being installed; native acceptance remains open. — Do not mark hardware or hashrate acceptance complete from host tests. Current evidence is docs/panicminer-validation-2026-11-25.md; source and Espressif binary boundaries are docs/firmware-provenance.md.
@@ -105,8 +107,8 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T17:56:42.594Z
-**Stopped at:** USB/SD endurance and saved-settings reboot PASS on 23236906 / source 49afce5. Owner authorized public source and release; final secret scan, publication and release verification are underway. Remaining hardware checks are explicitly release-candidate limitations.
+**Last session:** 2026-11-26T18:09:42.965Z
+**Stopped at:** Published v4.0.0-rc.1 with six verified assets; source public, release CI green at 8d24cd1, secret scans PASS. Installed 23236906 / source 49afce5 passed USB/SD endurance and saved-settings reboot. Remaining physical/egress/portal checks are documented RC limitations.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers

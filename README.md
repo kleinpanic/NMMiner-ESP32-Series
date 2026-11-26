@@ -1,9 +1,13 @@
-# PanicMiner ESP32 workspace
+# PanicMiner for ESP32 CYD
 
 Hardware bring-up, firmware, recovery tools and validation for an
 ESP32-2432S028R 2.8-inch Cheap Yellow Display miner. The open PanicMiner
 firmware lives in the [firmware source](firmware/custom/NerdMiner-CYD-Custom).
 This single repository includes the firmware source and reverse-engineering notes.
+
+Download [v4.0.0-rc.1](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1)
+for the tested firmware, checksums, license notices and flashing instructions.
+[Build and test status](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/workflows/firmware.yml).
 
 ## Daily use
 
