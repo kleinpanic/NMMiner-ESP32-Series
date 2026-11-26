@@ -4,7 +4,434 @@ The CYD runs the matching Mine, Hash, Chain, Clock, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
 
-## November 26: SD update installed; offline card mount verified
+## November 26: SD, runtime reconnect and wallet follow-up
+
+### Paced-export qualification
+
+Current application: **1,781,808 bytes**, SHA-256
+`a6712fcef1ef3f7989478f25b6e97e110b35afbf080e551612bf02a9cb5207e0`,
+firmware source `b0282a3`. A fresh full 4 MB backup passed checksum and full-flash
+comparison before writing; all four written images verified. Three complete
+feed cycles passed, with current wallet data, pool authorization, mounted SD,
+stable TLS reservations and zero allocator fallbacks. The feed stack minimum
+was 3,732 bytes.
+
+Three consecutive native SD downloads each returned all **6,562 bytes / 145
+rows**, in 2.581–2.789 seconds. There was no radio drop or native fault, including
+the post-download watch. Five pages were exercised and Mine restored; controlled
+Wi-Fi disconnection recovered pool authorization in **41.416 seconds**, with
+one boot and no native fault. The fresh strict 20-minute run and full one-hour
+soak started at **10:10:21 UTC**; neither is accepted before its full duration. Charger cold boot with SD remains unavailable
+while the owner is asleep; publication stays held.
+
+### Packet-memory follow-up
+
+The earlier packet-budget application was **1,781,200 bytes**, SHA-256
+`4fa5892fafcfc09ebea653e24fdc4385d1f631150fbcb7427b7eeeba9adb20ea`,
+source commit `a4be00d`. A fresh full 4 MB backup passed checksum/full-flash
+comparison and all four written images verified. The native initialization log
+confirms dynamic TX 4/RX 8. Three complete feed cycles passed. Its download
+preflight then stopped after 1,536 of 6,338 bytes as the largest free block
+fell to 660 bytes. The memory guard prevented another restart or radio drop,
+but an incomplete download is still a failed check. No timed run or soak was
+started for this candidate.
+
+The next build sends at most one 512-byte block per Arduino main-loop pass,
+retaining the file/socket between passes and keeping a 180-second total deadline.
+This lets network buffers drain between writes and returns control to buttons,
+audio and logging. It builds and passes the sanitizer regression suite; fresh
+backup/installation and repeated native downloads are in progress. This is not
+yet an accepted fix.
+
+The first bounded-transfer image (`a21a35e3ed3d6359cf1830a9dae3c5df0fb6428717036154e5e739849a441645`,
+1,780,896 bytes) passed full backup/image verification and three complete feed
+cycles, but failed download prequalification. It aborted in `JobPush` when
+`std::make_shared<JobRequest>` could not allocate. The observer caught the abort
+and restart; this image is rejected. A later heap trace during another download
+measured the largest free block falling from about 15 KB to 1,396 bytes, despite
+15–17 KB of total free heap. These are fragmentation/pressure measurements, not
+proof that every earlier RF failure had the same cause.
+
+Inspection of the pinned Arduino `WiFiGeneric.cpp` found that it overrides the
+SDK defaults with 32 dynamic TX and RX packet buffers. Source commit `a4be00d`
+caps dynamic TX at four and RX at eight through the SDK initialization structure;
+it preserves radio/security fields and existing lower/static limits. The SD
+transfer also stops if free heap falls below 8 KB or the largest block below
+2 KB. The SDK remains Espressif binary code; the initialization policy is in
+`wifiMemory.cpp` and `wifiBufferBudget.h`. The full sanitizer suite, configuration
+scenarios and board build pass. Native repeated-download and endurance checks
+are still required before accepting the change.
+
+The host sampler now checks Content-Length as well as CSV structure. A truncated
+response that ends at a complete row cannot pass qualification. Complete,
+lengthless, truncated, invalid-length, oversized and HTTP-error responses have
+regression coverage. The full root-venv suite passes 99 tests and 27 subtests.
+
+### SD download follow-up
+
+After the scheduling measurement below, the automatic post-window SD CSV
+download timed out. Two manual repeats returned HTTP 200 and the first 1,360
+bytes, then stalled. Each was followed by `BEACON_TIMEOUT`; automatic pool
+recovery still worked without restarting. The associated one-hour soak was
+interrupted. The composite qualification is failed, despite passing performance
+checks inside its original 20-minute window. Regrading the later extended capture
+also fails complete-feed checks after the download-triggered radio losses.
+
+The pinned SDK's `WiFiClient::write(Stream&)` reads through the byte-at-a-time
+base interface, has no disconnect check in its file loop and does not stop when
+a storage read makes zero progress. Source commit `34892a9` replaces that path
+for both SD download routes with direct reads of at most 512 bytes, a yield
+between blocks, a deadline and abort on failed/short progress. It does not claim
+that every Wi-Fi failure was caused by this path. Ten transfer scenarios and the
+full sanitizer host suite pass; the board build passes. Repeated native downloads
+must pass before a fresh timed run and full soak are accepted.
+
+### Scheduling qualification (before SD download repair)
+
+That scheduling application was **1,781,168 bytes**, SHA-256
+`f9b46f96df8bab0520ebc7e73dbeeef935ac564d54c893a16b8274e35fb8ee6b`;
+firmware source is commit `e7ff617`. A fresh full 4 MB backup passed checksum
+and flash comparison, and all four written images independently verified.
+The CYD Stratum task now runs at priority 6, above Monitor at 5. Network waits
+still yield. No assembly kernel or rate threshold changed.
+
+Three complete live-data cycles passed with SD mounted, the saved pool worker
+authorized and wallet data valid. Active TLS scratch stayed at 11,392 bytes,
+peak 22,220, zero SDK fallbacks, with two record-buffer reservations. The feed
+task's initial minimum free stack was 3,704 bytes. All five pages were exercised;
+Mine was restored before timing. Controlled non-erasing Wi-Fi disconnection
+recovered pool authorization in **41.153 seconds**, with one boot and no fault.
+Across the first eight prepared jobs, the maximum preparation was **3,823 µs**.
+
+The strict measurement started at **09:15:48 UTC on November 26** and recorded
+**1,200.984 seconds, 225 samples and 968.076 kH/s** by independent work counters.
+All 17 checks passed at the timed-window end, including both rolling-rate bands,
+SD progress, current wallet, one boot, 30 complete feed cycles and clean SHA checks.
+The minimum sampled rates were 965.212 kH/s (10-window) and 967.005 (60-window).
+The subsequent CSV timeout failed composite qualification and interrupted the
+soak, as described above. This is not an overall hardware-acceptance PASS.
+Standalone charger cold boot with SD still needs the owner, who is asleep;
+publication remains held.
+
+### Earlier continuous-work qualification
+
+That application was **1,781,168 bytes**, SHA-256
+`f8da51e39bffbe18419fe24de1a888346af77eae0144da4f26b06f02ac95d792`.
+A fresh full 4 MB backup passed checksum and flash comparison before installation;
+all four written images independently verified. Firmware source commit `194eada`
+includes bounded actual-work reporting and the bounded hex-decoding repair.
+The complete sanitizer host suite passes, including 24 work-batch/queue scenarios;
+96 Python tests and 22 subtests pass. These are host results, not endurance acceptance.
+
+Timing diagnostics measured a 52 ms hardware-job gap without a new job and a
+129 ms preparation gap. They also verified complete live-data cycles and recovery
+after a controlled Wi-Fi disconnect in 43.063 seconds. Those diagnostic traces
+were deliberately interrupted for installation and do not establish a timed pass.
+Source inspection found that the worker discarded its current request when the
+network task had not refilled the queue, despite retaining a continuous nonce
+cursor for a still-valid header. It can now continue that header through fresh
+nonces. A stopped or replaced full generation invalidates retained work, including
+IDs with equal low bytes. Pool cancellations still stop the assembly loop.
+No completed work is estimated and the rate threshold is unchanged.
+
+That candidate passed three complete feed/wallet cycles, page checks and automatic
+pool recovery in 42.720 seconds after a controlled disconnect. Its strict run
+failed after 63.264 seconds at 944.1116 kH/s against the unchanged 944.3 minimum.
+The native timing counters recorded a new-job preparation lasting 272,937 µs
+at the dip; hardware SHA acquisition remained at most 25 µs. Pool, SD and wallet
+stayed healthy. The failed run and interrupted soak are preserved.
+
+The CYD Stratum task ran below Monitor on the same core while new-job
+preparation deliberately stopped hardware hashing. This motivated the scheduling
+correction above; this failed candidate does not establish endurance acceptance.
+
+Factory packaging separately now reads PlatformIO's upload manifest, including
+the SDK boot-app image. Missing, empty, overlapping or out-of-range inputs fail
+instead of producing an incomplete factory image. Five tests cover those paths;
+this packaging change does not alter the already installed application.
+
+### Earlier connection-reuse qualification
+
+Hardware acceptance remains open. The parser-memory image avoided the earlier
+heap abort but failed the strict rolling-rate gate during a repeated TLS
+handshake. The equal-priority experiment then produced repeated peer connection
+resets (`MBEDTLS_ERR_NET_CONN_RESET`), with no completed live-data cycle; that
+experiment is rejected too. Host HTTPS access still succeeded.
+
+The next candidate restores ChainFeed priority 2 and retains the authenticated
+connection across 45-second snapshots. Failed requests still close the connection
+and receive at most one transport retry. Certificate and hostname checks remain
+enabled. This avoids deliberately repeating certificate verification on every
+update. Monitor/SW stack reductions and the parser memory repairs are retained.
+Native connection reuse, stack margins, runtime reconnect and a fresh strict
+20-minute run must pass before accepting this candidate. The one-hour soak and
+standalone charger boot with SD remain separate gates.
+
+The installed connection-reuse application is **1,779,856 bytes**, SHA-256
+`4f318f75542122b963d6303676ac025550609cc995854066f6da00887b1e87f4`.
+Its fresh 4 MB backup passed checksum and flash comparison; all four written
+images verified. Saved-settings USB boot mounted SD, restored counters and
+authorized the pool. Three complete feed/wallet cycles passed: the first took
+10,023 ms, reused cycles 1,329 and 1,583 ms. Record reservations stayed at two
+uses; active TLS scratch stayed at 11,392 bytes, peak 22,220, zero SDK fallbacks.
+Retaining active TLS allocations is expected while the connection remains open.
+An obsolete smoke assertion required multiple handshakes; it was corrected to
+require exactly two record allocations and stable live scratch use. Its failed
+assertion log is preserved and does not indicate a firmware fault.
+
+All five pages were exercised and Mine restored before timing. A controlled
+non-erasing Wi-Fi disconnect reauthorized the pool in **41.811 seconds**, without
+a restart. A new complete feed/wallet cycle followed in 10,714 ms. Observed
+minimum free stacks were Monitor 2,500, Stratum 2,684, HW miner 1,920, SW miner
+1,628, ChainFeed 2,224 and loopTask 3,516 bytes. The strict attempt then failed
+after 76.995 seconds at a sampled 10-window rate of 931.66 kH/s. The 60-window
+rate was 962.12 kH/s; pool, SD and wallet remained valid, all feed cycles were
+complete and no native fault occurred. That attempt and its associated soak
+are preserved as failed/interrupted. They do not establish endurance acceptance.
+
+The reproducible native capture, API sampler and independent grader are in
+`scripts/`; their commands are in `CONTRIBUTING.md`. Fourteen positive/negative
+fixtures cover missed abort/restart, stale capture, bad rolling rates, counter
+resets, pool/SD/wallet loss and exclusion of wallet values from sample reports.
+The sanitizer host suite and nine HTTP retry/connection-lifetime scenarios pass.
+
+### Completed-work accounting correction
+
+Source inspection found that the work counter credited entire 256K-nonce HW
+jobs only after their results passed through Stratum's 50 ms network loop.
+Monitor samples could therefore omit both the current hardware batch and
+already-completed queued work. This produces delayed steps in the displayed
+rolling rate; the source did not actually count progress inside the current job.
+
+The correction retains the 256K job queue and unchanged assembly/SHA checks,
+but executes at most 32K nonces per assembly call and immediately records only
+the actual completed nonces. Cancellation and early candidates credit only work
+done. These work counts are no longer queued for a second Stratum accounting
+pass; the unused per-job result allocation is removed. The shared counter
+normalizes million-hash carry on every update. No rate is estimated or padded.
+Sixteen sanitizer scenarios check exact totals, maximum uint32 work size,
+bounded publication, early candidates, cancellation and invalid progress.
+The bounded-work application is 1,779,488 bytes, SHA-256
+`e0bf4c691ba7d073a94b2ab267e59b98966e8d0b16e6d59650ff88893412c71f`.
+Its fresh full 4 MB backup and all four installed images verified. Native
+prequalification passed: three complete feed/wallet cycles, stable active TLS
+scratch, all five pages, SD writes and pool recovery in 42.250 seconds after a
+controlled disconnect. The fast SHA loop passed all six known candidates;
+checked runtime candidates had zero mismatches or drops.
+
+The strict attempt started at 08:36:54 UTC and failed after 10.401 seconds:
+10-window rate 943.44 kH/s, 60-window rate 964.05 kH/s. Pool, SD and wallet
+remained valid, and native capture reported no fault. The associated soak was
+interrupted. The minimum remains 944.3 kH/s; the near miss is not rounded into
+a pass. Accounting delay was a real source defect, but its repair alone did
+not establish the required performance stability.
+
+A timing build records aggregate job preparation, hardware-job gaps and SHA
+engine waits, with maxima, once per ten seconds. This measures the remaining
+pause without changing the SHA kernel or lowering the acceptance threshold.
+The full Python suite now passes 91 tests plus 15 subtests, including the
+historical dashboard proxy/HTTP tests; all dependencies are pinned in root
+requirements and the dashboard launcher uses root `.venv`. Dashboard statement
+coverage is 95%; this is not a claim of whole-project or hardware coverage.
+
+### Follow-up charger failure and USB diagnosis
+
+The owner reported Mine at zero with no pool after the charger move. Router
+queries returned no active miner association and its status API was unreachable;
+the new 20-minute observer never reached its warmup gate. The owner reconnected
+USB and reported a restart before any further firmware write. The captured
+boot rejected the stronger candidate with `AUTH_FAIL`, joined the other
+candidate, authorized the pool and mined near 961 kH/s. A pool-confirmed accepted
+share and increasing SD CSV rows are now observed. No payout is inferred.
+
+With the card mounted, all five Chain requests repeatedly failed with mbedTLS
+memory-allocation errors; free heap was about 44–49 KB. The build uses FAT
+per-file caches with a 4,096-byte maximum sector, and SD's default five file
+slots reserve unnecessary RAM. The repair limits SD to two simultaneous file
+slots. The first combined build retained a 44 KB LVGL pool and reduced the
+display transfer buffer from 20 to 10 rows, preserving certificate validation.
+The Stats page has five spaced
+metric rows and confirmed wallet BTC/USD and pending transaction values.
+Wallet queries strip the worker suffix and never print the address URL on
+failure. Their public schema was checked against the saved address privately.
+
+Runtime Wi-Fi recovery previously called Arduino's force-disconnect/reconnect
+every five seconds while automatic event retries were enabled. Both paths
+retained the startup BSSID/channel restriction. The repair gives the Stratum
+task ownership, waits 30 seconds between attempts and rebuilds an unpinned
+all-channel configuration. This fixes a recovery defect; the original radio
+drop is not isolated. Espressif documents the need to coordinate application
+retries and scans in its [Wi-Fi guide](https://github.com/espressif/esp-idf/blob/v4.4/docs/en/api-guides/wifi.rst).
+
+The production host suite, SD slot-limit/no-format check, reconnect timing and
+wrap checks, wallet parsing/arithmetic checks and both theme renders pass.
+The first combined build was 1,797,600 bytes, SHA-256
+`b1d2c7cfd3ace8f4ddc203099e88a0c4b05d5ba20d040d5f8c5d2879be2c4de5`.
+A fresh verified 4 MB backup preceded its installation; all four installed
+images independently verified. Native boot mounted SD, restored statistics,
+authorized the pool and resumed mining. A controlled non-erasing Wi-Fi disconnect
+at observer second 183.061 triggered an unpinned join at 213.294 and pool
+reauthorization at 223.805; later readings were about 968 kH/s. No application
+restart was required. This verifies runtime recovery, not a new charger boot.
+
+That build still failed RSA certificate allocation with SD mounted. The failure
+is retained; increasing free heap alone did not establish TLS acceptance.
+The follow-up reduces LVGL to 40 KB, the transfer buffer to four rows and the
+ChainFeed stack to 8 KB, freeing another 12,032 bytes. ChainFeed reports its
+minimum unused stack after a fetch so the smaller stack can be checked natively.
+The follow-up build is 1,797,728 bytes, SHA-256
+`82b42c1fe714923b946b9da3ea73d212ca6ed7cdb3f470e3e017752ce7ac3640`.
+A fresh full 4 MB backup was checksum-checked and compared with flash before
+installation; all four images independently verified. Native saved-settings boot
+mounted the card, restored statistics, authorized the pool and loaded **5/5
+Chain endpoints** in 6,289 ms. The wallet request succeeded on the same verified
+TLS path. The feed task reported **1,736 bytes minimum unused stack**; no stack
+overflow or SHA mismatch was observed. The API confirmed mounted capacity
+31,246,958,592 bytes. Downloaded CSV contained 22 nine-column records with the
+expected measured-statistics header. A complete 320 × 240 native Stats frame
+shows balance, USD value, rates, accepted/rejected work, difficulty, CPU, RAM,
+temperature, signal, SD writes and SHA checks without overlapping rows.
+The configured address and its confirmed/pending amounts match an independent
+explorer query; no address or wallet amount is published.
+
+The serial framebuffer dump blocks the display/API task and is deliberately
+kept outside the timed window; a simultaneous CSV request timed out, and its
+retry after the dump succeeded. The display was returned to Mine before a new
+20-minute API/work-counter observer began its warmup. No new 20-minute
+performance PASS or charger cold-boot acceptance with SD is claimed yet.
+
+### Final stack-margin correction
+
+A second successful feed cycle lowered the 8 KB task's minimum unused stack
+from 1,736 to **300 bytes**. The timed observer was stopped and preserved as
+interrupted; this is not an endurance pass. The correction increases ChainFeed
+to 10 KB and reduces display transfer storage from four rows to two. Its total
+RAM requirement is only 768 bytes above the TLS-working candidate, while adding
+2,048 bytes of stack margin. No certificate check is bypassed.
+
+The correction builds as 1,797,728 bytes, application SHA-256
+`52b88e70b6508b4115f79b4978bdce87acc7392ffe526b3d5b6578124979876c`.
+Its fresh full 4 MB backup passed the checksum and flash comparison; all four
+installed images verified. A repeated-fetch smoke check succeeded twice, then failed all six requests
+with `SSL - Memory allocation failed`: 76–77 KB was free but the largest
+block was 32,756 bytes. Stack margin remained 2,340 bytes. This candidate is
+not accepted; the failure is separate from the earlier RSA scratch allocation.
+
+The next repair reserves both SDK-sized TLS record buffers before SD/Wi-Fi
+allocation churn. The supported mbedTLS allocator hook reuses those two slots
+only for ChainFeed record allocations; other tasks and smaller crypto
+allocations retain Espressif's original allocator. Released slots are zeroed on
+reuse. No certificate flags, cryptography or trust configuration are changed.
+The host suite includes repeated reuse, exhaustion, zeroing, arithmetic overflow,
+foreign-pointer routing and unequal-slot ordering, including a C++11 sanitizer
+build matching the firmware language level. The repair builds as 1,798,496 bytes, application SHA-256
+`0c6c662324ddd30c37a6797be89de9a64cd56fa1461fe403c3837e9105442780`.
+The first 460,800-baud backup read stopped at 62% on a corrupt USB packet;
+the helper aborted before any firmware write. The fresh 230,400-baud backup
+then passed its checksum and full flash comparison, followed by all four
+installed-image verifications. The installed build then passed three consecutive
+native feed cycles: all five Chain endpoints and wallet data loaded each time
+in 9,690, 9,251 and 9,205 ms. Minimum unused task stack remained **2,280 bytes**;
+reserved-record use advanced from two to four to six, establishing actual
+buffer reuse. SD mounted, saved statistics restored and the pool authorized;
+no panic, brownout, heap assertion, TLS allocation error or SHA mismatch/drop
+was observed during this smoke check. The subsequent timed attempt was stopped
+after another certificate-scratch allocation failure at native observer second
+437.212. The record reservation was reused successfully, but RSA verification
+had only a 2,676-byte largest free block despite 20,092 free bytes. That cycle
+loaded 4/5 Chain endpoints; mining, pool authorization, wallet data and SD
+writes continued. This interrupted attempt is not an endurance pass.
+
+### Separate certificate-scratch pool
+
+The next correction reserves a separate 24 KB scratch pool before SD/network
+startup, alongside the two record buffers. It uses a separate instance of the
+TLSF allocator already bundled in pinned LVGL 8.3.11. Only ChainFeed's mbedTLS
+allocations use it; other tasks retain the SDK allocator. Free blocks coalesce
+between certificate operations, allocations are zeroed, and SDK fallback
+remains available if the scratch pool is exhausted. Diagnostics report used/
+peak scratch bytes and fallback counts. This changes allocation policy only;
+trust, certificate flags and cryptographic checks remain unchanged.
+
+The host suite passes 1,000 allocation/free/coalescing cycles against that actual
+allocator under C++11 sanitizers, plus ownership, bounds and overflow checks.
+The candidate builds as 1,798,992 bytes, application SHA-256
+`10536ea4ef678259813309ecb14062f96018feaae613f5d12a8b88e196344a00`.
+Its fresh full 4 MB backup passed the checksum and full flash comparison; all
+four installed images verified at 230,400 baud. The saved-settings native boot
+mounted SD, passed the HW SHA self-test and authorized the configured worker.
+The first feed/wallet cycle passed 5/5 in 7,400 ms. Scratch peak was 22,220
+bytes, final used bytes were zero and SDK fallback count was zero. Three
+consecutive native cycles then passed with all feeds and wallet valid, SD
+mounted, authorized pool and no faults. Minimum unused stack was 2,316 bytes;
+scratch returned to zero after every cycle, peaked at 22,220 bytes and never
+fell back to the SDK. The subsequent attempt failed after runtime Wi-Fi recovery: repeated socket writes
+ran out of memory and `std::make_shared<JobRequest>` aborted at native observer
+second 214.5, causing a software restart. The scratch pool itself returned to
+zero without fallback, but its reservation left too little general heap. This
+candidate is not accepted. The owner is
+unavailable for a physical charger move and explicitly requests continued USB
+testing while asleep; charger cold boot with SD remains open.
+
+### Pool parser memory correction
+
+The pool parser now borrows incoming messages and the 4 KB JSON document instead
+of copying them. Share submission borrows the existing worker/job strings.
+The CYD Stratum stack returns 3,260 bytes of the old reservation to the general
+heap; PMMEM reports minimum free stack for each application task. Host sanitizer
+checks include a near-limit whitespace-padded pool job, preserve the source
+message and confirm that whitespace handling still works without trimming a copy.
+The build passes as 1,779,760 bytes, application SHA-256
+`696e07ebd0fc1d9a505a67744f917c14692d381bd088e6a9ec2135e2e471c9cc`.
+Its fresh full 4 MB backup passed checksum and flash comparison; all four
+installed images verified. Saved-settings boot restored statistics, mounted SD,
+passed the HW SHA self-test and authorized the pool. Three consecutive feed/
+wallet cycles passed with minimum ChainFeed stack 2,308 bytes, scratch peak
+22,220 bytes, final used zero and no SDK fallback. Native PMMEM minima were
+Monitor 5,908, Stratum 2,708, HW miner 1,924, SW miner 3,552 and loopTask 3,516
+bytes. A non-erasing controlled disconnect recovered pool authorization in
+44.047 seconds; another 72 seconds of observation showed no allocation fault or
+restart. The fresh strict attempt then caught a 932.41 kH/s 10-second reading at native
+second 327.637, during a feed cycle ending at 328.072. Its 60-second rate was
+961.87 kH/s and no native fault/restart occurred, but the strict performance
+gate failed. Both this timed attempt and the associated soak were stopped and
+preserved. No performance PASS is claimed for this image. Acceptance monitoring now detects allocation aborts, reboots,
+failed String allocations and nonfinite rates, which the earlier observer missed.
+A separate evidence validator checks a complete 20 minutes, both rate windows,
+independent work, sampling continuity, live serial coverage, pool/SD/wallet
+progress and SHA/feed integrity. Its negative fixtures reject the previously
+missed abort/restart, stale monitoring, counter reset, partial feeds and brief
+out-of-band readings.
+
+### Feed scheduling and measured stack reservations
+
+An experimental correction gave ChainFeed priority 1, equal to the software miner,
+instead of letting certificate work preempt it at priority 2. Monitor and SW
+miner reservations shrink only from measured native minima: 9,500 → 6,144 and
+5,000 → 3,072 bytes respectively, preserving over 2 KB and 1.5 KB of observed
+unused stack. This returns another 5,284 bytes to general networking memory.
+Job preparation also borrows its existing job strings. Its installed application
+was 1,779,840 bytes, SHA-256
+`e5ab82cfc02176b92c0f532246b1b409c23948496fa99b71057e466896bd795a`.
+The full backup and all four written images verified. Saved-settings boot
+mounted SD and authorized the pool, but both attempts for every HTTPS endpoint
+reset during the handshake. Its feed smoke check timed out. This is a failed
+experiment, not a performance or live-data pass; priority 1 is superseded by
+the connection-reuse candidate described above.
+
+### Recovery-script follow-up
+
+The full-flash restore helper uses the pinned esptool 4.8.1 `write_flash`
+command, takes a fresh full current-device backup, verifies that backup and
+compares the restored image afterward. The historical stock-image flash helper
+had retained `write-flash` and omitted the backup; it now uses the same verified
+backup-before-write sequence and compares all five stock images, including the
+filesystem. Both helpers use the root virtual environment and the stable USB
+device link. Sixteen stubbed safety cases pass across success, short/read/verify
+backup failures, invalid/missing inputs, write failures and final verification
+failures. These tests perform no hardware write and are included in root CI.
+
+### First shared-SPI installation
 
 The owner requested reinserting the purchased card and updating the firmware.
 The charger observer was preserved as interrupted, with 54 samples through

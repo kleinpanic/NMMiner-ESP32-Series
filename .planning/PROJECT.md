@@ -17,11 +17,12 @@ change. Every screen has a look nobody else ships.
 **Goal:** Replace the closed NMMiner firmware with PanicMiner on this unit. It
 mines with accepted shares, shows our own UI, and has a known network egress.
 
-**Base:** fork `kleinpanic/NerdMiner-CYD-Custom` (MIT, upstream
-`BitMaker-hub/NerdMiner_v2` `nerdminer-release-V1.8.3`). The work branches from
-`61aae97`, the last commit recorded as mining on this hardware. Modules from the
-archived LVGL stack (`archive/nmminer-clone-lvgl`) move over one by one, each
-with its own on-device check.
+**Base:** the MIT NerdMiner fork is consolidated as ordinary source under
+`firmware/custom/NerdMiner-CYD-Custom/` in the canonical
+`kleinpanic/NMMiner-ESP32-Series` repository. Its historical open base is
+`BitMaker-hub/NerdMiner_v2` `nerdminer-release-V1.8.3`; `61aae97` recorded the
+early working board. Source consolidation is root commit `a730def`. The former
+nested repository is historical; current source and tests live here.
 
 **Gate rule:** a phase closes only on hardware evidence: a serial log, a
 framebuffer dump or an operator photo. Compile and review gates are necessary,
@@ -43,14 +44,24 @@ over serial so the agent can view the real pixels.
 
 ## Hardware
 
-- Board: ESP32-2432S028R, ESP32-D0WD-V3, 4 MB flash, serial `/dev/ttyUSB0` (CH340).
-- Panel: 320x240. Stock firmware identity says ST7789. The base `61aae97` built
-  with `ILI9341_2_DRIVER`. Phase 1 settles the driver with a photo.
-- Touch: XPT2046 path showed no press and no PENIRQ edge in v3.0. Unresolved.
+- Board: ESP32-2432S028R, ESP32-D0WD-V3, 4 MB flash, CH340 USB serial. Helpers prefer the stable by-id link; ttyUSB numbering may change.
+- Panel: 320x240, working `ILI9341_2_DRIVER` with `TFT_INVERSION_ON`. The owner confirmed visibility and the corrected colours; stock calls it ST7789. Preserve the tested configuration.
+- Touch: resistive controller on HSPI (CLK25/MISO39/MOSI32/CS33/IRQ36). The owner confirmed left/right navigation. Stable-press, release and cooldown filtering suppress repeated or phantom paging.
 - Extras fitted: microSD (FAT32), speaker on GPIO26, RGB LED on GPIO4/16/17.
-- Wi-Fi is 2.4 GHz only. Target SSID `Homebase`, not `Homebase5`.
-- Stock hashrate on this unit: about 1.04 MH/s (2026-06-01 API readback).
-  The open core's rate on this unit is not yet measured.
+- Wi-Fi is 2.4 GHz only. Saved settings load automatically; Setup selects a new network after relocation.
+- Historical stock API readback was about 1.04 MH/s. Current acceptance uses the agreed 994 kH/s baseline, with a 944.3–1043.7 band. Earlier open-core runs averaged 972.6 kH/s but failed individual rolling readings; fresh SD-enabled qualification is in progress.
+
+## Current acceptance
+
+Matching pages, manual touch, verified live feeds, configured-address balance,
+SD logging and automatic reconnect are implemented and observed on USB. The
+current image and exact passing/failed measurements are in
+[the validation record](../docs/panicminer-validation-2026-11-25.md). A full strict
+20-minute measurement, one-hour soak and charger cold boot with SD are separate
+gates. The owner is asleep and authorized continued USB testing; do not prompt
+for another move tonight. Publication remains held until hardware acceptance.
+The application is open source; Espressif radio binaries and chip ROM are still
+part of the platform, as documented in firmware provenance.
 
 ## Constraints
 

@@ -19,9 +19,20 @@ a wildcard CORS header. Keep it on a trusted local network.
     "totalMHashes": 0, "uptimeSeconds": 0
   },
   "sd": { "mounted": false, "rowsSaved": 0, "total": 0, "used": 0, "free": 0 },
-  "speaker": { "volume": 20, "mute": false }
+  "speaker": { "volume": 20, "mute": false },
+  "wallet": { "valid": false }
 }
 ```
+
+When `wallet.valid` is true, `wallet` also contains `balanceSats` (confirmed
+address balance), `pendingSats` (signed unconfirmed transaction delta), and
+`ageSeconds` (time since the last successful address query). These fields are
+omitted until a successful query; a valid zero balance is distinct from missing
+data. Refreshes use certificate-verified mempool.space HTTPS approximately every
+45 seconds, reusing the authenticated connection when available. The address
+comes from the saved pool worker with its suffix
+removed; the API does not return that address or any signing material. The
+balance can include transfers unrelated to mining and is not a share reward.
 
 ## Speaker
 
@@ -43,6 +54,11 @@ backlight. Test tones accept 100–10,000 Hz and cap duration at two seconds.
 All `path` inputs pass `SDStore::sanitizePath` (rejects traversal, ambiguous
 separators and control characters, constrains to `/sd/`). Config and secrets
 paths are denied at the API boundary. Downloads stream from the card.
+Only one SD download runs at a time; a second receives `503` with
+`download busy`. The transfer sends at most 512 bytes per main-loop pass,
+retains its original Content-Length even if logging appends rows, and closes
+on failed progress, insufficient memory or a 180-second deadline. Clients must
+verify Content-Length before treating a download as complete.
 
 | Method | Path | Input | Returns |
 |--------|------|-------|---------|

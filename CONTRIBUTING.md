@@ -19,9 +19,10 @@ bash tests/test_flash_v2_0_02.sh
 ./.venv/bin/python -m pytest tests
 ```
 
-The Python suite includes dashboard proxy unit/HTTP contract tests and strict
-hardware-evidence fixtures. Its dependencies are pinned in root requirements;
-the dashboard launcher also uses that root virtual environment. The mock HTTP
+The Python suite includes dashboard proxy unit/HTTP contract tests, strict
+hardware-evidence fixtures and factory-image packaging checks. Its dependencies
+are pinned in root requirements; the dashboard launcher also uses that root
+virtual environment. The mock HTTP
 tests do not establish native firmware behavior.
 
 The C++ host suite requires a compiler and OpenSSL development headers. UI
@@ -78,6 +79,13 @@ pool authorization, SD record progress, wallet refreshes and complete feed/SHA
 checks. An abort, restart or allocation failure invalidates the attempt even
 if the observer's fault array missed it. Keep all three input artifacts private;
 the validator prints only check results and summary measurements.
+
+Factory packaging uses the exact SDK images and offsets selected by PlatformIO,
+including `boot_app0.bin`. Missing, overlapping or oversized inputs fail the build;
+the packager does not silently create an incomplete factory image.
+CI archives the complete factory image and application update alongside the raw
+build outputs and matching ELF. A raw application image alone is insufficient
+for an erased board; the factory image includes the SDK boot-app image.
 
 Use the flash/restore helpers, which require a fresh verified full-flash backup
 before writing. Never commit real Wi-Fi or pool credentials, wallet values,

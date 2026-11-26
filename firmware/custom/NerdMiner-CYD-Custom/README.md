@@ -135,10 +135,20 @@ credentials remain in the existing private SPIFFS configuration. Native failures
 and the installed digest are recorded in the parent repository's runtime
 validation document; these recovery changes have not passed hardware acceptance.
 
-Run `bash tools/tests/run.sh` for 132 production-code regression cases and the
-speaker tests. The suite covers target decoding/comparison, fragmented pool
+Runtime reconnects have one owner and a 30-second retry interval. Each attempt
+clears the startup AP/channel restriction, allowing recovery if the matching
+access point changes. With SD mounted, HTTPS reserves two SDK-sized record
+buffers and a separate 24 KB certificate-scratch pool before network startup,
+reusing/coalescing allocations. Authenticated connections remain open between
+45-second snapshots; transport failures receive one fresh-connection retry.
+Certificate verification remains enabled. The CYD build uses a 40 KB LVGL pool, a two-row
+display transfer buffer and a 10 KB feed-task stack.
+
+Run `bash tools/tests/run.sh` for production-code regression and speaker tests.
+The suite covers target decoding/comparison, fragmented pool
 messages, authorization and acceptance responses, touch, SD paths, stalled work,
-coinbase hashing, merkle roots and complete header byte ordering. Linux host
+coinbase hashing, merkle roots, complete header byte ordering, Wi-Fi retry timing,
+wallet arithmetic and TLS buffer reuse. Linux host
 builds need `libssl-dev`. See `tools/tests/README.md` for the hardware limits.
 
 Credentials, wallets, device licences, flash images, serial logs and generated

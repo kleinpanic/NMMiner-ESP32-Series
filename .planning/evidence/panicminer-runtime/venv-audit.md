@@ -51,3 +51,8 @@ the SDK's boot_app0 image. Five root-venv tests exercise actual packaging code,
 missing images, invalid layouts and alternate app offsets without serial access.
 The full root-venv Python suite passes 96 tests and 22 subtests. This change uses
 only the standard library and introduces no environment or dependency change.
+
+The download-completeness repair also uses only the standard library. Its full
+root-venv suite passes 99 tests and 27 subtests, including truncated CSV and
+invalid Content-Length rejection. All build, flash, capture and qualification
+commands continue to use the root virtual environment.

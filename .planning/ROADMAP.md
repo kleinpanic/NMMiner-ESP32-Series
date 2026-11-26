@@ -67,7 +67,7 @@ operator photo. Every firmware write follows a fresh full 4 MB backup.
 | Phase | Status |
 |---|---|
 | 1. Base + See | In progress |
-| 2. PanicMiner UI | Not started |
-| 3. De-brand + Egress | Not started |
-| 4. Hardware extras | Not started |
-| 5. Hashrate + Soak | Not started |
+| 2. PanicMiner UI | In progress; hardware acceptance pending |
+| 3. De-brand + Egress | In progress; hardware acceptance pending |
+| 4. Hardware extras | In progress; hardware acceptance pending |
+| 5. Hashrate + Soak | In progress; hardware acceptance pending |

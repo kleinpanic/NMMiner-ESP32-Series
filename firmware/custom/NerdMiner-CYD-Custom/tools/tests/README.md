@@ -48,6 +48,15 @@ real shared-pointer queue: temporary queue exhaustion preserves the nonce
 cursor, while a stopped or replaced full generation discards old work, including
 generations with equal low bytes. These checks do not establish native speed.
 
+The Wi-Fi packet-budget tests check Arduino's default dynamic counts, preservation
+of lower/static limits, unlimited RX conversion and repeated application. They
+do not establish RF reliability or SDK memory behavior on the board.
+
+The bounded-transfer tests exercise the production SD-download block loop with
+exact byte comparisons, failed/invalid reads, partial/invalid socket writes and
+disconnects. They verify that no-progress I/O terminates; native downloads are
+still required to establish SPI, Wi-Fi and display coexistence.
+
 The SD-store tests compile production `src/sdstore.cpp` with host filesystem and
 SPI boundaries. They verify that SD uses the display's existing SPI object,
 retains its pin routes, survives mount failures and retries, and never stops the

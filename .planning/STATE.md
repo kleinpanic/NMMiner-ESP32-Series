@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: SD shared-SPI firmware backed up, flashed and verified; inserted card mounts on native offline EN boot. Waiting for owner to relocate downstairs on charger, then CSV/display/touch checks and fresh 20-minute Mine run. Publication held.
-last_updated: "2026-11-26T05:58:56.940Z"
-state_head: 23199a62544b2209e2034efa6ea1b586a601dc7d
+stopped_at: "Paced-export a6712fce/source b0282a3 passed feed, download, page and automatic reconnect preflight. Fresh strict 20-minute and full one-hour USB/SD qualification is running from 10:10:21 UTC. Physical SD charger test and publication held."
+last_updated: "2026-11-26T10:14:17.414Z"
+state_head: cb5bed698e6945d2c3eb923d2d12387b32b7da88
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,14 +24,21 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current hardware evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). Earlier failed joins below are historical, superseded by the November 26 recovery.
-- Installed normal application SHA-256: `161f02c2831ac32a2265dc5e49706757968e33fa5eca513f6fc72cd6dfbaf3e9` (1,794,416 bytes). Fresh full 4 MB backup and its flash comparison passed before the write; all four installed images independently verified. This includes the common success-path reconnect safeguard and shared-SPI SD repair.
-- Owner confirmed USB charger power near the router with the SD card removed. Laptop USB disappeared; JNAP independently listed the 2.4 GHz client and its API reported the saved worker pool-authorized, best restored to 0.702206052, and a 999.4 kH/s startup reading. Saved-settings EN restart also passed before moving to the charger.
-- All five Chain endpoints, native Stats/Chain frames and zero SHA mismatches/drops were observed before USB removal. These serial observations do not establish continuous post-unplug TLS/SHA coverage.
-- Airtime fairness is disabled on the EA8300; WPA2 remains configured. Placement, power cycling and the router setting changed together, so no single root cause is established.
-- Two API observers stopped on status-read timeouts; later responses remained authorized with increasing work. The continued charger observer was interrupted for the owner-requested SD update after 54 samples through 787 seconds. HTTP/ICMP and router association were lost around the card change; no cause is established without native logs. There is no new 20-minute PASS.
-- Saved configuration and full verified backups remain ignored. Every future firmware write requires a fresh verified full 4 MB backup. Use the checked flash/restore scripts.
-- Daily use: USB power, saved 2.4 GHz Wi-Fi and pool; tap left/right for manual pages, hold BOOT for Setup at 192.168.4.1.
+- Current installed application a6712fcef1ef3f7989478f25b6e97e110b35afbf080e551612bf02a9cb5207e0 (1,781,808 bytes), firmware source b0282a3. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified. Three complete feed cycles and three full CSV downloads (6,562 bytes/145 rows each) pass without fault/radio drop. SD writes at most 512 bytes per main-loop pass; packet budget remains TX 4/RX 8. Page checks and controlled reconnect pass (41.416 seconds, one boot/no fault). Fresh timed/soak qualification is running from 10:10:21 UTC.
+- Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
+- Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
+
+- Current evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). SD/card-removed results are separate; no composite SD-enabled qualification PASS is established yet.
+- The parser-memory image 696e07eb avoided the earlier heap abort and recovered after a controlled Wi-Fi drop in 44.047 seconds, but failed a strict 10-second rate reading (932.41 kH/s). Its timed run and soak are preserved as failed/interrupted.
+- The earlier experiment e5ab82cf (1,779,840 bytes) mounted SD and authorized the pool, but equal feed/software-miner priority produced repeated TLS connection resets and the feed smoke check timed out. It is rejected.
+- Earlier application 4f318f75542122b963d6303676ac025550609cc995854066f6da00887b1e87f4 (1,779,856 bytes) retains authenticated HTTPS across 45-second updates at feed priority 2. Fresh full 4 MB backup checksum/flash comparison and all four installed images verified. Repeated 5/5 Chain/wallet cycles passed; reuse reduced fetch time from 10.0 to 1.3–1.6 seconds with stable active TLS scratch and zero SDK fallbacks.
+- Connection-reuse prequalification passed five pages, Mine restore and controlled Wi-Fi recovery in 41.811 seconds. Its strict timed attempt then failed after 76.995 seconds: 10-second rate 931.66 kH/s, 60-second rate 962.12 kH/s. Pool, SD and wallet stayed valid and no native fault occurred. The failed run and interrupted soak are preserved; no endurance PASS.
+- Earlier bounded-work application e0bf4c691ba7d073a94b2ab267e59b98966e8d0b16e6d59650ff88893412c71f (1,779,488 bytes), source commit b686681, records actual completed work at most every 32K nonces and removes per-job queue/accounting delay. Its fresh full 4 MB backup passed checksum and full flash comparison; all four installed images independently verified. Sixteen batch sanitizer cases, full host suite, board build and 91 Python tests pass.
+- Bounded-work native prequalification passed SD, complete Chain/wallet cycles, all five pages and controlled Wi-Fi recovery in 42.250 seconds, with no native fault or SHA mismatch/drop. Its strict attempt failed after 10.401 seconds at 943.44 kH/s (minimum 944.3); the 60-window rate was 964.05. Pool, SD and wallet remained valid. Failed run and interrupted soak are preserved. Timing diagnostics measured 52 ms between-job and 129 ms preparation gaps; they recovered from a controlled Wi-Fi drop in 43.063 seconds and were interrupted for the continuous-work repair. No endurance acceptance is inferred.
+- Earlier native Stats capture is complete and SD CSV contains measured nine-column records. Configured payout address and confirmed/pending amounts match an independent explorer query privately; no address or wallet amount belongs in tracked evidence.
+- The owner explicitly requests continued USB testing while asleep and cannot move the board now. Charger cold boot with SD remains a physical gate. Publication stays held.
+- Airtime fairness remains disabled on the EA8300; WPA2 is unchanged. The original radio failure is not isolated. No router changes are part of this qualification.
+- Saved settings, backups, captures and raw logs remain ignored. Every firmware write requires a fresh verified full 4 MB backup. Daily use is saved 2.4 GHz Wi-Fi/pool, manual left/right pages and BOOT hold for Setup.
 
 ## Implementation history (earlier fork commits)
 
@@ -77,11 +84,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Owner reconnected laptop USB with the SD inserted. The installed shared-SPI update mounted the card successfully before Wi-Fi on a saved-settings EN boot, with no observed SD warning or crash. The owner states this location is out of range and will move the miner downstairs after flashing. Native CSV/capacity, post-mount display/touch coexistence and a fresh 20-minute Mine run await that charger boot. An observer is ready; no new performance PASS is claimed.
-- Intermittent HTTP status timeouts need diagnosis if they recur. At the last check the miner stayed associated, pool-authorized and advancing work, with 12/12 ICMP replies.
-- SD reinsertion, a one-hour unattended soak, native egress capture and a pool-confirmed share/block remain unverified. Zero accepted shares is an observed result, not evidence of a payout or a license problem.
-- The owner's manual-page requirement supersedes the old UI-04 timer-rotation wording. Touch direction and one action per held press were confirmed on hardware.
-- Historical phase checklists have broader gates than the current delivery; do not mark all five phases or all requirements complete from this closeout.
+- Qualify the paced-export candidate: feed, repeated-download, page and reconnect preflight passed; finish the fresh strict 20-minute and full one-hour USB/SD tests. Require sampled 10/60-second rates and work mean within 944.3–1043.7 kH/s, pool authorization, SD progress, fresh wallet and no native/API faults. Earlier packet-budget download stopped safely but incomplete (1,536/6,338 bytes, largest block 660); no timed run was started for it.
+- Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
+- One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
+- Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
 
 ## Decisions
 
@@ -99,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T05:58:56.914Z
-**Stopped at:** SD shared-SPI firmware backed up, flashed and verified; inserted card mounts on native offline EN boot. Waiting for owner to relocate downstairs on charger, then CSV/display/touch checks and fresh 20-minute Mine run. Publication held.
+**Last session:** 2026-11-26T10:14:17.395Z
+**Stopped at:** Paced-export a6712fce/source b0282a3 passed feed, download, page and automatic reconnect preflight. Fresh strict 20-minute and full one-hour USB/SD qualification is running from 10:10:21 UTC. Physical SD charger test and publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- SD firmware installation and offline native mount are verified. The owner must relocate the miner from the explicitly out-of-range laptop position to downstairs charger power near the router. Then verify SD CSV/capacity, display/touch and the full fresh 20-minute Mine run. No public release or push until the directed hardware checks pass.
+- No accepted SD-enabled composite qualification yet. Paced-export preflight passed downloads and feeds; final USB timing/soak is pending. Charger cold boot with SD requires owner availability; publication held.

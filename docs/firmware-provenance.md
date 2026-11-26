@@ -20,17 +20,17 @@ Paths below are relative to the firmware checkout.
 | Behavior | Source to inspect |
 | --- | --- |
 | Startup and task creation | `src/NerdMinerV2.ino.cpp` |
-| Work scheduling, hardware/software mining and independent software verification of submitted candidates | `src/mining.cpp`, `src/ShaTests/nerdSHA256plus.h` |
+| Work scheduling, hardware/software mining and independent software verification of submitted candidates | `src/mining.cpp`, `src/miningBatches.h`, `src/ShaTests/nerdSHA256plus.h` |
 | Classic ESP32 SHA256d assembly loop and self-test support | `src/pipelined_hw_sha_classic_v2.S`, `src/sha_bench_variants.inc`, `src/sha_bench*.cpp` |
 | Bitcoin target decoding and comparison | `src/miningTarget.h`, `src/utils.cpp` |
 | Stratum subscription, authorization, difficulty and share submission | `src/stratum.cpp`, `src/stratum.h`, `src/poolWatchdog.h` |
 | Screens, fonts and animation | `src/ui/`, `src/drivers/displays/panicMinerDisplayDriver.cpp` |
 | Touch bus, calibration and page debounce | `src/drivers/displays/panicMinerDisplayDriver.cpp`, `src/touchPager.h`; the source dependency is TFT_eTouch |
-| Chain/price data and TLS diagnostics | `src/chainFeed.cpp`, `src/chainTlsDiagnostics.cpp` |
-| Wi-Fi setup and saved configuration | `src/wManager.cpp`, `src/drivers/storage/nvMemory.cpp` |
+| Chain/price/address-balance data and TLS allocation | `src/chainFeed.cpp`, `src/chainTlsDiagnostics.cpp`, `src/walletStats.h`, `src/tlsRecordBuffers.h`, `src/tlsScratchBuffer.h` |
+| Wi-Fi setup, runtime recovery, packet memory and saved configuration | `src/wManager.cpp`, `src/wifiRecovery.h`, `src/wifiMemory.cpp`, `src/wifiBufferBudget.h`, `src/drivers/storage/nvMemory.cpp` |
 | SD logging and path validation | `src/sdstore.cpp`, `include/sdstore.h`, `src/sdPath.h` |
 | Sound events, volume and mute | `src/speaker.cpp`, `include/speaker.h` |
-| Local status/control API and resource measurements | `src/webapi.cpp`, `src/monitor.cpp`, `src/systemHealth.cpp` |
+| Local status/control API, bounded SD transfers and resource measurements | `src/webapi.cpp`, `src/boundedTransfer.h`, `src/monitor.cpp`, `src/systemHealth.cpp` |
 
 The application originates from [BitMaker's NerdMiner_v2](https://github.com/BitMaker-hub/NerdMiner_v2).
 The pipelined classic ESP32 mining loop was ported from
@@ -86,7 +86,9 @@ the upstream multi-board default list. It selects `esp32dev`, Arduino,
 `huge_app.csv`, `PANICMINER_UI`, pipelined assembly and the recorded CYD pins.
 Both application event handling and Arduino's loop run on core 0; the hardware
 miner uses core 1. Pre/post hooks derive version labels and merge generated
-images; they do not import a vendor application.
+images; they do not import a vendor application. Factory packaging consumes
+PlatformIO's resolved upload manifest, including the SDK boot-app image, and
+rejects missing, overlapping or out-of-range inputs.
 
 | Dependency | Declared selection | Inspected resolution / license |
 | --- | --- | --- |
@@ -157,6 +159,13 @@ The firmware sends the configured public payout address/worker to the pool in
 Stratum authorization. A successful authorization response confirms that the
 pool accepted those credentials; it does not prove wallet ownership or a
 payment. The firmware does not need a wallet seed or private key.
+
+The ChainFeed also sends the configured public address, after removing its
+worker suffix, to mempool.space's address endpoint over verified HTTPS. It
+reads confirmed and pending address totals to populate Stats; no signing or
+spending request exists. This discloses that public address to the explorer
+service. Its returned balance can include transfers unrelated to mining. The
+local status API exposes balances and freshness without returning the address.
 
 An accepted share records pool-accepted work at the pool's share target. A
 verified candidate or a higher best difficulty is not a balance increase.

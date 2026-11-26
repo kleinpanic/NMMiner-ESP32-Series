@@ -24,53 +24,35 @@ configuration is recorded in PlatformIO rather than inferred from that label.
 
 ## Current validation
 
-**Wi-Fi and mining recovered on November 26.** With the unit near the router,
-SD removed and laptop USB power, the saved wallet worker authorized with the
-pool and all five Chain endpoints loaded. After a statistics checkpoint, an EN
-reset rejoined automatically, restored best difficulty and resumed mining without
-provisioning. A subsequent cold boot on a USB charger also authorized the pool,
-restored the same best and mined near 999 kH/s with no laptop USB connection.
-The charger-powered observer was interrupted when the owner requested SD
-reinsertion and an SD firmware update. It did not complete the 20-minute gate.
-Automatic boot and mining were verified with the card removed.
+The matching Mine, Hash, Chain, Clock, Stats, Boot and Setup screens are built
+and installed. Navigation is manual and debounced. Stats shows measured 10/60-second
+rates, verified best difficulty, pool-accepted/rejected shares, CPU/RAM usage,
+chip temperature, signal and SD writes. Chain uses certificate-verified live
+price, network difficulty, fees and retarget data.
 
-The SD update fixes separate display/card owners reconfiguring the same SPI
-controller. They now share the display's SPI object and transaction lock, with
-clock/data routed to both wired buses and separate chip selects. Touch retains
-its existing controller. The update builds, passes host regression checks and
-was installed with a fresh verified full backup on November 26. All four flash
-images verify, and a native saved-settings boot detects the inserted SD card
-before joining Wi-Fi. The owner reports this USB location is out of range;
-card CSV writes, display/touch coexistence and the fresh endurance run still
-need the downstairs charger boot near the router.
-With a mounted FAT32 card, firmware writes measured rates, accepted/rejected
-shares, best difficulty, memory and temperature once per minute to
-`/sd/mining_stats_v2.csv`, rotating at 1 MB. The Stats page and local API report
-card capacity and successfully saved rows. Existing internal settings take
-priority over the card's optional recovery configuration.
+SD now shares the display's actual SPI controller and transaction lock, with
+separate chip selects; touch keeps its own controller. A mounted FAT32 card
+records measured statistics every minute in `/sd/mining_stats_v2.csv`, rotating
+at 1 MB. Saved internal settings take priority over optional SD recovery settings.
+Native tests have confirmed card capacity, successful rows and a complete Stats
+screen. Recovery tools take and verify a full backup before every firmware write.
 
-The router's airtime fairness was disabled through authenticated JNAP while the
-unit was moved closer. Signal improved from about -63 to -38 dBm (-34 dBm on
-restart). Both changes occurred together; neither is established as the sole
-cause. The router setting briefly restarted Wi-Fi, which recovered. The current
-working configuration retains airtime fairness disabled and WPA2 security.
-
-The repair fixes a mining-job buffer overrun, long-coinbase truncation, blocking
-job logging and inconsistent work-counter reads. Network startup scans all
-channels and tries matching access points on their detected channels. Exact
-firmware digests and native results are in
+**Hardware acceptance is still open.** The scheduling correction passed a full
+20-minute speed window at 968.076 kH/s against the 994 kH/s baseline, with all
+sampled rolling rates inside the required 944.3–1043.7 band. Its subsequent SD
+download exposed memory pressure and radio loss, so overall qualification failed.
+SD exports now use bounded, paced blocks and smaller Wi-Fi packet-buffer budgets;
+the complete download, speed and one-hour stability checks must pass together on
+the final installed image. Charger cold boot with the SD card inserted still
+requires the owner's physical test. Publication remains on hold.
+Exact binary digests and failed attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
-Mine, Hash, Chain, Clock, Stats, Boot and Setup share the Afterglow design;
-Hazard is also available. Native captures show live price, retarget, network
-difficulty, CPU/RAM/temperature and pool authorization. Pages stay manual, with
-one action per debounced press. The original TLS allocation failure was fixed
-by freeing 12 KB from LVGL; certificate verification remains enabled.
-
-The original 20-minute Mine run averaged **972.6 kH/s**, 2.15% below the
-994 kH/s baseline, but some rolling readings fell outside the 5% band. A new
-20-minute run is required on the repaired binary. SD reinsertion and sustained
-unattended-use acceptance remain open. Publication stays on hold.
+Wallet BTC/USD values come from the **configured payout address**, after removing
+its worker suffix. They describe that address's funds, including other transfers;
+accepted solo shares do not create a payout. Unknown or stale data is labelled.
+No private key or signing access is needed or stored. Reward sounds occur only
+for confirmed events, with volume and mute controls; startup and taps stay quiet.
 
 ## Get the source and build
 
@@ -93,6 +75,11 @@ also backs up and verifies the current device before writing:
 ```bash
 ./scripts/restore_full_flash_backup.sh hardware/backups/<full-image.bin>
 ```
+
+The historical `scripts/flash_v2_0_02.sh` stock-recovery helper follows the same
+backup-before-write rule and verifies all five stock images, including the
+filesystem. Both recovery helpers have stubbed failure-path tests in CI; those
+tests do not write a device.
 
 The connected unit has an ESP32-D0WD-V3 with 4 MB flash. Flash and restore prefer
 its stable `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0` link because the
