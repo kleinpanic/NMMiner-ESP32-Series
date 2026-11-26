@@ -1,56 +1,120 @@
-# NMMiner ESP32 Series Setup
+# PanicMiner ESP32 workspace
 
-This repo tracks setup, recovery, and upgrade notes for the NM-CYD / ESP32-2432S028 NMMiner device.
+Hardware bring-up, firmware, recovery tools and validation for an
+ESP32-2432S028R 2.8-inch Cheap Yellow Display miner. The open PanicMiner
+firmware lives in the [firmware source](firmware/custom/NerdMiner-CYD-Custom).
+This single repository includes the firmware source and reverse-engineering notes.
 
-Current device state:
+## Daily use
 
-- USB serial: `/dev/ttyUSB0`
-- Chip: ESP32-D0WD-V3, 4 MB flash
-- Board family: CYD 2.8
-- Display firmware target: `esp32-2432s028r-st7789`
-- Running firmware: custom decoded-spec `ESP32-2432S028R` ST7789 fork reporting recovered NMMiner `v2.0.02`; not the official stock binary
-- Live app verification: final webfix2 app was flashed at `0x10000`, independently read back, and rebuilt locally without a device write; all three app artifacts match.
-- Live app artifact: 2,840,400 bytes, SHA-256 `f9547fbb43af286c9adb5833d961dde0fd981e043a9bf0787656c16e44aff9f5`, contains `v2.0.02` and no `V1.8.3`
-- Live asset verification: decoded LittleFS image `/tmp/p7-custom-littlefs-stock-ss-20260618-221540.bin` verified byte-for-byte at `0x310000` on 2026-06-19 00:20 UTC / 2026-06-18 20:20 EDT
-- Latest serial runtime: no-write reset touch window showed clean recovery/config behavior, 0 panic lines, 31 touch diagnostics, 0 pressed observations, and 0 IRQ-low observations; raw serial was not stored in tracked files.
-- Recovery AP: `nmap-2.4g`
-- Recovery portal: `http://192.168.4.1`
-- Recovery web UI: WiFiManager root page reviewed at desktop and mobile widths; custom JSON API is not reachable in portal mode
-- Touch: unresolved; serial diagnostics show no raw press/contact signal (`directPressed=0`, `libPressed=0`)
-- Official `v2.0.02` ST7789 image: verified recovery baseline and decoded-spec source; `v2.0.02` text alone no longer distinguishes stock from the custom rebuilt firmware
-- Historical LAN/mining state: prior stock-baseline runs used `Homebase` 2.4 GHz and the LAN API, but the current live unit is in recovery AP mode
-- Latest pre-write full flash backup: `hardware/backups/cyd-backup-20260619-053633-pre-web-ui-fix2-app-flash.bin` (gitignored)
-- Recovered credentials and wallet notes: `secrets/recovered-device-config-2026-06-01.txt` (gitignored)
+Plug in USB power. The board loads its saved Wi-Fi and pool settings and starts
+mining without a computer. Wi-Fi must be **2.4 GHz**.
 
-Key docs:
+- Tap right for the next page, left for the previous page. A held press acts once.
+- Short BOOT press: next page. Double press: rotate. Triple press: backlight.
+- Pages stay where you leave them: Mine, Hash, Chain, Clock, Stats.
+- Hold BOOT for 5 seconds to open Setup without erasing the current settings.
+  Join the AP shown on the screen and open `http://192.168.4.1`.
+- At a new location, choose the new 2.4 GHz network and save. Existing pool
+  settings remain populated. A failed join opens Setup temporarily, then retries.
 
-- [Setup Procedure](docs/setup-nm-cyd.md)
-- [Amazon Product Description Notes](docs/product-description.md)
-- [Code/UI/Math Audit Notes](docs/codebase-audit.md)
-- [Customization Audit](docs/customization-audit.md)
-- [Monitor, Customization, And Hardware Notes](docs/monitor-and-hardware-notes.md)
-- [Kleinpanic Customization Basis](docs/kleinpanic-customization-basis.md)
-- [Official Manual Text Extract](docs/vendor/NM-CYD-ESP32-2432S028-manual.txt)
-- [GSD Project Context](.planning/PROJECT.md)
-- [Phase 7 Current Failure State](.planning/phases/07-on-device-validation/07-CURRENT-FAILURE-STATE.md)
+The screen colours use the verified `ILI9341_2_DRIVER` + `TFT_INVERSION_ON`
+configuration. The vendor identifies this unit as ST7789; the working custom
+configuration is recorded in PlatformIO rather than inferred from that label.
 
-Canonical local tools:
+## Current validation
 
-- [Kleinpanic NMMiner Control](apps/nmminer-control/README.md)
+**Hardware acceptance is open.** The latest firmware is backed up, flashed and
+verified, but this unit is currently failing Wi-Fi authentication/association.
+SD initialization is deferred until Wi-Fi connects. All four radio profiles
+still failed with zero SD access. Live pool, CSV logging and restart persistence
+need verification on this binary. It is not yet cleared for unattended use.
 
-Useful commands:
+The redesigned Mine, Hash, Chain, Clock, Stats, Boot and Setup screens share the
+Afterglow visual system; Hazard is also available. The touch update restores the
+original CYD touch bus and calibration, polls each display frame and debounces
+held presses. Physical acceptance and firmware digests are recorded in
+[runtime validation](docs/panicminer-validation-2026-11-25.md).
+
+An earlier native run fetched all five mempool.space endpoints with certificate
+verification enabled. RSA verification was failing from insufficient usable
+heap; reducing the LVGL reservation by 12 KB fixed that failure. Live Chain data
+must be checked again after this unit reconnects.
+
+The original 20-minute Mine check averaged **972.6 kH/s**, 2.15% below the
+994 kH/s baseline, with zero SHA mismatches. Eleven rolling readings briefly
+fell below the 5% band, so the strict per-reading gate remains open. This run
+predates the touch/Stats update; the evidence distinguishes the tested binaries.
+Two restart/rejoin checks passed; those were EN resets, not literal USB power
+removal. See the validation document for the current limits of hardware testing.
+
+## Get the source and build
 
 ```bash
-# Run the local dashboard/controller
-./scripts/run_nmminer_control.sh
-
-# Back up current flash
-python3 ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 read_flash 0x0 0x400000 hardware/backups/nmminer-esp32-d0wd-v3-full-flash-$(date +%F).bin
-
-# Reflash official stock v2.0.02 ST7789 recovery baseline if recovery/reinstall is needed.
-# Take a fresh full 4 MB backup first; current custom firmware also reports v2.0.02.
-./scripts/flash_v2_0_02.sh
-
-# Send config over USB serial; keep the laptop on its current Wi-Fi
-./scripts/send_serial_config.py --ssid 'Homebase' --password '<wifi password>' --wallet '<btc wallet>' --delay 4.5
+git clone https://github.com/kleinpanic/NMMiner-ESP32-Series.git
+cd NMMiner-ESP32-Series
+# Reuse .venv if present; create it only on a fresh checkout.
+uv venv .venv
+uv pip install --python ./.venv/bin/python -r requirements.txt
+cd firmware/custom/NerdMiner-CYD-Custom
+../../../.venv/bin/python -m platformio run -e ESP32-2432S028R
+cd ../../..
+./scripts/flash_fork_build.sh panicminer
 ```
+
+Every firmware write must have a fresh full 4 MB backup. The flash helper reads
+and verifies that backup, writes the build, then verifies every image. Restore
+also backs up and verifies the current device before writing:
+
+```bash
+./scripts/restore_full_flash_backup.sh hardware/backups/<full-image.bin>
+```
+
+The connected unit uses `/dev/ttyUSB0` and has an ESP32-D0WD-V3 with 4 MB flash.
+Close serial monitors before flashing. Generated builds, full backups and serial
+logs stay local in ignored directories.
+
+## Workspace map
+
+| Path | Purpose |
+| --- | --- |
+| `firmware/custom/NerdMiner-CYD-Custom/` | Open firmware, touch, UI, mining and live feed |
+| `scripts/` | Backup, verified flash/restore, provisioning and framebuffer capture |
+| `docs/panicminer-validation-2026-11-25.md` | Hardware results, measurements and remaining gates |
+| `firmware/custom/NerdMiner-CYD-Custom/docs/design/` | Current display design |
+| `apps/nmminer-control/` | Local controller/dashboard; historical stock tooling |
+| `.planning/` | GSD requirements, decisions and milestone state |
+| `hardware/backups/`, `logs/`, `secrets/` | Ignored private device data |
+
+The firmware README documents controls, measured statistics and developer
+commands. The host renderer in its `tools/uisim/` directory renders the same UI
+source in both themes. Framebuffer capture is deliberately kept outside timed
+mining runs because serial dumping blocks the display task.
+
+The application, mining loop and UI are built from the source in this workspace;
+the vendor's NMMiner application is replaced. Espressif's radio libraries and
+chip ROM still contain proprietary components. See the verified
+[firmware provenance](docs/firmware-provenance.md) for that boundary.
+
+Firmware source was consolidated from `v4/panicminer` commit `bf08ec8` into this
+repository. It is an owned source fork of NerdMiner with separate NMMiner binary
+research/recovery notes; it is not a completely decoded vendor firmware. The
+old nested Git history is retained locally under ignored `external/`.
+
+## Secrets and recovery
+
+Do not commit Wi-Fi passwords, wallet values, device licences, full flash images,
+serial logs or real configuration files. Private GitHub visibility does not
+replace those exclusions. Dependencies belong in `requirements.txt` and all
+Python tools run through `./.venv/bin/python`.
+
+The original closed NMMiner recovery procedure is historical: long BOOT, join
+`nmap-2.4g`, open `192.168.4.1`. It applies when that firmware is installed.
+Reflashing official stock recovery replaces PanicMiner; take a fresh backup first.
+
+Earlier research remains available in [setup notes](docs/setup-nm-cyd.md),
+[hardware notes](docs/monitor-and-hardware-notes.md),
+[customization audit](docs/customization-audit.md),
+[code/UI/math audit](docs/codebase-audit.md), and
+[vendor manual](docs/vendor/NM-CYD-ESP32-2432S028-manual.txt).
+Those June recovery and asset investigations do not describe the current runtime.

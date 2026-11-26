@@ -2,7 +2,8 @@
 # Safety regression checks. The ESP tool is a stub; no serial device is opened.
 set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-sandbox="$(mktemp -d)"
+mkdir -p "$root/logs/test-sandboxes"
+sandbox="$(mktemp -d "$root/logs/test-sandboxes/restore-XXXXXX")"
 trap 'rm -rf -- "$sandbox"' EXIT
 mkdir -p "$sandbox/scripts" "$sandbox/.venv/bin" "$sandbox/run"
 cp "$root/scripts/restore_full_flash_backup.sh" "$sandbox/scripts/restore.sh"

@@ -1,0 +1,4 @@
+# Firmware build tooling. Install only inside this checkout's virtual environment:
+# uv venv .venv
+# uv pip install --python ./.venv/bin/python -r requirements.txt
+platformio==6.1.19

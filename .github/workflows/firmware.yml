@@ -1,0 +1,70 @@
+name: Build and test PanicMiner
+
+# This fork only targets the ESP32-2432S028R (CYD, ST7789) unit. The upstream
+# workflow built every board and gated releases on BitMaker-hub approval.
+# This workflow builds our board, checks host regressions and renders both themes.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: requirements.txt
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio/.cache
+          key: ${{ runner.os }}-pio-6.1.19-${{ hashFiles('firmware/custom/NerdMiner-CYD-Custom/platformio.ini', 'requirements.txt') }}
+      - name: Install PlatformIO Core
+        run: |
+          uv venv .venv
+          uv pip install --python ./.venv/bin/python -r requirements.txt
+      - name: Install host build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential libpng-dev
+      - name: Build ESP32-2432S028R firmware
+        run: ./.venv/bin/python -m platformio run -d firmware/custom/NerdMiner-CYD-Custom -e ESP32-2432S028R
+      - name: Run native regression tests with sanitizers
+        run: bash firmware/custom/NerdMiner-CYD-Custom/tools/tests/run.sh
+      - name: Check backup and restore safety
+        run: bash tests/test_restore_full_flash_backup.sh
+      - name: Render both UI themes
+        run: |
+          make -C firmware/custom/NerdMiner-CYD-Custom/tools/uisim .deps/lvgl/lvgl.h
+          make -C firmware/custom/NerdMiner-CYD-Custom/tools/uisim THEME=1 render
+          make -C firmware/custom/NerdMiner-CYD-Custom/tools/uisim THEME=2 render
+      - name: Archive firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ESP32-2432S028R-firmware-${{ github.sha }}
+          path: |
+            firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/firmware.bin
+            firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/bootloader.bin
+            firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/partitions.bin
+          if-no-files-found: error
+      - name: Archive UI fixtures
+        uses: actions/upload-artifact@v4
+        with:
+          name: UI-fixtures-${{ github.sha }}
+          path: |
+            firmware/custom/NerdMiner-CYD-Custom/tools/uisim/out-t1/*.png
+            firmware/custom/NerdMiner-CYD-Custom/tools/uisim/out-t2/*.png
+          if-no-files-found: error

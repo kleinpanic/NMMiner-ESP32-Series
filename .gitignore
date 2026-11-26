@@ -32,6 +32,10 @@ firmware/reconstructed/nmminer-v2-baseline/*.uf2
 # Upstream source checkouts used for local audit/customization experiments.
 external/
 
+# Historical upstream prebuilt images/flasher bundle; source is tracked below.
+firmware/custom/NerdMiner-CYD-Custom/bin/
+firmware/custom/NerdMiner-CYD-Custom/SLS/
+
 # Claude Code local state / worktrees
 .claude/
 

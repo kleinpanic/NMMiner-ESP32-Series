@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+BUILD="$ROOT/tools/uisim/build-tests"
+JSON="$ROOT/.pio/libdeps/ESP32-2432S028R/ArduinoJson/src"
+CXX=${CXX:-g++}
+mkdir -p "$BUILD"
+if [[ ! -f "$JSON/ArduinoJson.h" ]]; then
+  echo "ArduinoJson dependency missing. Build ESP32-2432S028R with PlatformIO first." >&2
+  exit 1
+fi
+COMMON=(-std=c++17 -g -O1 -Wall -Wextra -Wno-format -fsanitize=address,undefined -fno-omit-frame-pointer)
+"$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_touch.cpp" -o "$BUILD/test_touch"
+"$BUILD/test_touch"
+for TEST in sd_path pool_watchdog mining_target; do
+  "$CXX" "${COMMON[@]}" -I"$ROOT/src" "$ROOT/tools/tests/test_$TEST.cpp" -o "$BUILD/test_$TEST"
+  "$BUILD/test_$TEST"
+done
+"$CXX" "${COMMON[@]}" -DPANICMINER_UI -I"$ROOT/tools/tests/stubs" -I"$ROOT/src" -I"$JSON" \
+  "$ROOT/src/stratum.cpp" "$ROOT/tools/tests/test_stratum.cpp" -o "$BUILD/test_stratum"
+"$BUILD/test_stratum"
+if [[ -f "$ROOT/tools/tests/run_speaker.sh" ]]; then
+  bash "$ROOT/tools/tests/run_speaker.sh"
+fi

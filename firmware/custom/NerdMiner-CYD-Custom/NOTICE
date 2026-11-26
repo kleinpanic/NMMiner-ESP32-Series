@@ -1,0 +1,31 @@
+NerdMiner-CYD-Custom
+====================
+
+This project is a fork of NerdMiner_v2 by BitMaker (BitMaker-hub):
+
+    https://github.com/BitMaker-hub/NerdMiner_v2
+    Copyright (c) 2023 Bitmaker — MIT License
+
+Distributed under the MIT License (see LICENSE), retained from upstream.
+
+Modifications in this fork (Copyright (c) 2026 kleinpanic), also MIT:
+  - Non-blocking LEDC speaker/buzzer driver (GPIO26): beep on accepted share,
+    alarm on pool/WiFi disconnect, boot chime, volume/mute, web test-tone.
+  - microSD support (VSPI/FAT32): CSV mining-stats logging with rotation,
+    config.json read/write, path-sanitized file operations, screensaver store.
+  - Custom JSON HTTP API (port 80) exposing status + speaker + SD control
+    (see docs/API.md), consumed by the companion local control dashboard.
+
+Pipelined classic-ESP32 HW SHA256d mining loop, its self-test, the SW/HW
+nonce split and the on-chip SHA engine bench are ported from NerdMiner
+Modded by HenrysCat, also MIT (Copyright (c) 2026 HenrysCat):
+
+    https://github.com/HenrysCat/NerdMiner-Modded (522764d)
+
+Hardware target: ESP32-2432S028R "Cheap Yellow Display" (ST7789/ILI9341).
+CYD SD + speaker wiring references adapted from
+witnessmenow/ESP32-Cheap-Yellow-Display (MIT).
+
+No device secrets (WiFi credentials, wallet, license) are included in this
+repository — they are provided at runtime via the WiFiManager portal or an
+SD config.json and are git-ignored.

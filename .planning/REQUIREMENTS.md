@@ -5,21 +5,21 @@
 
 ## Base and tooling (BASE)
 
-- [ ] **BASE-01**: Branch `v4/panicminer` from `61aae97` builds for `ESP32-2432S028R` with the repo's PlatformIO.
-- [ ] **BASE-02**: One script backs up the full 4 MB flash, flashes, and runs `verify_flash`. It refuses to flash without a fresh backup.
+- [x] **BASE-01**: Branch `v4/panicminer` from `61aae97` builds for `ESP32-2432S028R` with the repo's PlatformIO.
+- [x] **BASE-02**: One script backs up the full 4 MB flash, flashes, and runs `verify_flash`. It refuses to flash without a fresh backup.
 - [ ] **BASE-03**: The unmodified base mines on hardware: pool subscribed, nonzero hashrate, at least one accepted share.
 
 ## See what we make (SEE)
 
-- [ ] **SEE-01**: A host simulator compiles the firmware's UI source with the same LVGL version and writes each screen to PNG.
-- [ ] **SEE-02**: The device dumps its framebuffer over serial on request; a host script turns the dump into PNG.
-- [ ] **SEE-03**: Panel driver, colour inversion, colour order and rotation are confirmed against one operator photo.
+- [x] **SEE-01**: A host simulator compiles the firmware's UI source with the same LVGL version and writes each screen to PNG.
+- [x] **SEE-02**: The device dumps its framebuffer over serial on request; a host script turns the dump into PNG.
+- [x] **SEE-03**: Panel driver, colour inversion, colour order and rotation are confirmed against one operator photo.
 
 ## UI (UI)
 
-- [ ] **UI-01**: A written design system: palette, type scale, grid, motion rules.
+- [x] **UI-01**: A written design system: palette, type scale, grid, motion rules.
 - [ ] **UI-02**: Screens Boot, Mine, Chain, Clock and Setup render in the simulator and on hardware.
-- [ ] **UI-03**: The Setup screen shows the AP name, `192.168.4.1` and a Wi-Fi QR code.
+- [x] **UI-03**: The Setup screen shows the AP name, `192.168.4.1` and a Wi-Fi QR code.
 - [ ] **UI-04**: The `BOOT` button pages through screens; pages also rotate on a timer.
 - [ ] **UI-05**: The UI holds 30 fps-class redraws without dropping hashrate more than 5 %.
 

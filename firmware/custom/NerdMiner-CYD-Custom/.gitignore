@@ -1,0 +1,33 @@
+.idea/
+.pio
+.pio/
+.vscode
+.vs
+*.sln
+*.vcxproj*
+NerdMinerLog.txt
+bin/0x10000_firmware.bin
+logs
+boards/ESP32_wroom_guide.md
+
+# Build artifacts
+.venv/
+build/
+*.bin
+*.elf
+
+# Secrets and local config
+config.json
+include/secrets.h
+src/secrets.cpp
+*.example
+!*.example.json
+
+# Flash backups and device logs
+serial_*.log
+
+# PanicMiner host tools: fetched deps, caches, renders
+tools/uisim/.deps/
+tools/uisim/out*/
+tools/uisim/build*/
+tools/fonts/.cache/

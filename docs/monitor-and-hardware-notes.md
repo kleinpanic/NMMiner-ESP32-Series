@@ -54,7 +54,7 @@ http://127.0.0.1:7877/web_monitor
 
 Status check on 2026-06-01:
 
-- The running monitor process is `/usr/bin/python3 nmcontroller.py`.
+- The historical monitor used the system Python interpreter. Current project tools must use `./.venv/bin/python`.
 - Its working directory is `/home/broklein/codeWS/Python/NMController_web`.
 - Both `/home/broklein/codeWS/Python/NMController_web` and `external/NMController_web` are clean upstream checkouts at commit `ba048864f247ff4678ed75a47c00c6d88a6c23fb`.
 - No separate local dashboard app was found in this setup repo.

@@ -1,0 +1,28 @@
+name: Build (prerelease branch)
+
+# Build-only check for the prerelease branch. Upstream's auto-prerelease
+# (GitHub release creation) is dropped — this fork releases manually.
+
+on:
+  push:
+    branches: [ prerelease ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio-${{ hashFiles('platformio.ini') }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+      - name: Build ESP32-2432S028R firmware
+        run: pio run -e ESP32-2432S028R
