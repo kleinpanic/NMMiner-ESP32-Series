@@ -118,3 +118,10 @@ clears a preceding client's reset/broken-pipe state before that probe, while a
 real receive failure still rejects the peer. This boundary test is not a native
 SDK or radio test. Native API timing logs identify request/sender passes taking
 at least 500 ms without recording paths, credentials or payloads.
+
+Pending-response tests cover the production response cursor used for deferred
+HTTP headers and JSON bodies. Repeated blocked and partial sends preserve exact
+frame bytes; the 8 KB bound, append failure, invalid socket results, empty input
+and reset are checked. The SDK server's write hooks retain replies for one
+nonblocking send per pass, prioritizing them over SD bulk traffic. Native
+blocked-download/status pressure tests are required to validate that integration.

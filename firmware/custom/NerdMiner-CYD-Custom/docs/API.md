@@ -51,6 +51,13 @@ backlight. Test tones accept 100–10,000 Hz and cap duration at two seconds.
 
 ## SD card
 
+All API headers and JSON bodies use a retained response buffer, capped at 8 KB,
+and at most one nonblocking 512-byte send per loop pass. One response is queued
+at a time, with a ten-second total deadline. While it is pending, bulk SD writes
+pause so control/status replies receive the next send opportunity. Clients must
+check complete HTTP bodies; a disconnected or unresponsive peer can still fail
+its own request.
+
 All `path` inputs pass the shared SD normalizer (rejects traversal, ambiguous
 separators, control characters and leading/trailing spaces or trailing dots in
 components; constrains to `/sd/`). The API additionally denies configuration

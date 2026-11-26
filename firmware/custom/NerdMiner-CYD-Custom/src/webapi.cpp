@@ -18,6 +18,7 @@
 #include "sdTransferPolicy.h"
 #include "sdPath.h"
 #include "socketErrorState.h"
+#include "pendingResponse.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -27,7 +28,61 @@ extern uint64_t upTime;
 // Global SD store instance (defined in NerdMinerV2.ino.cpp).
 extern SDStore sdStore;
 
-static WebServer apiServer(80);
+static int socketSendOnce(int fd, const void* buffer, size_t count) {
+  const int sent = ::send(fd, buffer, count, MSG_DONTWAIT);
+  if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK ||
+                   errno == ENOMEM || errno == ENOBUFS || errno == EINTR)) return 0;
+  return sent;
+}
+
+// WebServer::send normally performs synchronous SDK writes for both the
+// header and body. A blocked bulk peer can make those writes retry for many
+// seconds or silently return a short JSON body. Retain one small response and
+// prioritize its nonblocking writes over bulk traffic instead.
+class DeferredApiServer : public WebServer {
+  WiFiClient responseClient_;
+  PendingResponse<String> response_;
+  bool active_ = false, failed_ = false;
+  uint32_t began_ = 0;
+protected:
+  size_t _currentClientWrite(const char* bytes, size_t size) override {
+    if (!active_) {
+      responseClient_ = client();
+      responseClient_.setTimeout(1);
+      began_ = millis();
+      active_ = true;
+    }
+    if (failed_ || !response_.append(bytes, size)) {
+      failed_ = true;
+      return 0;
+    }
+    return size;
+  }
+  size_t _currentClientWrite_P(PGM_P bytes, size_t size) override {
+    // ESP32 flash is byte-addressable; the retained copy owns these bytes.
+    return _currentClientWrite(bytes, size);
+  }
+public:
+  DeferredApiServer() : WebServer(80) {}
+  bool responsePending() const { return active_; }
+  void advanceResponse() {
+    if (!active_) return;
+    ResponseWriteState state = ResponseWriteState::Failed;
+    if (!failed_ && responseClient_.fd() >= 0 && uint32_t(millis() - began_) < 10000)
+      state = response_.advance([&](const char* bytes, size_t size) {
+        return socketSendOnce(responseClient_.fd(), bytes, size);
+      });
+    if (state == ResponseWriteState::Progress || state == ResponseWriteState::Wait) return;
+    if (state != ResponseWriteState::Complete)
+      Serial.printf("[WEBAPI] response incomplete: %u/%u bytes\n",
+                    (unsigned)response_.sent(), (unsigned)response_.size());
+    responseClient_.stop();
+    response_.reset();
+    active_ = failed_ = false;
+  }
+};
+
+static DeferredApiServer apiServer;
 static bool apiStarted = false;
 
 // --- helpers ---------------------------------------------------------------
@@ -132,9 +187,7 @@ static void advanceSdTransfer() {
       return received;
     },
     [&](const uint8_t* buffer, size_t n) {
-      const int sent = ::send(sdTransferClient.fd(), buffer, n, MSG_DONTWAIT);
-      if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK ||
-                       errno == ENOMEM || errno == ENOBUFS)) return 0;
+      const int sent = socketSendOnce(sdTransferClient.fd(), buffer, n);
       if (sent < 0) Serial.printf("[WEBAPI] SD send failed: errno %d\n", errno);
       return sent;
     });
@@ -322,11 +375,14 @@ void webApiSetup() {
 void webApiLoop() {
   if (apiStarted) {
     uint32_t began = millis();
-    handleSocketServerPass(apiServer);
+    if (!apiServer.responsePending()) handleSocketServerPass(apiServer);
     uint32_t elapsed = millis() - began;
     if (elapsed >= 500) Serial.printf("[WEBAPI] request pass took %u ms\n", (unsigned)elapsed);
     began = millis();
-    advanceSdTransfer();
+    apiServer.advanceResponse();
+    // Headers must arrive before a file body; status/control replies also
+    // get their bounded send opportunity before more bulk data is queued.
+    if (!apiServer.responsePending()) advanceSdTransfer();
     elapsed = millis() - began;
     if (elapsed >= 500) Serial.printf("[WEBAPI] SD pass took %u ms\n", (unsigned)elapsed);
   }
