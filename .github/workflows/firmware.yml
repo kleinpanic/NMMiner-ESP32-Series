@@ -42,6 +42,8 @@ jobs:
           sudo apt-get install --yes --no-install-recommends build-essential libpng-dev libssl-dev
       - name: Build ESP32-2432S028R firmware
         run: ./.venv/bin/python -m platformio run -d firmware/custom/NerdMiner-CYD-Custom -e ESP32-2432S028R
+      - name: Build Wi-Fi isolation diagnostic
+        run: ./.venv/bin/python -m platformio run -d firmware/diagnostics/wifi-only -e cyd-wifi
       - name: Run native regression tests with sanitizers
         run: bash firmware/custom/NerdMiner-CYD-Custom/tools/tests/run.sh
       - name: Check backup and restore safety

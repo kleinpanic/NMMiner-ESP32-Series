@@ -19,6 +19,13 @@ factory_out.bin
 firmware/*
 !firmware/custom/
 !firmware/reconstructed/
+!firmware/diagnostics/
+firmware/diagnostics/*
+!firmware/diagnostics/wifi-only/
+firmware/diagnostics/wifi-only/*
+!firmware/diagnostics/wifi-only/platformio.ini
+!firmware/diagnostics/wifi-only/README.md
+!firmware/diagnostics/wifi-only/src/
 firmware/reconstructed/*
 !firmware/reconstructed/nmminer-v2-baseline/
 !firmware/reconstructed/nmminer-v2-baseline/**
