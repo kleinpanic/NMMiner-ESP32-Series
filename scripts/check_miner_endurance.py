@@ -31,7 +31,7 @@ def record_native_line(state, line, seconds):
         if len(state["boots"]) > 1:
             state["faults"].append({**event, "line": "UNEXPECTED RESTART: " + line})
     if line.startswith(("[SD]", "[STATS]", "[POOL]", "[TOUCH]", "[UI]", "[STATE]",
-                        "[WIFI]", "[STACK]", "[MINER] HW SHA", "[CFG] Opening")):
+                        "[WIFI]", "[STACK]", "[PERF]", "[MINER] HW SHA", "[CFG] Opening")):
         state["events"].append(event)
     if match := re.search(r"avg\. hashrate (\S+) KH/s", line):
         try:

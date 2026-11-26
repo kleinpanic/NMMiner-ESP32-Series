@@ -112,6 +112,18 @@ uint32_t templates = 0;
 uint32_t hashes = 0;
 uint32_t Mhashes = 0;
 static std::mutex s_work_mutex;
+#ifdef PIPELINED_CLASSIC
+struct MiningTiming {
+  std::atomic<uint32_t> total{0}, maximum{0};
+  void add(uint32_t microseconds) {
+    total.fetch_add(microseconds);
+    uint32_t prior = maximum.load();
+    while (prior < microseconds && !maximum.compare_exchange_weak(prior, microseconds)) {}
+  }
+};
+static MiningTiming s_job_preparation, s_hw_gap, s_sha_wait;
+static std::atomic<uint32_t> s_prepared_jobs{0};
+#endif
 static void recordCompletedWork(uint32_t completed) {
   std::lock_guard<std::mutex> lock(s_work_mutex);
   uint64_t accumulated = (uint64_t)hashes + completed;
@@ -615,6 +627,9 @@ void runStratumWorker(void *name) {
       {
           case MINING_NOTIFY:         if(parse_mining_notify(line, mJob))
                                       {
+#ifdef PIPELINED_CLASSIC
+                                          uint32_t preparation_started = micros();
+#endif
                                           {
                                             std::lock_guard<std::mutex> lock(s_job_mutex);
                                             s_job_request_list_sw.clear();
@@ -708,6 +723,10 @@ void runStratumWorker(void *name) {
                                           //For i2c slave we give nonces from 0x20000000, that is 0x10000000 nonces per slave
                                           i2c_feed_slaves(i2c_slave_vector, job_pool & 0xFF, 0x20, currentPoolDifficulty, mMiner.bytearray_blockheader);
                                           #endif
+#ifdef PIPELINED_CLASSIC
+                                          s_job_preparation.add(micros() - preparation_started);
+                                          s_prepared_jobs.fetch_add(1);
+#endif
                                       } else
                                       {
                                         Serial.println("Parsing error, need restart");
@@ -1610,7 +1629,9 @@ static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &
   if (s_working_current_job_id != (job->id & 0xFF))
     s_pl_ctx.run = 0;
 
+  uint32_t lock_started = micros();
   sha_lock_job_wait(true);
+  s_sha_wait.add(micros() - lock_started);
   // Whatever used the engine last (TLS before we held every engine, the
   // previous chunk's abandoned block) is finished; start from a clean one.
   periph_module_reset(PERIPH_SHA_MODULE);
@@ -1681,6 +1702,7 @@ void minerWorkerHw(void * task_id)
   uint8_t native_header[80];
   #else
   uint32_t pl_cursor = 0;
+  uint32_t work_finished = 0;
   pl_select_loop();
   #endif
 
@@ -1722,7 +1744,9 @@ void minerWorkerHw(void * task_id)
 #ifdef PIPELINED_CLASSIC
       // pl_mine_chunk records completed 32K steps directly. Do not queue the
       // same work for a second accounting pass through Stratum.
+      if (work_finished) s_hw_gap.add(micros() - work_finished);
       pl_mine_chunk(job, pl_cursor);
+      work_finished = micros();
 #else
       uint8_t job_in_work = job->id & 0xFF;
       memcpy(sha_buffer, job->sha_buffer, 80);
@@ -1944,10 +1968,18 @@ void runMonitor(void *name)
         upTime ++;
       }
 
-      if (upTime % 10 == 0)
+      if (upTime % 10 == 0) {
         Serial.printf("[SHA] prefilter hits checked %lu, mismatched %lu, lock %s, dropped %lu\n",
                       (unsigned long)s_hw_checked, (unsigned long)s_hw_mismatched,
                       minerShaLockAllOn() ? "all" : "sha256", (unsigned long)s_hw_dropped);
+#ifdef PIPELINED_CLASSIC
+        Serial.printf("[PERF] jobs %lu prep %lu max %lu; HW gaps %lu max %lu; SHA wait %lu max %lu us\n",
+            (unsigned long)s_prepared_jobs.load(), (unsigned long)s_job_preparation.total.load(),
+            (unsigned long)s_job_preparation.maximum.load(), (unsigned long)s_hw_gap.total.load(),
+            (unsigned long)s_hw_gap.maximum.load(), (unsigned long)s_sha_wait.total.load(),
+            (unsigned long)s_sha_wait.maximum.load());
+#endif
+      }
       drawCurrentScreen(mElapsed);
 
       // Monitor state when hashrate is 0.0

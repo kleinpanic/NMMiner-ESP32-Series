@@ -95,12 +95,12 @@ class NativeCaptureParserTests(unittest.TestCase):
         for second, line in enumerate((">>> Completed 2 share(s), avg. hashrate 972.5 KH/s",
                 "[CHAIN] 5/5 ok in 9000 ms", "[CHAIN] scratch used 0, peak 22220, SDK fallbacks 0",
                 "[SHA] prefilter hits checked 100, mismatched 0, lock all, dropped 0",
-                "[STACK] Monitor minimum free 2500 bytes")):
+                "[STACK] Monitor minimum free 2500 bytes", "[PERF] jobs 2 prep 100 max 60; HW gaps 20 max 5; SHA wait 0 max 0 us")):
             module.record_native_line(state, line, second)
         self.assertEqual(state["rates"][0]["khs"], 972.5)
         self.assertEqual(len(state["feeds"]), 2)
         self.assertEqual(len(state["sha"]), 1)
-        self.assertEqual(len(state["events"]), 1)
+        self.assertEqual(len(state["events"]), 2)
         self.assertFalse(state["faults"])
 
     def test_nonfinite_and_corrupt_rates_fail_without_throwing(self):
