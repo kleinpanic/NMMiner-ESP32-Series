@@ -173,8 +173,14 @@ void setup()
   Serial.println("Initiating tasks...");
   static const char monitor_name[] = "(Monitor)";
   #if defined(CONFIG_IDF_TARGET_ESP32)
-  // Increased stack for ESP32 classic due to NVS operations  
+  #if defined(PANICMINER_UI)
+  // Native minimum was 5908/9500 after feed refreshes and NVS save. Keep
+  // >2 KB of that measured margin and return 3356 bytes to general heap.
+  BaseType_t res1 = xTaskCreatePinnedToCore(runMonitor, "Monitor", 6144, (void*)monitor_name, 5, NULL, APP_TASK_CORE);
+  #else
+  // Increased stack for ESP32 classic due to NVS operations
   BaseType_t res1 = xTaskCreatePinnedToCore(runMonitor, "Monitor", 9500, (void*)monitor_name, 5, NULL, APP_TASK_CORE);
+  #endif
   #else
   BaseType_t res1 = xTaskCreatePinnedToCore(runMonitor, "Monitor", 10000, (void*)monitor_name, 5, NULL, APP_TASK_CORE);
   #endif
@@ -228,7 +234,8 @@ void setup()
 
 #if (SOC_CPU_CORES_NUM >= 2)
   #if defined(HW_MINER_OWNS_CORE1)
-  xTaskCreatePinnedToCore(minerWorkerSw, "MinerSw-1", 5000, (void*)1, 1, &minerTask2, 0);
+  // Native minimum was 3552/5000. Retain >1.5 KB measured margin.
+  xTaskCreatePinnedToCore(minerWorkerSw, "MinerSw-1", 3072, (void*)1, 1, &minerTask2, 0);
   #elif defined(CONFIG_IDF_TARGET_ESP32)
   xTaskCreate(minerWorkerSw, "MinerSw-1", 5000, (void*)1, 1, &minerTask2); // Reduced for ESP32 classic
   #else

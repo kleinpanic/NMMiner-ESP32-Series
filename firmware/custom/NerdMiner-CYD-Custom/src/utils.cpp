@@ -176,7 +176,7 @@ miner_data init_miner_data(void){
   return newMinerData;
 }
 
-miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob){
+miner_data calculateMiningData(mining_subscribe& mWorker, const mining_job& mJob){
 
   miner_data mMiner = init_miner_data();
 

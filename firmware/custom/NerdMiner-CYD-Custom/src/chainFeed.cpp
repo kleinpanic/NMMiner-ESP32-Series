@@ -276,7 +276,10 @@ void chainFeedStart(void)
     // the miner's SHA-256 engine. With every engine held per job, mbedTLS finds
     // them busy and hashes in software instead (see minerShaLockAll).
     minerShaLockAll(true);
-    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 10240, NULL, 2, &s_task, APP_TASK_CORE);
+    // Share core-0 compute time with the software miner during RSA/TLS.
+    // Priority 2 preempted that miner for the whole certificate operation,
+    // pushing the native rolling rate below the allowed 5% band.
+    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 10240, NULL, 1, &s_task, APP_TASK_CORE);
 }
 
 void chainFeedPoke(void)
