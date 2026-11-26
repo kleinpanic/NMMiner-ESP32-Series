@@ -65,6 +65,9 @@ jobs:
             firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/firmware.bin
             firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/bootloader.bin
             firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/partitions.bin
+            firmware/custom/NerdMiner-CYD-Custom/.pio/build/ESP32-2432S028R/firmware.elf
+            firmware/custom/NerdMiner-CYD-Custom/firmware/*/ESP32-2432S028R_factory.bin
+            firmware/custom/NerdMiner-CYD-Custom/firmware/*/ESP32-2432S028R_firmware.bin
           if-no-files-found: error
       - name: Archive UI fixtures
         uses: actions/upload-artifact@v4
