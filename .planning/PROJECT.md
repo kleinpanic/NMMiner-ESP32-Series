@@ -62,7 +62,7 @@ audio. Public CI 45897395376, sanitizers, 108 local Python tests / 29 subtests a
 binary/history secret scans passed. The previous rc.1 image separately passed
 its full hour with accepted work; its identity is not replaced by this retest.
 
-The canonical repository is public. Stable v4.0.0 promotes the exact rc.2
+The canonical repository is public. Stable v4.0.0 is published as the latest release; all six assets were anonymously downloaded and checksum-verified. It promotes the exact rc.2
 application bytes. The owner transferred the SD-equipped miner to a charger;
 read-only LAN checks passed for 70.234 seconds at 969.003 kH/s,
 with primary authorization, new SD writes, advancing work and current wallet

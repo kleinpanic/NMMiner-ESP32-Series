@@ -1,5 +1,27 @@
 # PanicMiner validation — 2026-11-25
 
+## Stable v4.0.0 publication — November 26
+
+[Stable v4.0.0](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0)
+is published as the latest release, with draft and prerelease flags both false.
+The release and milestone tags point to `f555a22c141e1155fbb338503ebd6dca32c692e2`;
+firmware source remains `07c3931cbcb297f330eabe68e7feabbc2f330c2f`.
+Application and factory bytes match rc.2 exactly. All six assets were downloaded
+anonymously and matched local files, GitHub SHA-256 digests, the external
+checksum manifest and the ZIP's internal manifest. All 63 release files and ZIP
+entries passed the exact private-value scan. No new build or flash occurred.
+
+The final read-only charger snapshot showed saved-primary authorization,
+967.595 kH/s over 60 seconds, mounted SD with 13 successful records this boot,
+and valid wallet data aged 12 seconds. One preceding status request timed out;
+the next request succeeded in 0.375 seconds without a reset or settings change.
+This later observation is separate from the successful 70-second charger
+acceptance window. The device remains on charger power with SD inserted.
+
+GSD archived all five phases, 22 verified requirements and the acceptance audit.
+The active requirements file was retired only after its complete archive was
+committed. No next milestone or remaining acceptance task is queued.
+
 The CYD runs the matching Mine, Hash, Chain, Clock, Stats, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.

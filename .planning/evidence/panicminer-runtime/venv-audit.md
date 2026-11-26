@@ -86,3 +86,7 @@ cleanup without retaining wallet values. The complete root-venv Python suite
 passes 105 tests and 29 subtests. A scoped forbidden-invocation audit of the new
 checker, tests, root requirements and CI found zero matches; no dependency or
 environment change was needed. Native behavior is checked separately.
+
+## Stable charger closeout — 2026-11-26
+
+The ignored charger checker, stable packager, exact private-value scanner and anonymous download verifier all ran through root `./.venv/bin/python`, using standard-library modules. No Python dependency or environment was added. GSD archival used its installed Node CLI and owned mutation APIs.

@@ -3,11 +3,11 @@ gsd_state_version: "1.0"
 milestone: v4.0
 current_phase: 5
 status: completed
-stopped_at: Remote follow-up verified on 0e32d00a / source 07c3931; stable v4.0.0 prepared from identical firmware; charger/SD acceptance passed. No remaining acceptance item.
-last_updated: "2026-11-26T22:54:42.702Z"
+stopped_at: Stable v4.0.0 published from f555a22; all six assets anonymously downloaded and checksum-verified. Charger/SD acceptance passed. Milestone archived; no remaining acceptance item.
+last_updated: "2026-11-26T22:58:32.416Z"
 last_activity: 2026-11-26
 last_activity_desc: Milestone v4.0 completed and archived
-state_head: 5defbd843ae2ef51c4afee1e6c78b43d6d4f6532
+state_head: f555a22c141e1155fbb338503ebd6dca32c692e2
 progress:
   total_phases: 5
   completed_phases: 5
@@ -38,7 +38,7 @@ Milestone: v4.0 PanicMiner. All five phases and all 22 requirements verified.
 
 ## Repository and checks
 
-- Release v4.0.0-rc.2 published from tag 73d6394. All six assets downloaded anonymously and matched local/GitHub digests and both checksum manifests. All 62 release files/ZIP entries passed the private-value scan.
+- Stable v4.0.0 is the latest public release at tag f555a22; all six assets downloaded anonymously and matched local/GitHub digests and both checksum manifests. All 63 release files/ZIP entries passed the private-value scan. The application/factory bytes are identical to rc.2.
 - Canonical public source: https://github.com/kleinpanic/NMMiner-ESP32-Series, branch main.
 - Historical kleinpanic/NerdMiner-CYD-Custom is private, archived and points to the canonical repo.
 - Public CI 45897395376 passed exact firmware source 07c3931: both builds, C++ sanitizers, restore safety, Python tests, both UI themes and artifacts.
@@ -66,7 +66,7 @@ HW-05 complete. No coding or physical acceptance item remains.
 ## Session
 
 **Last session:** 2026-11-26
-**Stopped at:** Remote follow-up verified on 0e32d00a / source 07c3931; stable v4.0.0 prepared from identical firmware; charger/SD acceptance passed. No remaining acceptance item.
+**Stopped at:** Stable v4.0.0 published from f555a22; all six assets anonymously downloaded and checksum-verified. Charger/SD acceptance passed. Milestone archived; no remaining acceptance item.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ## Current Position
@@ -78,4 +78,4 @@ Last activity: 2026-11-26 — Milestone v4.0 completed and archived
 
 ## Operator Next Steps
 
-None. Leave the qualified firmware running; take a fresh full backup before any future write.
+None. Miner remains authorized on charger power with SD: final 60-second rate 967.595 kH/s, 13 saved SD records and wallet age 12 seconds. Leave the qualified firmware running; take a fresh full backup before any future write.

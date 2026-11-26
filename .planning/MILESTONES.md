@@ -10,6 +10,6 @@
 - Verified SD logging, RGB output states, owner-confirmed sound and charger cold boot with SD.
 - Current image passed all 17 strict 20-minute checks at 968.720 kH/s; the earlier mining-core image separately completed its recorded hour.
 
-Stable v4.0.0 promotes the exact tested rc.2 application and factory bytes. The owner-confirmed charger follow-up passed at 969.003 kH/s, with saved-pool authorization, advancing work, a new SD record and fresh wallet data. No additional flash was needed.
+[Stable v4.0.0](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0) is published from f555a22 as the latest release. All six public downloads and both checksum manifests were verified. It promotes the exact tested rc.2 application and factory bytes. The owner-confirmed charger follow-up passed at 969.003 kH/s, with saved-pool authorization, advancing work, a new SD record and fresh wallet data. No additional flash was needed.
 
 [Roadmap](milestones/v4.0-ROADMAP.md) · [Requirements](milestones/v4.0-REQUIREMENTS.md) · [Audit](milestones/v4.0-MILESTONE-AUDIT.md) · [Validation](../docs/panicminer-validation-2026-11-25.md) · [Release notes](../docs/releases/v4.0.0.md)
