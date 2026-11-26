@@ -111,3 +111,10 @@ heap / 2 KB contiguous space for mining and concurrent requests. A regression
 also covers the native 4084-byte fragmentation plateau that stalled the previous
 4 KB cutoff despite more than 21 KB free. Native pressure
 checks remain necessary; these host tests do not establish radio throughput.
+
+The socket-error-state test checks the installed Arduino SDK's connected-probe
+contract: a successful zero-length receive leaves errno untouched. The API pass
+clears a preceding client's reset/broken-pipe state before that probe, while a
+real receive failure still rejects the peer. This boundary test is not a native
+SDK or radio test. Native API timing logs identify request/sender passes taking
+at least 500 ms without recording paths, credentials or payloads.

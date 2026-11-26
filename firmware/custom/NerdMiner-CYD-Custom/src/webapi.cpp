@@ -17,6 +17,7 @@
 #include "sdPendingTransfer.h"
 #include "sdTransferPolicy.h"
 #include "sdPath.h"
+#include "socketErrorState.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -124,11 +125,17 @@ static void advanceSdTransfer() {
   if (step == SdTransferStep::Wait) return;
   const size_t left = sdTransferLength - sdTransferSent;
   const SdWriteResult progress = sdPending.advance(left,
-    [&](uint8_t* buffer, size_t n) { return sdTransferFile.read(buffer, n); },
+    [&](uint8_t* buffer, size_t n) {
+      const int received = sdTransferFile.read(buffer, n);
+      if (received < 0 || size_t(received) != n)
+        Serial.printf("[WEBAPI] SD read failed: %d/%u bytes\n", received, (unsigned)n);
+      return received;
+    },
     [&](const uint8_t* buffer, size_t n) {
       const int sent = ::send(sdTransferClient.fd(), buffer, n, MSG_DONTWAIT);
       if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK ||
                        errno == ENOMEM || errno == ENOBUFS)) return 0;
+      if (sent < 0) Serial.printf("[WEBAPI] SD send failed: errno %d\n", errno);
       return sent;
     });
   sdTransferSent += progress.sent;
@@ -314,7 +321,13 @@ void webApiSetup() {
 
 void webApiLoop() {
   if (apiStarted) {
-    apiServer.handleClient();
+    uint32_t began = millis();
+    handleSocketServerPass(apiServer);
+    uint32_t elapsed = millis() - began;
+    if (elapsed >= 500) Serial.printf("[WEBAPI] request pass took %u ms\n", (unsigned)elapsed);
+    began = millis();
     advanceSdTransfer();
+    elapsed = millis() - began;
+    if (elapsed >= 500) Serial.printf("[WEBAPI] SD pass took %u ms\n", (unsigned)elapsed);
   }
 }
