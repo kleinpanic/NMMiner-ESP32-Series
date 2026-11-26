@@ -26,7 +26,21 @@ full one-hour USB/SD tests started at **10:44:55 UTC**. The strict test passed
 (2.652% below 994). All 17 checks passed; minimum sampled 10/60-window rates
 were 960.771 / 966.065 kH/s. Its post-window CSV also passed: 197 rows, nine columns,
 3.642 seconds. The one-hour soak is still running, with no fault or radio drop
-through its first twenty minutes. This is not yet a full one-hour PASS.
+through its first twenty minutes. At about **47.5 minutes**, the API observer
+recorded one `TimeoutError`; the native feed also recorded **3/5** completed
+requests in **57.994 seconds**, including transport/read/EOF errors. The next
+cycle recovered all five feeds. Mining stayed in band, the wallet remained
+current, and no native fault or radio disconnect was observed. This attempt
+cannot pass the zero-API-error and complete-feed gates. The complete attempt
+finished at **3,614.990 seconds / 236 samples / 967.828 kH/s**, with 60 new SD
+records, current wallet data throughout (maximum age 94 seconds), minimum free
+heap 19,868 bytes, no native fault, no radio drop and one observed boot. No new
+pool-accepted share appeared; saved lifetime shares were not counted as new.
+The report is **FAIL** on exactly those three gates, with its original evidence
+preserved. A fresh native capture then deliberately reset the unchanged image;
+saved Wi-Fi joined automatically after the first candidate failed authentication.
+That repeat is in progress. No speculative firmware change is inferred from
+the transient failure, and no overall hardware PASS is claimed.
 
 ### Paced-export qualification
 

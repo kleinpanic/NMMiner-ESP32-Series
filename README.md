@@ -43,7 +43,9 @@ sampled rolling rates inside the required 944.3–1043.7 band and all 17 checks
 passing. Complete SD downloads also passed, including cancellation recovery and
 simultaneous status requests. Bounded, paced exports and smaller Wi-Fi buffer
 budgets address the crashes and incomplete downloads found in earlier builds.
-The full one-hour USB/SD soak is running. Charger cold boot with the SD card
+The first hour attempt encountered an API timeout and a partial feed cycle;
+automatic recovery worked, but a clean full-hour retry is still required.
+Charger cold boot with the SD card
 inserted still requires the owner's physical test. Publication remains on hold.
 Exact binary digests and failed attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).

@@ -57,7 +57,9 @@ Matching pages, manual touch, verified live feeds, configured-address balance,
 SD logging and automatic reconnect are implemented and observed on USB. The
 current image and exact passing/failed measurements are in
 [the validation record](../docs/panicminer-validation-2026-11-25.md). A full strict
-20-minute measurement has passed; the full one-hour soak is running. Charger
+20-minute measurement has passed. The first full hour failed on an API timeout,
+a partial feed cycle and no new accepted share; a reset-only repeat of the same
+image is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still
