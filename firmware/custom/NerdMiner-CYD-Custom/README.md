@@ -119,10 +119,16 @@ a statistics checkpoint. `PMMINE` selects Mine; `PMAUTO` explicitly enables
 diagnostic page rotation. A physical tap restores manual paging. Long BOOT
 and `PMSETUP` use the same Setup path.
 
-Run `bash tools/tests/run.sh` for 126 production-code regression cases and the
+`PMRF` is an explicit USB recovery command accepted only during the six-second
+serial configuration window at boot. It stops Wi-Fi, clears only Espressif's
+saved RF calibration, then restarts for full calibration. App configuration and
+mining statistics are preserved; it does not run on normal boots.
+
+Run `bash tools/tests/run.sh` for 132 production-code regression cases and the
 speaker tests. The suite covers target decoding/comparison, fragmented pool
-messages, authorization and real acceptance, touch, SD paths and stalled-work
-detection. See `tools/tests/README.md` for the hardware limits of those tests.
+messages, authorization and acceptance responses, touch, SD paths, stalled work,
+coinbase hashing, merkle roots and complete header byte ordering. Linux host
+builds need `libssl-dev`. See `tools/tests/README.md` for the hardware limits.
 
 Credentials, wallets, device licences, flash images, serial logs and generated
 captures belong only in ignored local storage. Do not commit a real `config.json`.

@@ -26,6 +26,7 @@ extern SDStore sdStore;
 #include <esp_mac.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
+#include <esp_phy_init.h>
 
 
 // Flag for saving data
@@ -261,6 +262,20 @@ static bool tryConfigOverSerial(TSettings* settings, uint32_t window_ms)
             char c = (char)Serial.read();
             if (c == '\n' || c == '\r') {
                 line.trim();
+#ifdef PANICMINER_UI
+                if (line == "PMRF") {
+                    // Explicit USB diagnostic, accepted only in the boot window.
+                    // Espressif's remedy deletes only RF calibration, preserving
+                    // the app's Wi-Fi/pool/wallet config and statistics namespaces.
+                    WiFi.mode(WIFI_OFF);
+                    esp_err_t result = esp_phy_erase_cal_data_in_nvs();
+                    Serial.printf("[WIFI] RF calibration reset: %s; settings preserved\n",
+                                  esp_err_to_name(result));
+                    if (result == ESP_OK) ESP.restart();
+                    line = "";
+                    continue;
+                }
+#endif
                 if (line.startsWith("NMCFG")) {
                     int brace = line.indexOf('{');
                     if (brace < 0) { Serial.println(F("[CFG] no JSON object")); line = ""; continue; }
