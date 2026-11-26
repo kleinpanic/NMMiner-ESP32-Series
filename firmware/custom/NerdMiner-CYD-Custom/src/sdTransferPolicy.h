@@ -9,6 +9,7 @@ inline SdTransferStep sdTransferStep(bool socketOpen, uint32_t elapsedMs,
                                      uint32_t freeBytes, uint32_t largestBlock)
 {
     if (!socketOpen || elapsedMs >= 180000) return SdTransferStep::Abort;
-    if (freeBytes < 8192 || largestBlock < 2048) return SdTransferStep::Wait;
+    // Reserve room for Stratum parsing/results and concurrent status replies.
+    if (freeBytes < 16384 || largestBlock < 4096) return SdTransferStep::Wait;
     return SdTransferStep::Write;
 }

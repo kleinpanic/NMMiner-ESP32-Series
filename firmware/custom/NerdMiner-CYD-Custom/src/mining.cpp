@@ -21,6 +21,7 @@
 #include "i2c_master.h"
 #include "speaker.h"
 #include "poolWatchdog.h"
+#include "miningJobQueue.h"
 #include "miningTarget.h"
 #include "wManager.h"
 
@@ -372,9 +373,9 @@ struct JobResult
 };
 
 static std::mutex s_job_mutex;
-std::list<std::shared_ptr<JobRequest>> s_job_request_list_sw;
+MiningJobQueue<JobRequest, 4> s_job_request_list_sw;
 #ifdef HARDWARE_SHA265
-std::list<std::shared_ptr<JobRequest>> s_job_request_list_hw;
+MiningJobQueue<JobRequest, 4> s_job_request_list_hw;
 #endif
 std::list<std::shared_ptr<JobResult>> s_job_result_list;
 static volatile uint8_t s_working_current_job_id = 0xFF;
@@ -416,17 +417,17 @@ static_assert(offsetof(pl_ctx_t, nonce) == 80 && offsetof(pl_ctx_t, budget) == 8
 static pl_ctx_t s_pl_ctx;
 #endif
 
-static void JobPush(std::list<std::shared_ptr<JobRequest>> &job_list,  uint32_t id, uint32_t nonce_start, uint32_t nonce_count, double difficulty,
+static void JobPush(MiningJobQueue<JobRequest, 4> &job_list,  uint32_t id, uint32_t nonce_start, uint32_t nonce_count, double difficulty,
                     const uint8_t* sha_buffer, const uint32_t* midstate, const uint32_t* bake)
 {
-  std::shared_ptr<JobRequest> job = std::make_shared<JobRequest>();
-  job->id = id;
-  job->nonce_start = nonce_start;
-  job->nonce_count = nonce_count;
-  job->difficulty = difficulty;
-  memcpy(job->sha_buffer, sha_buffer, sizeof(job->sha_buffer));
-  memcpy(job->midstate, midstate, sizeof(job->midstate));
-  memcpy(job->bake, bake, sizeof(job->bake));
+  JobRequest job{};
+  job.id = id;
+  job.nonce_start = nonce_start;
+  job.nonce_count = nonce_count;
+  job.difficulty = difficulty;
+  memcpy(job.sha_buffer, sha_buffer, sizeof(job.sha_buffer));
+  memcpy(job.midstate, midstate, sizeof(job.midstate));
+  memcpy(job.bake, bake, sizeof(job.bake));
   job_list.push_back(job);
 }
 
@@ -927,7 +928,7 @@ void minerWorkerSw(void * task_id)
   unsigned int miner_id = (uint32_t)task_id;
   Serial.printf("[MINER] %d Started minerWorkerSw Task!\n", miner_id);
 
-  std::shared_ptr<JobRequest> job;
+  OwnedMiningJob<JobRequest> job;
   std::shared_ptr<JobResult> result;
   uint8_t hash[32];
   uint32_t wdt_counter = 0;
@@ -1123,7 +1124,7 @@ void minerWorkerHw(void * task_id)
   unsigned int miner_id = (uint32_t)task_id;
   Serial.printf("[MINER] %d Started minerWorkerHw Task!\n", miner_id);
 
-  std::shared_ptr<JobRequest> job;
+  OwnedMiningJob<JobRequest> job;
   std::shared_ptr<JobResult> result;
   uint8_t interResult[64];
   uint8_t hash[32];
@@ -1602,7 +1603,7 @@ static uint32_t s_pl_bake[16];
 // prefilter ring and, if it beats the job's difficulty, straight to the
 // stratum task as a share (a 256K chunk at low pool difficulty often holds
 // two, and they should not wait for the chunk to end).
-static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &cursor)
+static uint32_t pl_mine_chunk(const OwnedMiningJob<JobRequest> &job, uint32_t &cursor)
 {
   // Key on the header, never the job id. MiningJobStop() restarts ids, so
   // after a pool reconnect a new header can carry an old id, and a stale
@@ -1699,7 +1700,7 @@ void minerWorkerHw(void * task_id)
   unsigned int miner_id = (uint32_t)task_id;
   Serial.printf("[MINER] %d Started minerWorkerHwEsp32D Task!\n", miner_id);
 
-  std::shared_ptr<JobRequest> job;
+  OwnedMiningJob<JobRequest> job;
   std::shared_ptr<JobResult> result;
   #ifndef PIPELINED_CLASSIC
   uint8_t hash[32];

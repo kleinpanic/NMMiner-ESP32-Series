@@ -6,13 +6,15 @@
 #include <vector>
 #include <string>
 #include <cctype>
+#include <errno.h>
+#include <lwip/sockets.h>
 
 #include "speaker.h"
 #include "sdstore.h"
 #include "mining.h"
 #include "monitor.h"
 #include "chainFeed.h"
-#include "boundedTransfer.h"
+#include "sdPendingTransfer.h"
 #include "sdTransferPolicy.h"
 #include "sdPath.h"
 
@@ -75,11 +77,13 @@ static WiFiClient sdTransferClient;
 static size_t sdTransferLength = 0, sdTransferSent = 0;
 static uint32_t sdTransferStarted = 0;
 static bool sdTransferActive = false;
+static SdPendingTransfer sdPending;
 
 static void finishSdTransfer(bool complete) {
   sdTransferFile.close();
   sdTransferClient.stop();
   sdTransferActive = false;
+  sdPending.reset();
   if (!complete)
     Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes; heap %u, largest %u\n",
                   (unsigned)sdTransferSent, (unsigned)sdTransferLength,
@@ -96,7 +100,9 @@ static void sendSdFile(fs::File& file, const char* contentType) {
   apiServer.send(200, contentType, "");
   sdTransferClient = apiServer.client();
   sdTransferClient.setTimeout(1);
-  sdTransferClient.setNoDelay(true);
+  // Coalesce bulk data rather than allocating a packet for every small write.
+  sdTransferClient.setNoDelay(false);
+  sdPending.reset();
   sdTransferFile = file;
   // File::close closes the shared underlying file, so release the handler's
   // copy without closing it. The transfer now owns its lifetime.
@@ -117,14 +123,16 @@ static void advanceSdTransfer() {
   if (step == SdTransferStep::Abort) { finishSdTransfer(false); return; }
   if (step == SdTransferStep::Wait) return;
   const size_t left = sdTransferLength - sdTransferSent;
-  const size_t count = left < 512 ? left : 512;
-  const size_t sent = transferBlocks(count,
+  const SdWriteResult progress = sdPending.advance(left,
     [&](uint8_t* buffer, size_t n) { return sdTransferFile.read(buffer, n); },
-    [&](const uint8_t* buffer, size_t n) { return sdTransferClient.write(buffer, n); },
-    []() { return true; },
-    []() {});
-  sdTransferSent += sent;
-  if (sent != count) finishSdTransfer(false);
+    [&](const uint8_t* buffer, size_t n) {
+      const int sent = ::send(sdTransferClient.fd(), buffer, n, MSG_DONTWAIT);
+      if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK ||
+                       errno == ENOMEM || errno == ENOBUFS)) return 0;
+      return sent;
+    });
+  sdTransferSent += progress.sent;
+  if (progress.state == SdWriteState::Failed) finishSdTransfer(false);
   else if (sdTransferSent == sdTransferLength) finishSdTransfer(true);
 }
 

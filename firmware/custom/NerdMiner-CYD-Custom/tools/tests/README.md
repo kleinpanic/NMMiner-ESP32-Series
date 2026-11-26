@@ -97,3 +97,15 @@ SD transfer policy cases cover temporary low-memory wait/resume, exact heap/bloc
 bounds, a closed descriptor and the total deadline. Native checks additionally
 exercise client cancellation, busy-download refusal and status queries during
 an export; host tests alone do not establish SDK socket behavior.
+
+The fixed mining-job queue is also tested while heap allocations are denied:
+the old shared allocation fails, but FIFO refill, wraparound, retained deep
+ownership and full-generation cancellation still work. This removes request
+allocations; result/submission bookkeeping still uses the heap.
+
+The pending SD writer tests force repeated zero-progress backpressure and short
+sends, checking the complete byte stream and that a block is not reread or
+skipped. Failed/invalid I/O and reset are covered. Production bulk sends use
+one nonblocking socket call per pass with retained bytes, and reserve 16 KB free
+heap / 4 KB contiguous space for mining and concurrent requests. Native pressure
+checks remain necessary; these host tests do not establish radio throughput.

@@ -64,13 +64,14 @@ def evaluate(report, native, serial_text, baseline=994.0):
     work_rate = ((samples[-1]["total_mhashes"] - samples[0]["total_mhashes"]) * 1000 / duration
                  if duration > 0 else None)
     boot_count = len(re.findall(r"panicminer [^\r\n]* starting", serial_text))
-    feed_lines = [x["line"] for x in native.get("feeds", []) if "/5 ok" in x["line"]]
     sha = [tuple(map(int, match.groups())) for event in native.get("sha", [])
            if (match := re.search(r"checked (\d+), mismatched (\d+),.*dropped (\d+)", event["line"]))]
     native_start = native.get("started_epoch", math.inf)
     native_end = native_start + native.get("elapsed_seconds", 0)
     sample_start = samples[0].get("epoch", -math.inf) if samples else -math.inf
     sample_end = samples[-1].get("epoch", math.inf) if samples else math.inf
+    feed_lines = [x["line"] for x in native.get("feeds", []) if "/5 ok" in x["line"]
+                  and sample_start <= native_start + x.get("seconds", math.inf) <= sample_end]
     last_sha = native_start + native.get("sha", [{}])[-1].get("seconds", -math.inf) if native.get("sha") else -math.inf
     checks = {
         "full_20_minutes": duration >= 1200,

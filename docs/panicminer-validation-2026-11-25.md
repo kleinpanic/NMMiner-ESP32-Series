@@ -25,7 +25,33 @@ The full C++ sanitizer suite and board build pass. SD paths now have **68**
 acceptance/idempotence/rejection scenarios. A separate C++11 negative control
 using the old API guard permits all four synthetic aliases; the repaired helper
 blocks all four. No actual private file was fetched or deleted for this check.
-Native rejection checks and fresh-image endurance qualification are pending.
+Native preflight passed: three complete feed cycles; 24 denied private-path
+variants; three complete downloads (11,522–11,567 bytes / 252–253 rows);
+cancellation recovery and three concurrent busy/status export scenarios;
+five pages and automatic reconnect in 41.955 seconds (one boot/no fault).
+
+The measured window ran **1,204.836 seconds / 227 samples / 968.153 kH/s**.
+Both sampled rate bands, wallet freshness, SD progress and native SHA checks
+passed. The original strict verdict failed complete-feed checks because it
+included a **1/5** cycle during the intentional preflight Wi-Fi drop, before the
+window. All 26 feed completions inside the actual timed window were 5/5. A
+checker repair scopes feed evidence to sample timestamps and adds positive and
+negative fixtures; it does not rewrite this original failed report.
+
+The subsequent CSV export timed out and the board then aborted in
+`std::make_shared<JobRequest>` / `JobPush`, decoded with the exact archived ELF.
+The export had SDK EAGAIN retry messages immediately beforehand. This candidate
+therefore **fails composite acceptance**, independently of the checker defect.
+Its full-hour observer was explicitly interrupted; the reboot and original
+reports remain preserved.
+
+The next source uses fixed four-entry value queues and worker-owned job copies,
+removing mining-request allocation and list-node churn. SD exports retain a
+512-byte pending block across partial/zero-progress nonblocking sends, coalesce
+small packets, and reserve 16 KB free / 4 KB contiguous heap. The full sanitizer
+suite and board build pass, including blocked-allocation negative control and
+exact-byte backpressure tests. Fresh backup/install and native pressure checks
+are required before accepting this repair.
 
 ### Previous socket-lifetime qualification
 
@@ -46,8 +72,7 @@ full one-hour USB/SD tests started at **10:44:55 UTC**. The strict test passed
 **1,202.960 seconds / 227 samples / 967.639 kH/s** by independent work counts
 (2.652% below 994). All 17 checks passed; minimum sampled 10/60-window rates
 were 960.771 / 966.065 kH/s. Its post-window CSV also passed: 197 rows, nine columns,
-3.642 seconds. The one-hour soak is still running, with no fault or radio drop
-through its first twenty minutes. At about **47.5 minutes**, the API observer
+3.642 seconds. No fault or radio drop occurred during its first twenty minutes. At about **47.5 minutes**, the API observer
 recorded one `TimeoutError`; the native feed also recorded **3/5** completed
 requests in **57.994 seconds**, including transport/read/EOF errors. The next
 cycle recovered all five feeds. Mining stayed in band, the wallet remained

@@ -20,7 +20,7 @@ Paths below are relative to the firmware checkout.
 | Behavior | Source to inspect |
 | --- | --- |
 | Startup and task creation | `src/NerdMinerV2.ino.cpp` |
-| Work scheduling, hardware/software mining and independent software verification of submitted candidates | `src/mining.cpp`, `src/miningBatches.h`, `src/ShaTests/nerdSHA256plus.h` |
+| Work scheduling, hardware/software mining and independent software verification of submitted candidates | `src/mining.cpp`, `src/miningBatches.h`, `src/miningJobQueue.h`, `src/ShaTests/nerdSHA256plus.h` |
 | Classic ESP32 SHA256d assembly loop and self-test support | `src/pipelined_hw_sha_classic_v2.S`, `src/sha_bench_variants.inc`, `src/sha_bench*.cpp` |
 | Bitcoin target decoding and comparison | `src/miningTarget.h`, `src/utils.cpp` |
 | Stratum subscription, authorization, difficulty and share submission | `src/stratum.cpp`, `src/stratum.h`, `src/poolWatchdog.h` |
@@ -30,7 +30,7 @@ Paths below are relative to the firmware checkout.
 | Wi-Fi setup, runtime recovery, packet memory and saved configuration | `src/wManager.cpp`, `src/wifiRecovery.h`, `src/wifiMemory.cpp`, `src/wifiBufferBudget.h`, `src/drivers/storage/nvMemory.cpp` |
 | SD logging and path validation | `src/sdstore.cpp`, `include/sdstore.h`, `src/sdPath.h` |
 | Sound events, volume and mute | `src/speaker.cpp`, `include/speaker.h` |
-| Local status/control API, bounded SD transfers and resource measurements | `src/webapi.cpp`, `src/boundedTransfer.h`, `src/sdTransferPolicy.h`, `src/monitor.cpp`, `src/systemHealth.cpp` |
+| Local status/control API, bounded SD transfers and resource measurements | `src/webapi.cpp`, `src/sdPendingTransfer.h`, `src/sdTransferPolicy.h`, `src/monitor.cpp`, `src/systemHealth.cpp` |
 
 The application originates from [BitMaker's NerdMiner_v2](https://github.com/BitMaker-hub/NerdMiner_v2).
 The pipelined classic ESP32 mining loop was ported from

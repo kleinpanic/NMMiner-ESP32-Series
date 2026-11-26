@@ -20,7 +20,7 @@ class EnduranceEvidenceTests(unittest.TestCase):
             "sd_rows_saved": i // 12, "wallet_valid": True, "wallet_age_seconds": i * 5 % 120}
             for i in range(241)], "api_errors": []}
         self.native = {"started_epoch": 900, "elapsed_seconds": 1301, "faults": [],
-            "feeds": [{"line": "[CHAIN] 5/5 ok"}] * 10,
+            "feeds": [{"seconds": 100 + i * 120, "line": "[CHAIN] 5/5 ok"} for i in range(10)],
             "sha": [{"seconds": 1295, "line": "[SHA] prefilter hits checked 100, mismatched 0, lock all, dropped 0"}]}
         self.serial = "panicminer 0.1.0 starting\n"
 
@@ -68,10 +68,20 @@ class EnduranceEvidenceTests(unittest.TestCase):
                 self.assertEqual(module.evaluate(candidate, self.native, self.serial)["status"], "FAIL")
 
     def test_partial_feed_or_sha_drop_fail(self):
-        self.native["feeds"].append({"line": "[CHAIN] 4/5 ok"})
+        self.native["feeds"].append({"seconds": 700, "line": "[CHAIN] 4/5 ok"})
         self.assertFalse(self.result()["checks"]["all_feed_cycles_complete"])
         self.native["sha"][0]["line"] = "[SHA] prefilter hits checked 100, mismatched 0, lock all, dropped 1"
         self.assertFalse(self.result()["checks"]["sha_checks_clean"])
+
+    def test_preflight_and_later_feed_failures_do_not_rewrite_timed_window(self):
+        self.native["feeds"].extend([
+            {"seconds": 50, "line": "[CHAIN] 1/5 ok"},
+            {"seconds": 1400, "line": "[CHAIN] 3/5 ok"}])
+        self.assertTrue(self.result()["checks"]["all_feed_cycles_complete"])
+
+    def test_missing_feed_timestamps_cannot_supply_window_evidence(self):
+        self.native["feeds"] = [{"line": "[CHAIN] 5/5 ok"}] * 10
+        self.assertFalse(self.result()["checks"]["all_feed_cycles_complete"])
 
     def test_stale_serial_monitor_and_wallet_without_refresh_fail(self):
         self.native["elapsed_seconds"] = 100
