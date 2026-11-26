@@ -72,9 +72,10 @@ retain unsent bytes for the next pass. It retains its original Content-Length
 even if logging appends rows, and closes
 on failed progress or a 180-second deadline. Temporary memory pressure pauses
 the transfer without discarding pending bytes; it reserves 20 KB free heap
-and a 4,000-byte contiguous block before queuing more bulk data. This leaves
+and a 6 KB contiguous block before queuing more bulk data. This leaves
 space for concurrent API connections and authenticated feeds even when a
-download client stops reading. File stdio buffering is limited to 512 bytes.
+download client stops reading. Zero-timeout write readiness also honors the
+SDK TCP send low-water mark, rather than filling the entire send queue. File stdio buffering is limited to 512 bytes.
 A stalled transfer closes after 15 seconds without progress, within the
 three-minute total deadline; a half-closed HTTP request can still receive its
 response. Clients must

@@ -13,10 +13,11 @@ inline SdTransferStep sdTransferStep(bool socketOpen, uint32_t elapsedMs,
     // A 512-byte write can retain a full 1436-byte TCP segment in this SDK.
     // A nonreading peer must leave room for another connection's RX buffer,
     // JSON/header copies, TCP output and concurrent authenticated feeds.
-    // Native pressure exhausted the old 16 KB / 2 KB guard (628-byte largest
-    // block). Stop bulk traffic earlier; 4000 also permits the observed
-    // 4084-byte fragmentation plateau which a 4096-byte cutoff rejected.
+    // Native pressure exhausted both the 2 KB (628 remaining) and 4 KB
+    // (2036 remaining) guards. Leave room for RX, JSON and a second TCP send,
+    // rather than just the next bulk packet. Stdio is separately bounded to
+    // avoid retaining the SDK's additional 4 KB file buffer.
     // File stdio is separately bounded to 512 bytes before this check.
-    if (freeBytes < 20480 || largestBlock < 4000) return SdTransferStep::Wait;
+    if (freeBytes < 20480 || largestBlock < 6144) return SdTransferStep::Wait;
     return SdTransferStep::Write;
 }

@@ -183,6 +183,7 @@ static void advanceSdTransfer() {
     uint32_t(millis() - sdTransferProgress));
   if (step == SdTransferStep::Abort) { finishSdTransfer(false); return; }
   if (step == SdTransferStep::Wait) return;
+  if (!socketWriteReady(sdTransferClient.fd())) return;
   const size_t left = sdTransferLength - sdTransferSent;
   const SdWriteResult progress = sdPending.advance(left,
     [&](uint8_t* buffer, size_t n) {
