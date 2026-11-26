@@ -194,7 +194,10 @@ void setup()
   // Free a little bit of the heap to the screen
   // checkError now borrows the 4 KB JSON document instead of copying it on
   // this stack. Return part of that reservation to networking/mining.
-  BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 10240, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
+  // Job preparation stops the hardware worker until its replacement header is
+  // ready. Run above Monitor (5) so rendering cannot prolong that mining pause.
+  // Socket waits still yield to the UI and other core-0 workers.
+  BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 10240, (void*)stratum_name, 6, NULL, APP_TASK_CORE);
  #else
   BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 15000, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
  #endif
