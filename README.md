@@ -5,7 +5,7 @@ ESP32-2432S028R 2.8-inch Cheap Yellow Display miner. The open PanicMiner
 firmware lives in the [firmware source](firmware/custom/NerdMiner-CYD-Custom).
 This single repository includes the firmware source and reverse-engineering notes.
 
-Download [v4.0.0-rc.1](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1)
+Download [v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2)
 for the tested firmware, checksums, license notices and flashing instructions.
 [Build and test status](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/workflows/firmware.yml).
 
@@ -23,6 +23,14 @@ Allow about a minute for the rolling hashrate windows to fill after startup.
 - At a new location, choose the new 2.4 GHz network and save. Existing pool
   settings remain populated. A temporarily unavailable saved network retries
   in the background; hold BOOT to choose a different network.
+
+Setup also accepts a fallback pool host, port and password. Leave its host empty
+to disable it. After three endpoint failures, the miner switches pools using the
+same payout address. Each boot starts with the primary. When the saved network
+is reachable, the explicit Setup portal is also available at the miner's LAN IP.
+
+The RGB LED is green while pool-authorized, amber while waiting for the pool,
+slow blinking red while offline and briefly cyan for newly accepted work.
 
 The screen colours use the verified `ILI9341_2_DRIVER` + `TFT_INVERSION_ON`
 configuration. The vendor identifies this unit as ST7789; the working custom
@@ -43,24 +51,22 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**USB/SD endurance passed on the installed release candidate.** The strict
-20-minute Mine test passed all 17 checks at **967.90 kH/s**, 2.63% below the
-994 kH/s baseline. The same boot then passed a **60.24-minute soak** at
-**967.93 kH/s**, with a new pool-accepted share, 60 SD records and 78 complete
-live-data cycles. No reboot, API error, radio drop, SHA mismatch or uncommanded
-page change was recorded. Both rolling rates remained within 5%.
+**The current firmware passed a fresh 20-minute USB/SD check:** 1,201.807 seconds, 220 samples, 968.720 kH/s (-2.54% against 994); all 17 strict checks passed.
+All rolling rates stayed in the 944.3–1043.7 kH/s band. SD and live wallet data
+stayed available, and the post-window CSV was complete. No reboot, API/native
+fault or SHA mismatch occurred.
 
-Complete/half-closed downloads, immediate follow-up requests, cancellation,
-ten blocked-client pressure exports and 66 status requests passed. Reusing
-JSON/SD source ports after 65 seconds passed. A saved-settings EN reboot with
-SD also passed: pool authorization, wallet data and lifetime counters returned.
-File buffers and TCP writes are bounded, control traffic retains memory, and
-configured offline startup retries run in the background.
+Setup persistence, forced primary-to-fallback recovery, restored primary mining,
+LED output states, controlled Wi-Fi recovery and a bounded native IPv4 egress
+audit also passed. The owner confirmed working audio. The previous rc.1 image
+separately passed a 60.24-minute soak at 967.925 kH/s with a new accepted share,
+plus export pressure and source-port reuse tests; those results retain their
+original image identity.
 
-This is a hardware-specific **release candidate**. Charger cold boot with SD,
-the remaining physical audio/LED checks, full egress capture and portal-pool
-persistence still need acceptance. See the
-[release notes](docs/releases/v4.0.0-rc.1.md). Exact digests, tests and failed attempts are preserved in
+The remaining physical acceptance is an actual charger unplug/replug **with SD
+inserted**. Saved-settings EN restarts with SD passed on laptop USB; the earlier
+charger test preceded the SD changes. See the
+[release notes](docs/releases/v4.0.0-rc.2.md) and the exact measurements in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
 Wallet BTC/USD values come from the **configured payout address**, after removing

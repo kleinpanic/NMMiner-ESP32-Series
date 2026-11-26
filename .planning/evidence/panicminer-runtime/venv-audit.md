@@ -1,5 +1,12 @@
 # Python environment audit — 2026-11-25
 
+November 26 portal/failover, RGB and native egress follow-up: build, full-backup
+installation, host tests, private-value scans and device qualification all used
+the existing root `./.venv/bin/python`. The tracked-source invocation audit found
+zero forbidden interpreter/install patterns. No Python dependency or environment
+change was needed. The local suite passes 108 tests and 29 subtests; public CI
+passes 107 tests and 29 subtests with one explicit private-image skip.
+
 November 26 public CI follow-up: `tests/test_ss_decode.py` now uses the root
 virtual-environment shebang and adds independently constructed public format
 fixtures. No dependency changed. All Python execution used `./.venv/bin/python`.

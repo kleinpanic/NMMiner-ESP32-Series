@@ -53,30 +53,22 @@ over serial so the agent can view the real pixels.
 
 ## Current acceptance
 
-Image 23236906 / source 49afce5 passed USB/SD composite qualification after
-fresh full 4 MB backup and verification of all four written images. The strict
-20-minute Mine run passed all 17 checks: 1,203.988 seconds, 222 samples and
-967.899 kH/s. The same boot passed 3,614.418 seconds at 967.925 kH/s with one
-new accepted share, 60 SD records, 78 complete in-window feeds and no reboot,
-API gap, radio drop, SHA mismatch or uncommanded navigation. Complete exports,
-blocked-client pressure, 65-second source-port reuse and controlled recovery
-passed. A separate saved-settings EN reset with SD restored pool authorization,
-wallet data and lifetime counters. Full sanitizer suite/build and 108 local Python
-tests / 29 subtests pass. Public CI passed both firmware targets, sanitizers,
-restore safety, 107 Python tests / 29 subtests (one private-fixture skip),
-both UI themes and artifact uploads. Exact identity, snapshots and original failures are
-in [the validation record](../docs/panicminer-validation-2026-11-25.md).
+Current firmware source `07c3931cbcb297f330eabe68e7feabbc2f330c2f`, application `0e32d00af0c9cb8d996f1a284cc9a04768707402d336ae5ec8f9e64c4c27b835`, passed
+fresh verified full-backup/four-image installation and **1,201.807 seconds, 220 samples, 968.720 kH/s (-2.54% against 994); all 17 strict checks passed**.
+Portal save/reopen persistence, native forced failover with advancing work,
+restored primary/wallet, LED output states, Wi-Fi recovery, steady-window IPv4
+egress, three 5/5 feed cycles and private-path guards passed. The owner confirmed
+audio. Public CI 45897395376, sanitizers, 108 local Python tests / 29 subtests and
+binary/history secret scans passed. The previous rc.1 image separately passed
+its full hour with accepted work; its identity is not replaced by this retest.
 
-The owner authorized publication after these results. The canonical source is
-public and [v4.0.0-rc.1](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.1)
-is published with six downloaded, checksum-verified assets. Release CI at
-`8d24cd1` passed and history, private-value and binary secret scans were clean.
-Version v4.0.0-rc.1 is a hardware-specific release candidate;
-the full milestone remains open. Charger cold boot with SD, complete egress
-capture, portal/fallback-pool persistence and observed audio/LED events still
-require acceptance. Panel settings were already confirmed (SEE-03). The owned
-application is open; Espressif radio binaries and chip ROM remain platform
-components, as documented in firmware provenance.
+The canonical repository is public. The previous nested-fork GitHub repo is
+private, archived and points to the canonical source. Release v4.0.0-rc.2 closes
+the remotely testable follow-up. **HW-05 remains physical:** a charger power
+removal/reinsertion with SD inserted. EN resets are separate evidence; do not
+archive the hardware milestone or assert that result without the actual test.
+Application source is open; Espressif radio binaries/ROM remain documented
+platform components. See [validation](../docs/panicminer-validation-2026-11-25.md).
 
 ## Constraints
 

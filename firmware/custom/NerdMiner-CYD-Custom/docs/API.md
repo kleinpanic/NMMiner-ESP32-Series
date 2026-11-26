@@ -20,6 +20,7 @@ a wildcard CORS header. Keep it on a trusted local network.
 {
   "miner": {
     "sharesAccepted": 0, "sharesRejected": 0, "poolAuthorized": false,
+    "usingFallback": false,
     "bestVerifiedDifficulty": 0, "poolDifficulty": 0,
     "hashrate10sKhs": 0, "hashrate60sKhs": 0,
     "heapFreeBytes": 0, "heapTotalBytes": 0, "chipTempC": 0,
@@ -30,6 +31,11 @@ a wildcard CORS header. Keep it on a trusted local network.
   "wallet": { "valid": false }
 }
 ```
+
+`miner.usingFallback` identifies the active configured endpoint without exposing
+its host, password or payout address. `poolAuthorized` requires a positive pool
+authorization response and working Wi-Fi; a connected TCP socket alone is
+insufficient.
 
 When `wallet.valid` is true, `wallet` also contains `balanceSats` (confirmed
 address balance), `pendingSats` (signed unconfirmed transaction delta), and

@@ -1,8 +1,54 @@
 # PanicMiner validation — 2026-11-25
 
-The CYD runs the matching Mine, Hash, Chain, Clock, Boot and Setup design in
+The CYD runs the matching Mine, Hash, Chain, Clock, Stats, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
+
+## November 26: completed remote acceptance follow-up
+
+This section supersedes the rc.1 pending-check list below. Source
+`07c3931cbcb297f330eabe68e7feabbc2f330c2f` / application **0e32d00af0c9cb8d996f1a284cc9a04768707402d336ae5ec8f9e64c4c27b835**
+(1,797,328 bytes) was installed after a fresh full 4 MB backup,
+checksum/full-flash comparison and independent comparison of all four images.
+
+The exact image passed **1,201.807 seconds, 220 samples, 968.720 kH/s (-2.54% against 994); all 17 strict checks passed**. Rolling 10-second range:
+965.236–971.950; rolling 60-second range:
+968.137–969.284 kH/s. Minimum sampled free heap
+was 22,676 bytes, maximum wallet age 49 seconds,
+and 20 SD records were added. All 25 in-window feeds completed.
+The full post-window CSV had 773 nine-column records.
+One new share was accepted. No API/native fault, restart, SHA mismatch or
+uncommanded navigation occurred.
+
+| Check | Result and evidence boundary |
+| --- | --- |
+| Setup and pool persistence | LAN portal saved both endpoints; reopening after reboot preserved them and the payout address |
+| Actual failover | Three deliberate failures on the primary's closed port; fallback authorized and completed work |
+| Restore | Original primary restored and authorized; original optional fallback remains disabled |
+| LED hardware outputs | Actual GPIO latches showed green, amber and red/off blink phases; cyan event path unit-tested |
+| Audio | Owner explicitly confirmed working; speaker implementation unchanged and sanitizer regressions pass |
+| Board Wi-Fi recovery | Pool and SD recovered automatically; audit hook remained active; router/laptop Wi-Fi unchanged |
+| Egress | 2023 accounted packets, 6 IPv4 entries; zero unknown IPv4 destinations, overflow or unparsed frames; 2 IPv6 frames counted without destination decoding |
+| Other native checks | Three 5/5 live-data cycles, five pages/stack checks and 24 private-path denials passed |
+| Public CI | [Run 45897395376](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/runs/45897395376) passed both builds, sanitizers, restore safety, Python tests, themes and artifacts |
+| Private data | Exact known-value binary/history scan and redacted history scan passed; raw evidence remains ignored |
+
+Egress destinations matched configured Stratum, mempool.space HTTPS, NTP,
+local DNS and local API replies. Header capture starts after saved Wi-Fi init,
+not before association/DHCP. ARP is counted. The separate controlled reconnect
+trace also counted DHCP and two IPv6 frames, without IPv6 destination decoding.
+The final uninterrupted trace counted 2 IPv6 frames without decoding destinations and no unparsed frames. NTP attribution
+uses the sole NTPClient UDP/123 code path; pool and feed addresses matched DNS.
+This is application IP evidence, not a claim about radio management or chip ROM.
+
+The owner's audio confirmation closes that item. Portal/fallback, LED outputs
+and steady-window IPv4 egress are now verified. The remaining physical check is
+new charger cold power with SD; no such unplug was available remotely. Earlier
+charger evidence preceded SD changes, and saved-settings EN resets cannot replace
+it. The full milestone remains open only for that explicit physical result.
+The earlier rc.1 hour and rejected images below retain their original identities.
+All follow-up Python execution used root .venv; the tracked-source invocation
+audit found zero forbidden patterns and no dependency changed.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 

@@ -38,6 +38,19 @@ restart. If the saved network is temporarily unavailable, the miner finishes
 booting and retries in the background. Explicit BOOT Setup and a missing saved
 network still open the portal.
 
+While explicit Setup is open, the portal is also reachable at the miner's LAN
+address if its saved network connects. Save the primary pool and an optional
+fallback host, port and password there. An empty fallback host disables it.
+Three endpoint failures switch to the other configured endpoint; successful
+authorization resets the failure count. A working fallback stays selected until
+it fails or the board restarts. Every boot starts with the primary, and both
+pools use your same configured payout address. Ordinary Wi-Fi loss does not
+count as an endpoint failure.
+
+The active-low RGB LED shows green for pool authorization, amber for Wi-Fi up
+while waiting for the pool, slow blinking red for offline, and an 800 ms cyan
+flash for a newly accepted share. Restored counters do not count as new work.
+
 ## Pages and measurements
 
 - **Mine:** current rolling hashrate, 60-point history, shares, best difficulty,
@@ -70,18 +83,15 @@ Boot and Setup use the same visual system. Afterglow is the default; Hazard is
 available at build time. Formatting/animation work is limited to the visible page.
 The rate history uses fixed storage instead of allocating list nodes each second.
 
-The installed 2026-11-26 release candidate passed all 17 strict Mine checks at
-**967.90 kH/s** over 1,203.99 seconds, with all 222 sampled 10/60-second rates
-within 5% of 994 kH/s. The same boot passed a **60.24-minute soak** at
-**967.93 kH/s**, with a newly accepted share, 60 SD records and no reboot,
-API error, radio drop, SHA mismatch or uncommanded navigation. All 78 in-window
-live-data cycles completed. Complete and half-closed exports, cancellation,
-ten pressure exports / 66 status requests, 65-second source-port reuse and
-a saved-settings EN reboot with SD passed. Charger cold boot with SD and
-the remaining physical/egress/portal checks are listed in the
-[release notes](../../../docs/releases/v4.0.0-rc.1.md).
-See the [validation record](../../../docs/panicminer-validation-2026-11-25.md)
-for binary identities and preserved failed attempts.
+The current image passed a fresh USB/SD Mine test: **1,201.807 seconds, 220 samples, 968.720 kH/s (-2.54% against 994); all 17 strict checks passed**.
+Portal persistence, forced fallback mining, restored primary authorization,
+LED GPIO states, board-only Wi-Fi recovery, steady-window egress, three live-feed
+cycles and 24 private-path checks passed. The owner confirmed working audio.
+The previous rc.1 image separately passed the full hour at 967.925 kH/s with a
+new accepted share; that hour is not relabelled as this image's measurement.
+The only remaining physical acceptance is charger unplug/replug with SD inserted.
+See the [release notes](../../../docs/releases/v4.0.0-rc.2.md) and
+[validation record](../../../docs/panicminer-validation-2026-11-25.md).
 
 ## Build and flash safely
 
@@ -130,6 +140,16 @@ The renderer pins LVGL to the firmware's version. Native serial diagnostics incl
 a statistics checkpoint. `PMMINE` selects Mine; `PMAUTO` explicitly enables
 diagnostic page rotation. A physical tap restores manual paging. Long BOOT
 and `PMSETUP` use the same Setup path.
+
+`PMLEDS` reads the actual LED output latches. `PMEGRESS` dumps a bounded table
+of outbound IPv4 destination addresses, ports, protocols and packet counts from
+the ESP32's STA Ethernet output path. It starts after Wi-Fi initialization,
+retains headers only, and forwards the original packets unchanged. TCP port 0
+denotes grouped replies from the local HTTP server, avoiding one entry per
+client ephemeral port. ARP, IPv6, unparsed frames and table overflow have
+separate counters; a nonzero overflow means the destination list is incomplete.
+Raw diagnostics stay private. This observes application IP traffic, including
+DNS/NTP infrastructure, rather than radio management frames or chip ROM behavior.
 
 `PMRF` is an explicit USB recovery command accepted only during the six-second
 serial configuration window at boot. It stops Wi-Fi, clears only Espressif's
