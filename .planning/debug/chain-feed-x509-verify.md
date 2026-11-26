@@ -1,17 +1,16 @@
 ---
-status: investigating
+status: resolved
 trigger: "ESP32 board's mempool.space feed fails certificate verification: [CHAIN] https://mempool.space/api/v1/prices -> -1 X509 - Certificate verification failed, every request, every retry"
 created: 2026-11-25T20:30:00
-updated: 2026-11-25T20:30:00
+updated: "2026-11-26T22:50:24.669091+00:00"
 ---
 
 ## Current Focus
 
-hypothesis: open; leading candidate from the brief (pipelined HW SHA miner corrupts mbedTLS hashing) is weakened by E3
-test: host mbedTLS 2.28.4 verify of the served chain; disassembly of the framework's mbedTLS SHA port; on-device chain dump + static verify, miner running vs paused
-expecting: on-device dump shows which certs the ESP32 receives and which flags fail
-next_action: build host mbedTLS 2.28.4 and verify scratchpad/certdbg/served1.pem against root.pem only
-bug_class: Bohrbug (every request, every retry fails on build ac9d35e+diag)
+Resolved: certificate verification was failing when RSA big-number workspace
+allocation exhausted fragmented heap. The hardware-SHA corruption hypothesis
+was not established. The current firmware retains certificate validation,
+uses bounded/coalescing TLS allocation and prioritizes/reuses the live session.
 
 ## Symptoms
 
@@ -40,7 +39,7 @@ started: seen 2026-11-25 17:48; worked 15:09-15:32 on build ef5e330
 
 ## Resolution
 
-root_cause:
-fix:
-verification:
-files_changed: []
+root_cause: RSA verification allocation failure (-17040), established by native instrumentation; the higher-level error hid fragmented-heap exhaustion.
+fix: Reduced competing display reservation, reserved TLS records and coalescing scratch allocation, retained authenticated connection and feed scheduling; certificate validation remains enabled.
+verification: 25 complete in-window feed cycles on 0e32d00a, prior independent hour, and fresh wallet data after owner-confirmed charger/SD cold boot. See docs/panicminer-validation-2026-11-25.md, Chain feed diagnosis and fix and later SD/TLS follow-up.
+files_changed: [src/chainFeed.cpp, src/mining.cpp, src/drivers/displays/panicMinerDisplayDriver.cpp]

@@ -50,3 +50,5 @@ firmware/custom/NerdMiner-CYD-Custom/SLS/
 fork-wt/
 hardware/recovered-assets/
 .planning/**/research/.cache/
+# Generated GSD state projection; STATE.md and milestone records are canonical.
+.planning/state.json

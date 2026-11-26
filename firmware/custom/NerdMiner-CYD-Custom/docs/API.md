@@ -37,6 +37,9 @@ its host, password or payout address. `poolAuthorized` requires a positive pool
 authorization response and working Wi-Fi; a connected TCP socket alone is
 insufficient.
 
+`miner.uptimeSeconds` is persisted lifetime uptime across boots. It is not a
+per-boot restart counter; `sd.rowsSaved` counts successful writes this boot.
+
 When `wallet.valid` is true, `wallet` also contains `balanceSats` (confirmed
 address balance), `pendingSats` (signed unconfirmed transaction delta), and
 `ageSeconds` (time since the last successful address query). These fields are

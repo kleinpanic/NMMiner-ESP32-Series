@@ -4,6 +4,23 @@ The CYD runs the matching Mine, Hash, Chain, Clock, Stats, Boot and Setup design
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
 
+## Charger cold boot with SD — verified November 26
+
+The owner transferred the miner from the laptop to a USB charger with SD
+inserted. The laptop's miner USB serial device disappeared. Read-only LAN
+checks then confirmed saved-primary authorization, advancing work, mounted SD,
+a fresh successful SD record, current wallet data and both rates in band.
+The stable window lasted **70.234 seconds** at
+**969.003 kH/s**, with 14 successful samples and
+no observed work/SD counter reset. The same previously flashed application
+was used; this check performed no firmware write, reset or settings change.
+
+Startup initially reported unavailable wallet data and three transient API
+transport errors. It recovered automatically; the wallet refreshed before the
+stable interval, which had no transport error. The API's `uptimeSeconds` is a
+persisted lifetime counter, so SD/work continuity supplies the restart check.
+This closes HW-05. Earlier USB endurance measurements retain their own scope.
+
 ## November 26: completed remote acceptance follow-up
 
 This section supersedes the rc.1 pending-check list below. Source

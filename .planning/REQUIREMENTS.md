@@ -42,7 +42,7 @@
 - [x] **HW-03**: RGB LED shows mining, share and disconnect states.
 - [x] **HW-04**: The touch controller is identified (XPT2046, capacitive, or none) and touch works or is declared absent.
 
-- [ ] **HW-05**: Actual standalone charger power removal/reinsertion with SD inserted restores saved Wi-Fi, pool authorization and mining. This makes the already-requested physical acceptance explicit; laptop USB EN resets are separate evidence.
+- [x] **HW-05**: Actual standalone charger power removal/reinsertion with SD inserted restores saved Wi-Fi, pool authorization and mining. This makes the already-requested physical acceptance explicit; laptop USB EN resets are separate evidence.
 
 The original 30-fps-class UI wording is made precise as the existing 40 ms
 Monitor frame target. Hashrate remains subject to the unchanged 5% limit.
@@ -65,4 +65,4 @@ by the production C++ test. See the November 26 follow-up validation.
 | HW-01..05 | 4 |
 | MINE-01..02 | 5 |
 
-Coverage: 22 of 22 mapped; 21 verified, HW-05 requires physical access.
+Coverage: 22 of 22 mapped; 22 verified, including owner-confirmed and LAN-verified charger/SD cold boot.

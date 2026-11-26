@@ -12,7 +12,7 @@ licence gate. It contacts no vendor host, and the UI is our own design.
 The device mines on a pool we choose, with firmware we can read, build and
 change. Every screen has a look nobody else ships.
 
-## Current Milestone: v4.0 — PanicMiner: owned open firmware
+## Shipped Milestone: v4.0 — PanicMiner: owned open firmware
 
 **Goal:** Replace the closed NMMiner firmware with PanicMiner on this unit. It
 mines with accepted shares, shows our own UI, and has a known network egress.
@@ -62,12 +62,37 @@ audio. Public CI 45897395376, sanitizers, 108 local Python tests / 29 subtests a
 binary/history secret scans passed. The previous rc.1 image separately passed
 its full hour with accepted work; its identity is not replaced by this retest.
 
-The canonical repository is public. The previous nested-fork GitHub repo is
-private, archived and points to the canonical source. Release [v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2) is published from tag `73d6394`. All six public assets were downloaded anonymously and matched local, GitHub and bundle checksums. This closes the remotely testable follow-up. **HW-05 remains physical:** a charger power
-removal/reinsertion with SD inserted. EN resets are separate evidence; do not
-archive the hardware milestone or assert that result without the actual test.
-Application source is open; Espressif radio binaries/ROM remain documented
-platform components. See [validation](../docs/panicminer-validation-2026-11-25.md).
+The canonical repository is public. Stable v4.0.0 promotes the exact rc.2
+application bytes. The owner transferred the SD-equipped miner to a charger;
+read-only LAN checks passed for 70.234 seconds at 969.003 kH/s,
+with primary authorization, new SD writes, advancing work and current wallet
+data. HW-05 is complete. The historical fork is private and archived.
+Application source is open; Espressif radio binaries/ROM and IPv6 destination
+attribution remain documented platform/audit boundaries, not decoded claims.
+See [validation](../docs/panicminer-validation-2026-11-25.md).
+
+## Requirements
+
+### Validated
+
+- Open mining, verified backup/restore and exact-image provenance — v4.0.
+- All matching pages, measured statistics and deliberate manual touch — v4.0.
+- Configurable primary/fallback portal, recovery and bounded IPv4 audit — v4.0.
+- Owner-confirmed audio, SD records, RGB outputs and charger/SD cold boot — v4.0.
+- Independent strict Mine measurement and prior mining-core one-hour soak — v4.0.
+
+### Active
+
+None. Project acceptance complete; no next milestone has been requested.
+
+### Out of scope
+
+Closed NMMiner binary redistribution, activation bypass, private signing keys,
+and a claim that Espressif radio/ROM or all IPv6 traffic has been decoded.
+
+## Next Milestone Goals
+
+None requested. Preserve verified operation and take a full backup before writes.
 
 ## Constraints
 
@@ -81,3 +106,6 @@ platform components. See [validation](../docs/panicminer-validation-2026-11-25.m
 - v2.0.02 bring-up + first fork: `archive/v2.0.02-fork-milestone/`.
 - v3.0 NMMiner RE + binary customization, closed as superseded:
   `archive/v3.0-nmminer-binary-re/README.md`.
+
+---
+*Last updated: 2026-11-26 after v4.0 hardware acceptance.*

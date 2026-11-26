@@ -1,28 +1,29 @@
 ---
 gsd_state_version: "1.0"
 milestone: v4.0
-milestone_name: "PanicMiner: owned open firmware"
-current_phase: 4
-status: verifying
-stopped_at: Remote follow-up verified on 0e32d00a / source 07c3931; release v4.0.0-rc.2 prepared. HW-05 actual charger/SD cold-power test is the only physical closeout item.
-last_updated: "2026-11-26T21:54:38.350Z"
-state_head: 73d63947c4982534e0ae9cf2c9c769ca24ecc4d1
+current_phase: 5
+status: completed
+stopped_at: Remote follow-up verified on 0e32d00a / source 07c3931; stable v4.0.0 prepared from identical firmware; charger/SD acceptance passed. No remaining acceptance item.
+last_updated: "2026-11-26T22:54:42.702Z"
+last_activity: 2026-11-26
+last_activity_desc: Milestone v4.0 completed and archived
+state_head: 5defbd843ae2ef51c4afee1e6c78b43d6d4f6532
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 0
   completed_plans: 0
-  percent: 80
-current_phase_name: Hardware extras
+  percent: 100
+milestone_name: "PanicMiner: owned open firmware"
+current_phase_name: Hashrate + Soak
 ---
 
 # State
 
-Current Phase: 4
-Phase Name: Hardware extras
-Status: verifying
-Milestone: v4.0 PanicMiner. Three earlier phases and the mining-core hour are
-verified. Only HW-05 needs a physical charger/SD cold-power test.
+Current Phase: 5
+Phase Name: Hashrate + Soak
+Status: v4.0 milestone complete
+Milestone: v4.0 PanicMiner. All five phases and all 22 requirements verified.
 
 ## Device
 
@@ -45,14 +46,14 @@ verified. Only HW-05 needs a physical charger/SD cold-power test.
 - History, exact private-value and binary scans passed. Secrets, wallet values, backups and raw logs stay ignored.
 - Source and license boundary: owned open application; Espressif radio binaries and ROM remain platform components.
 
-## Remaining physical acceptance
+## Completed charger acceptance
 
-HW-05 only: remove/reapply charger power with SD inserted and verify saved Wi-Fi,
-pool authorization and advancing work. Earlier charger confirmation preceded SD
-changes. Current SD-enabled saved-settings EN resets pass on laptop USB. Remote
-USB software cannot establish an actual charger unplug result; do not request
-another move while the owner is unavailable or call this physical test passed.
-There is no remaining coding, portal, audio, LED-output or steady-window IPv4 gate.
+Owner-confirmed transfer to charger with SD, absent laptop USB serial device,
+then read-only LAN verification: 70.234 seconds at 969.003 kH/s,
+authorized saved primary, advancing work, new SD record and current wallet.
+Initial wallet warmup and three transient API errors recovered automatically;
+the stable window had no transport error or observed work/SD counter reset.
+HW-05 complete. No coding or physical acceptance item remains.
 
 ## Decisions
 
@@ -65,5 +66,16 @@ There is no remaining coding, portal, audio, LED-output or steady-window IPv4 ga
 ## Session
 
 **Last session:** 2026-11-26
-**Stopped at:** Remote follow-up verified on 0e32d00a / source 07c3931; release v4.0.0-rc.2 prepared. HW-05 actual charger/SD cold-power test is the only physical closeout item.
+**Stopped at:** Remote follow-up verified on 0e32d00a / source 07c3931; stable v4.0.0 prepared from identical firmware; charger/SD acceptance passed. No remaining acceptance item.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
+
+## Current Position
+
+Phase: Milestone v4.0 complete
+Plan: —
+Status: Complete; no next milestone requested
+Last activity: 2026-11-26 — Milestone v4.0 completed and archived
+
+## Operator Next Steps
+
+None. Leave the qualified firmware running; take a fresh full backup before any future write.

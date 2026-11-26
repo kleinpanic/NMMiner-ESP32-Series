@@ -5,7 +5,7 @@ ESP32-2432S028R 2.8-inch Cheap Yellow Display miner. The open PanicMiner
 firmware lives in the [firmware source](firmware/custom/NerdMiner-CYD-Custom).
 This single repository includes the firmware source and reverse-engineering notes.
 
-Download [v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2)
+Download [v4.0.0](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0)
 for the tested firmware, checksums, license notices and flashing instructions.
 All six published assets were downloaded anonymously and checksum-verified.
 [Build and test status](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/workflows/firmware.yml).
@@ -64,11 +64,13 @@ separately passed a 60.24-minute soak at 967.925 kH/s with a new accepted share,
 plus export pressure and source-port reuse tests; those results retain their
 original image identity.
 
-The remaining physical acceptance is an actual charger unplug/replug **with SD
-inserted**. Saved-settings EN restarts with SD passed on laptop USB; the earlier
-charger test preceded the SD changes. See the
-[release notes](docs/releases/v4.0.0-rc.2.md) and the exact measurements in
-[runtime validation](docs/panicminer-validation-2026-11-25.md).
+**Charger cold boot with SD also passed.** After the owner moved it to a USB
+charger, the saved pool authorized, work advanced, SD wrote a fresh record and
+wallet data refreshed. The 70.23-second stable window measured 969.00 kH/s.
+All planned hardware acceptance is complete. The stable release uses the same
+application bytes as rc.2. See the [release notes](docs/releases/v4.0.0.md) and
+[runtime validation](docs/panicminer-validation-2026-11-25.md) for exact evidence
+and the bounded IPv4 audit's scope.
 
 Wallet BTC/USD values come from the **configured payout address**, after removing
 its worker suffix. They describe that address's funds, including other transfers;

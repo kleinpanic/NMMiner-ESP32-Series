@@ -89,8 +89,8 @@ LED GPIO states, board-only Wi-Fi recovery, steady-window egress, three live-fee
 cycles and 24 private-path checks passed. The owner confirmed working audio.
 The previous rc.1 image separately passed the full hour at 967.925 kH/s with a
 new accepted share; that hour is not relabelled as this image's measurement.
-The only remaining physical acceptance is charger unplug/replug with SD inserted.
-See the [release notes](../../../docs/releases/v4.0.0-rc.2.md) and
+Charger cold boot with SD is now owner-confirmed and LAN-verified: saved primary authorization, advancing work, a new SD record and current wallet data.
+See the [release notes](../../../docs/releases/v4.0.0.md) and
 [validation record](../../../docs/panicminer-validation-2026-11-25.md).
 
 ## Build and flash safely
