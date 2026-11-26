@@ -37,14 +37,14 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**Hardware acceptance is still open.** The scheduling correction passed a full
-20-minute speed window at 968.076 kH/s against the 994 kH/s baseline, with all
-sampled rolling rates inside the required 944.3–1043.7 band. Its subsequent SD
-download exposed memory pressure and radio loss, so overall qualification failed.
-SD exports now use bounded, paced blocks and smaller Wi-Fi packet-buffer budgets;
-the complete download, speed and one-hour stability checks must pass together on
-the final installed image. Charger cold boot with the SD card inserted still
-requires the owner's physical test. Publication remains on hold.
+**Hardware acceptance is still open.** The installed firmware passed a full
+20-minute speed test at **967.639 kH/s** against the 994 kH/s baseline, with all
+sampled rolling rates inside the required 944.3–1043.7 band and all 17 checks
+passing. Complete SD downloads also passed, including cancellation recovery and
+simultaneous status requests. Bounded, paced exports and smaller Wi-Fi buffer
+budgets address the crashes and incomplete downloads found in earlier builds.
+The full one-hour USB/SD soak is running. Charger cold boot with the SD card
+inserted still requires the owner's physical test. Publication remains on hold.
 Exact binary digests and failed attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 

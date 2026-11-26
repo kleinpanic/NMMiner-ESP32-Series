@@ -21,7 +21,12 @@ three overlapping-request scenarios also passed: all 7,889 bytes / 174 rows
 arrived, a second download returned 503, and status requests worked during the
 active export. No native fault or radio loss occurred. Five pages and automatic reconnect
 passed (54.651 seconds, one boot/no fault). The fresh strict 20-minute and
-full one-hour USB/SD tests started at **10:44:55 UTC** and are still running.
+full one-hour USB/SD tests started at **10:44:55 UTC**. The strict test passed
+**1,202.960 seconds / 227 samples / 967.639 kH/s** by independent work counts
+(2.652% below 994). All 17 checks passed; minimum sampled 10/60-window rates
+were 960.771 / 966.065 kH/s. Its post-window CSV also passed: 197 rows, nine columns,
+3.642 seconds. The one-hour soak is still running, with no fault or radio drop
+through its first twenty minutes. This is not yet a full one-hour PASS.
 
 ### Paced-export qualification
 
@@ -50,8 +55,8 @@ SDK connection check uses zero-length recv plus errno, which can retain another
 request's socket error. Source `412e2c9` uses the retained descriptor and actual
 write progress instead, waits through temporary low memory within the existing
 deadline, and rejects a busy download before opening another file. Native
-concurrency checks precede timing for the next image. Host policy/sanitizer tests
-pass; installation/qualification is pending. This candidate's hour soak was
+concurrency checks preceded timing for the current image, with the passing
+results recorded above. Host policy/sanitizer tests pass. This earlier candidate's hour soak was
 explicitly interrupted for that repair; it is not accepted. Charger cold boot with SD remains unavailable
 while the owner is asleep; publication stays held.
 

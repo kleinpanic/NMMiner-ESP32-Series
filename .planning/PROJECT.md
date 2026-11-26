@@ -49,7 +49,7 @@ over serial so the agent can view the real pixels.
 - Touch: resistive controller on HSPI (CLK25/MISO39/MOSI32/CS33/IRQ36). The owner confirmed left/right navigation. Stable-press, release and cooldown filtering suppress repeated or phantom paging.
 - Extras fitted: microSD (FAT32), speaker on GPIO26, RGB LED on GPIO4/16/17.
 - Wi-Fi is 2.4 GHz only. Saved settings load automatically; Setup selects a new network after relocation.
-- Historical stock API readback was about 1.04 MH/s. Current acceptance uses the agreed 994 kH/s baseline, with a 944.3–1043.7 band. Earlier open-core runs averaged 972.6 kH/s but failed individual rolling readings; fresh SD-enabled qualification is in progress.
+- Historical stock API readback was about 1.04 MH/s. Current acceptance uses the agreed 994 kH/s baseline, with a 944.3–1043.7 band. The installed SD-enabled image passed a strict 1,202.960-second run at 967.639 kH/s, with all sampled 10/60-second rates in band and all 17 checks passing.
 
 ## Current acceptance
 
@@ -57,8 +57,8 @@ Matching pages, manual touch, verified live feeds, configured-address balance,
 SD logging and automatic reconnect are implemented and observed on USB. The
 current image and exact passing/failed measurements are in
 [the validation record](../docs/panicminer-validation-2026-11-25.md). A full strict
-20-minute measurement, one-hour soak and charger cold boot with SD are separate
-gates. The owner is asleep and authorized continued USB testing; do not prompt
+20-minute measurement has passed; the full one-hour soak is running. Charger
+cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still
 part of the platform, as documented in firmware provenance.
