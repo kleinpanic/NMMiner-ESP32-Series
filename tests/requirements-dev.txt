@@ -1,2 +1,2 @@
-pytest
-pytest-cov
+# Compatibility entry point; root requirements own every Python dependency.
+-r ../requirements.txt

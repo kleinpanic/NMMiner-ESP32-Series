@@ -16,8 +16,13 @@ Run from the repository root:
 bash firmware/custom/NerdMiner-CYD-Custom/tools/tests/run.sh
 bash tests/test_restore_full_flash_backup.sh
 bash tests/test_flash_v2_0_02.sh
-./.venv/bin/python -m unittest discover -s tests -p test_miner_endurance.py
+./.venv/bin/python -m pytest tests
 ```
+
+The Python suite includes dashboard proxy unit/HTTP contract tests and strict
+hardware-evidence fixtures. Its dependencies are pinned in root requirements;
+the dashboard launcher also uses that root virtual environment. The mock HTTP
+tests do not establish native firmware behavior.
 
 The C++ host suite requires a compiler and OpenSSL development headers. UI
 rendering additionally needs libpng development headers:

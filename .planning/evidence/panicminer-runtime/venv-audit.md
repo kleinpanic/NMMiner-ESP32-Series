@@ -35,3 +35,13 @@ The reusable native capture CLI also uses root-venv pyserial (already pinned in
 requirements.txt), restricts artifacts to ignored logs/ and needs no new package.
 The API sampler uses only the standard library, selects measured fields without
 wallet values or saved settings, and runs through the same root environment.
+
+The full Python suite exposed undeclared dashboard/test dependencies in the
+root environment. Flask, requests, pytest and pytest-cov are now pinned in root
+requirements; the historical tests requirements file includes that source of
+truth. uv installed them only in the existing root `.venv`. The dashboard
+launcher now resolves the root and executes its virtual-environment Python,
+including when called from another directory. A real local startup passed.
+All 91 Python tests and 15 subtests pass; dashboard statement coverage is 95%.
+The tracked-source forbidden-invocation audit again found zero matches.
+These host results do not establish native hardware acceptance.

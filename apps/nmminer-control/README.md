@@ -5,8 +5,14 @@ Canonical local dashboard for the NM-CYD / ESP32-2432S028 miner in this repo.
 Run it from the repo root:
 
 ```bash
+uv pip install --python ./.venv/bin/python -r requirements.txt
 ./scripts/run_nmminer_control.sh
 ```
+
+Reuse the root `.venv`, or create it once with `uv venv .venv` on a fresh
+checkout. The launcher uses that environment and can be called from another
+working directory. Proxy unit and HTTP contract tests run with
+`./.venv/bin/python -m pytest tests`.
 
 Default target:
 
