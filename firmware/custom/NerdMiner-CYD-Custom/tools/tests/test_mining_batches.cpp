@@ -2,10 +2,40 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <list>
+#include <memory>
 #include <vector>
 
 int main() {
     unsigned cases = 0;
+    {
+        struct Work { uint32_t id, cursor; };
+        std::list<std::shared_ptr<Work>> pending;
+        std::shared_ptr<Work> current;
+        assert(!takeContinuousMiningJob(pending, current, 0) && !current); ++cases;
+        auto first = std::make_shared<Work>(Work{0, 0x80000000u});
+        pending.push_back(first);
+        assert(!takeContinuousMiningJob(pending, current, 0) && current == first && pending.empty()); ++cases;
+        for (unsigned i = 0; i < 20; ++i) {
+            assert(takeContinuousMiningJob(pending, current, 0) && current == first);
+            current->cursor += 262144;
+        }
+        assert(current->cursor == 0x80500000u); ++cases;
+        // Stop drops retained work even if its low byte is the stop sentinel.
+        current->id = 255;
+        assert(!takeContinuousMiningJob(pending, current, UINT32_MAX) && !current); ++cases;
+        current = first;
+        current->id = 0;
+        assert(!takeContinuousMiningJob(pending, current, 256) && !current); ++cases;
+        // A queued replacement takes precedence and does not retain old work.
+        current = first;
+        auto next = std::make_shared<Work>(Work{256, 0x80000000u});
+        pending.push_back(next);
+        assert(!takeContinuousMiningJob(pending, current, 256) && current == next); ++cases;
+        assert(takeContinuousMiningJob(pending, current, 256) && current == next); ++cases;
+        pending.push_back(first);
+        assert(!takeContinuousMiningJob(pending, current, 256) && !current); ++cases;
+    }
     for (uint32_t requested : {0u, 1u, 32767u, 32768u, 32769u, 262144u, 1000000u, 0xffffffffu}) {
         uint64_t recorded = 0; unsigned calls = 0;
         auto result = runMiningBatches(requested, [&](uint32_t budget) {

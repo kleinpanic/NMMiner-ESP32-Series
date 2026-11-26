@@ -42,6 +42,12 @@ terminator; the repaired code passes under ASan/UBSan. The long fixtures also
 detect the former silent 512-character coinbase truncation. Release builds must
 prepare jobs without dumping payloads to the blocking serial port.
 
+Mining-batch tests check exact completed-work accounting and cancellation at
+bounded publication intervals. The continuous-job policy also runs against a
+real shared-pointer queue: temporary queue exhaustion preserves the nonce
+cursor, while a stopped or replaced full generation discards old work, including
+generations with equal low bytes. These checks do not establish native speed.
+
 The SD-store tests compile production `src/sdstore.cpp` with host filesystem and
 SPI boundaries. They verify that SD uses the display's existing SPI object,
 retains its pin routes, survives mount failures and retries, and never stops the
@@ -70,7 +76,7 @@ display operation, or a real pool accepting a share. Native hardware validation
 is required for those claims.
 
 The Chain HTTP tests compile the production transport helper with small HTTP/TLS
-boundary fakes. Eight scenarios check one fresh-connection transport retry,
+boundary fakes. Nine scenarios check one fresh-connection transport retry,
 bounded repeated failure, HTTP 404/429/503 without blind retries, begin failure,
 empty-body rejection, response cleanup and retention of the successful result.
 The actual pinned-CA path is exercised by repeated native feed/wallet cycles.

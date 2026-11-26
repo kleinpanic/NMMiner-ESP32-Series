@@ -123,6 +123,7 @@ struct MiningTiming {
 };
 static MiningTiming s_job_preparation, s_hw_gap, s_sha_wait;
 static std::atomic<uint32_t> s_prepared_jobs{0};
+static std::atomic<uint32_t> s_active_hw_job{UINT32_MAX}, s_continued_hw_jobs{0};
 #endif
 static void recordCompletedWork(uint32_t completed) {
   std::lock_guard<std::mutex> lock(s_work_mutex);
@@ -439,6 +440,9 @@ struct Submition
 static void MiningJobStop(uint32_t &job_pool, std::map<uint32_t, std::shared_ptr<Submition>> & submition_map)
 {
   s_pool_authorized = false;
+  #ifdef PIPELINED_CLASSIC
+  s_active_hw_job.store(UINT32_MAX);
+  #endif
   {
     std::lock_guard<std::mutex> lock(s_job_mutex);
     s_job_result_list.clear();
@@ -642,6 +646,7 @@ void runStratumWorker(void *name) {
                                           job_pool++;
                                           s_working_current_job_id = job_pool & 0xFF; //Terminate current job in thread
                                           #ifdef PIPELINED_CLASSIC
+                                          s_active_hw_job.store(job_pool);
                                           s_pl_ctx.run = 0;                           //...and stop the HW loop mid-chunk now
                                           #endif
 
@@ -1626,7 +1631,7 @@ static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &
   // stratum task switching jobs (it changes the id first and clears run
   // second), a stale chunk ends up with run == 0.
   s_pl_ctx.run = 1;
-  if (s_working_current_job_id != (job->id & 0xFF))
+  if (s_active_hw_job.load() != job->id)
     s_pl_ctx.run = 0;
 
   uint32_t lock_started = micros();
@@ -1725,12 +1730,19 @@ void minerWorkerHw(void * task_id)
         pushJobResult(result, 16);
         result.reset();
       }
+      #ifdef PIPELINED_CLASSIC
+      // Continue the retained header with pl_cursor if Stratum is busy. The
+      // cursor never restarts; a stop or new full generation invalidates it.
+      if (takeContinuousMiningJob(s_job_request_list_hw, job, s_active_hw_job.load()))
+        s_continued_hw_jobs.fetch_add(1);
+      #else
       if (!s_job_request_list_hw.empty())
       {
         job = s_job_request_list_hw.front();
         s_job_request_list_hw.pop_front();
       } else
         job.reset();
+      #endif
     }
     if (job)
     {
@@ -1973,11 +1985,11 @@ void runMonitor(void *name)
                       (unsigned long)s_hw_checked, (unsigned long)s_hw_mismatched,
                       minerShaLockAllOn() ? "all" : "sha256", (unsigned long)s_hw_dropped);
 #ifdef PIPELINED_CLASSIC
-        Serial.printf("[PERF] jobs %lu prep %lu max %lu; HW gaps %lu max %lu; SHA wait %lu max %lu us\n",
+        Serial.printf("[PERF] jobs %lu prep %lu max %lu; HW gaps %lu max %lu; SHA wait %lu max %lu us; continued %lu\n",
             (unsigned long)s_prepared_jobs.load(), (unsigned long)s_job_preparation.total.load(),
             (unsigned long)s_job_preparation.maximum.load(), (unsigned long)s_hw_gap.total.load(),
             (unsigned long)s_hw_gap.maximum.load(), (unsigned long)s_sha_wait.total.load(),
-            (unsigned long)s_sha_wait.maximum.load());
+            (unsigned long)s_sha_wait.maximum.load(), (unsigned long)s_continued_hw_jobs.load());
 #endif
       }
       drawCurrentScreen(mElapsed);
