@@ -27,6 +27,9 @@ flash operations, private scans and build orchestration used the root
 stubs at a sandboxed `.venv/bin/python` path and never invoke system Python.
 
 The parser-memory repair adds the standard-library-only endurance evidence
-validator and nine negative/positive fixture tests. Both run through the root
+validator and native serial parser with twelve negative/positive fixture tests. Both run through the root
 virtual environment, including CI. The tracked-source invocation audit passes;
 no dependency or system-environment change was needed.
+
+The reusable native capture CLI also uses root-venv pyserial (already pinned in
+requirements.txt), restricts artifacts to ignored logs/ and needs no new package.

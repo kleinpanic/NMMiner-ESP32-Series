@@ -33,6 +33,20 @@ remaining limitations in the runtime validation document. Host tests and renders
 do not establish radio reliability, native touch behavior or pool acceptance.
 Keep framebuffer dumps outside timed hashrate measurements.
 
+Stop other serial consoles before native capture. The capture tool opens the
+port without a reset unless explicitly requested, preserves an exclusive raw
+capture and writes parsed `result.json` once per second. A fresh directory is
+required; output is restricted to ignored `logs/`:
+
+```bash
+./.venv/bin/python scripts/capture_miner_runtime.py --out logs/<run> --reset --allow-commands
+```
+
+With `--allow-commands`, writing `PMMEM`, `PMNEXT`, `PMMINE` or `PMFEED` plus a
+newline to `logs/<run>/command.txt` sends that diagnostic through the existing
+serial owner. Avoid `PMDUMP` during performance measurements. Ctrl-C stops
+capture without erasing or reconfiguring the miner.
+
 `scripts/check_miner_endurance.py` independently validates the API sample JSON,
 native observer JSON and raw serial log from a qualification run:
 

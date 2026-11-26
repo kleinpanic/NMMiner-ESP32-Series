@@ -76,5 +76,37 @@ class EnduranceEvidenceTests(unittest.TestCase):
         self.assertFalse(self.result()["checks"]["wallet_refreshes"])
 
 
+class NativeCaptureParserTests(unittest.TestCase):
+    def test_boot_restart_and_allocation_failure_are_recorded(self):
+        state = module.native_state(1000)
+        for second, line in enumerate(("panicminer 0.1.0 starting", "[POOL] wallet worker authorized by pool",
+                "String(): No enought memory for the operation.", "abort() was called at PC 0x4000",
+                "Rebooting...", "panicminer 0.1.0 starting")):
+            module.record_native_line(state, line, second)
+        self.assertEqual(len(state["boots"]), 2)
+        self.assertGreaterEqual(len(state["faults"]), 4)
+        self.assertEqual(len(state["events"]), 1)
+
+    def test_rates_feed_sha_and_stack_are_classified(self):
+        state = module.native_state(1000)
+        for second, line in enumerate((">>> Completed 2 share(s), avg. hashrate 972.5 KH/s",
+                "[CHAIN] 5/5 ok in 9000 ms", "[CHAIN] scratch used 0, peak 22220, SDK fallbacks 0",
+                "[SHA] prefilter hits checked 100, mismatched 0, lock all, dropped 0",
+                "[STACK] Monitor minimum free 2500 bytes")):
+            module.record_native_line(state, line, second)
+        self.assertEqual(state["rates"][0]["khs"], 972.5)
+        self.assertEqual(len(state["feeds"]), 2)
+        self.assertEqual(len(state["sha"]), 1)
+        self.assertEqual(len(state["events"]), 1)
+        self.assertFalse(state["faults"])
+
+    def test_nonfinite_and_corrupt_rates_fail_without_throwing(self):
+        state = module.native_state(1000)
+        for value in ("nan", "inf", "corrupt"):
+            module.record_native_line(state, f"avg. hashrate {value} KH/s", 1)
+        self.assertFalse(state["rates"])
+        self.assertGreaterEqual(len(state["faults"]), 3)
+
+
 if __name__ == "__main__":
     unittest.main()

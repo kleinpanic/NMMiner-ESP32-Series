@@ -18,6 +18,38 @@ FATAL = re.compile(
 )
 
 
+def native_state(started_epoch):
+    return {"status": "observing", "started_epoch": started_epoch, "elapsed_seconds": 0,
+            "events": [], "rates": [], "sha": [], "feeds": [], "faults": [], "boots": []}
+
+
+def record_native_line(state, line, seconds):
+    event = {"seconds": round(seconds, 3), "line": line.strip()}
+    line = event["line"]
+    if re.search(r"panicminer [^\r\n]* starting", line):
+        state["boots"].append(event)
+        if len(state["boots"]) > 1:
+            state["faults"].append({**event, "line": "UNEXPECTED RESTART: " + line})
+    if line.startswith(("[SD]", "[STATS]", "[POOL]", "[TOUCH]", "[UI]", "[STATE]",
+                        "[WIFI]", "[STACK]", "[MINER] HW SHA", "[CFG] Opening")):
+        state["events"].append(event)
+    if match := re.search(r"avg\. hashrate (\S+) KH/s", line):
+        try:
+            rate = float(match[1])
+            if math.isfinite(rate):
+                state["rates"].append({"seconds": event["seconds"], "khs": rate})
+            else:
+                state["faults"].append({**event, "line": "NONFINITE RATE: " + line})
+        except ValueError:
+            state["faults"].append({**event, "line": "INVALID RATE: " + line})
+    if line.startswith("[SHA] prefilter"):
+        state["sha"].append(event)
+    if line.startswith("[CHAIN]") and any(x in line for x in ("/5 ok", "stack minimum", "record", "scratch")):
+        state["feeds"].append(event)
+    if FATAL.search(line):
+        state["faults"].append(event)
+
+
 def evaluate(report, native, serial_text, baseline=994.0):
     samples = report.get("samples", [])
     low, high = baseline * .95, baseline * 1.05

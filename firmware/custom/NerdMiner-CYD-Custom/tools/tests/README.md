@@ -68,3 +68,9 @@ stub replaces the implementation.
 These tests do not establish radio reliability, physical touch calibration,
 display operation, or a real pool accepting a share. Native hardware validation
 is required for those claims.
+
+The Chain HTTP tests compile the production transport helper with small HTTP/TLS
+boundary fakes. Eight scenarios check one fresh-connection transport retry,
+bounded repeated failure, HTTP 404/429/503 without blind retries, begin failure,
+empty-body rejection, response cleanup and retention of the successful result.
+The actual pinned-CA path is exercised by repeated native feed/wallet cycles.
