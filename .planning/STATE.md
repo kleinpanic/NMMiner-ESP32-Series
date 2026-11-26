@@ -5,8 +5,8 @@ milestone_name: "PanicMiner: owned open firmware"
 current_phase: 4
 status: verifying
 stopped_at: Remote follow-up verified on 0e32d00a / source 07c3931; release v4.0.0-rc.2 prepared. HW-05 actual charger/SD cold-power test is the only physical closeout item.
-last_updated: "2026-11-26T21:52:55.140Z"
-state_head: 07c3931cbcb297f330eabe68e7feabbc2f330c2f
+last_updated: "2026-11-26T21:54:38.350Z"
+state_head: 73d63947c4982534e0ae9cf2c9c769ca24ecc4d1
 progress:
   total_phases: 5
   completed_phases: 4
@@ -37,6 +37,7 @@ verified. Only HW-05 needs a physical charger/SD cold-power test.
 
 ## Repository and checks
 
+- Release v4.0.0-rc.2 published from tag 73d6394. All six assets downloaded anonymously and matched local/GitHub digests and both checksum manifests. All 62 release files/ZIP entries passed the private-value scan.
 - Canonical public source: https://github.com/kleinpanic/NMMiner-ESP32-Series, branch main.
 - Historical kleinpanic/NerdMiner-CYD-Custom is private, archived and points to the canonical repo.
 - Public CI 45897395376 passed exact firmware source 07c3931: both builds, C++ sanitizers, restore safety, Python tests, both UI themes and artifacts.

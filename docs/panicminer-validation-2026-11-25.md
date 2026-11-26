@@ -50,6 +50,13 @@ The earlier rc.1 hour and rejected images below retain their original identities
 All follow-up Python execution used root .venv; the tracked-source invocation
 audit found zero forbidden patterns and no dependency changed.
 
+[v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2)
+is published from tag commit `73d6394`. All six assets were downloaded without
+authentication, matched the local package and GitHub digests, and passed both
+external and ZIP-internal checksum verification. The application digest matches
+the installed and qualified image above. All 62 release files and ZIP entries
+passed the known-private-value scan. The prior rc.1 tag and assets were preserved.
+
 ## November 26: SD, runtime reconnect and wallet follow-up
 
 ### Qualified USB/SD release candidate

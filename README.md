@@ -7,6 +7,7 @@ This single repository includes the firmware source and reverse-engineering note
 
 Download [v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2)
 for the tested firmware, checksums, license notices and flashing instructions.
+All six published assets were downloaded anonymously and checksum-verified.
 [Build and test status](https://github.com/kleinpanic/NMMiner-ESP32-Series/actions/workflows/firmware.yml).
 
 ## Daily use

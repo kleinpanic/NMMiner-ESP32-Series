@@ -63,8 +63,7 @@ binary/history secret scans passed. The previous rc.1 image separately passed
 its full hour with accepted work; its identity is not replaced by this retest.
 
 The canonical repository is public. The previous nested-fork GitHub repo is
-private, archived and points to the canonical source. Release v4.0.0-rc.2 closes
-the remotely testable follow-up. **HW-05 remains physical:** a charger power
+private, archived and points to the canonical source. Release [v4.0.0-rc.2](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0-rc.2) is published from tag `73d6394`. All six public assets were downloaded anonymously and matched local, GitHub and bundle checksums. This closes the remotely testable follow-up. **HW-05 remains physical:** a charger power
 removal/reinsertion with SD inserted. EN resets are separate evidence; do not
 archive the hardware milestone or assert that result without the actual test.
 Application source is open; Espressif radio binaries/ROM remain documented
