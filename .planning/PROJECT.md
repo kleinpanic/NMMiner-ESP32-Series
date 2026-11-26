@@ -66,7 +66,10 @@ allocation abort. Fixed request queues/nonblocking exports (aa23288) are now
 installed as e25408f4 after verified full backup, but concurrent-export
 prequalification timed out at a fragmented-heap plateau. The corrected 2 KB
 contiguous floor / 16 KB aggregate reserve (c2b86f3) is installed as eb2b2c88
-after another verified full backup; fresh native qualification is running. Charger
+after another verified full backup. It passed ordinary concurrent exports, then
+failed blocked-client status pressure before any timed run. The SDK socket-state
+guard and timing diagnostics (da95928) are installed as 8e482e7d after verified
+full backup; fresh native qualification is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still

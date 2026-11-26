@@ -6,14 +6,38 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current SD fragmentation-floor qualification
+### Current API socket-state qualification
+
+Installed application: **1,781,808 bytes**, SHA-256
+`8e482e7d1ba02ec162945fed847e5c8880a857f13d3268afb6b7650d1fbd8a7a`,
+firmware source `da95928`. Fresh full 4 MB backup checksum/full-flash comparison
+and all four written images verified. Exact factory inputs and ELF are archived
+locally. Native pressure/page/reconnect and fresh endurance qualification are
+running; no overall hardware PASS is claimed.
+
+The API initializes errno before the installed Arduino-ESP32 SDK's client pass.
+That SDK probes `connected()` with a zero-length receive; success need not clear
+a preceding client's socket error. The host boundary regression reproduces a
+healthy peer rejected by stale reset/broken-pipe state and checks that genuine
+receive errors still reject the peer. This is not a native SDK test or proof
+that stale errno caused every observed timeout. Added native timing logs
+identify request or SD passes lasting at least 500 ms, plus short reads and
+permanent send errors, without recording paths or payloads. Full ASan/UBSan
+tests and the board build pass.
+
+### Previous SD fragmentation-floor qualification
 
 Installed application: **1,781,488 bytes**, SHA-256
 `eb2b2c88bd07da16278e9e6e5cf86170cf1bd324aa5c24842eeb7812f8056ca2`,
 firmware source `c2b86f3`. A fresh full 4 MB backup passed checksum/full-flash
 comparison; all four written images verified. Exact application, ELF and all
-four factory-image inputs are archived locally. Native feed/export pressure,
-page/reconnect, strict 20-minute and full-hour qualification are running.
+four factory-image inputs are archived locally. Feed smoke, private-path
+denials, three complete downloads, cancellation recovery and three concurrent
+busy/status export scenarios passed. The blocked-client pressure stage then
+timed out on a status request. A diagnostic repeat served its first status
+request in 475 ms, but its second request stalled while mining and feeds
+continued. One boot and no native fault were observed. The image failed
+prequalification; no timed run started. Original evidence is preserved.
 
 The contiguous heap floor is now **2 KB**, retaining the **16 KB** aggregate
 reserve and one nonblocking send of at most 512 bytes per loop. The regression
@@ -21,7 +45,7 @@ uses the prior native 21,224-byte free / 4,084-byte largest-block reading:
 the former 4,096-byte cutoff waits at that fragmentation plateau, while the
 repaired policy can progress. Exact bounds, the smaller low-memory wait state
 and the unchanged total deadline are covered. Full ASan/UBSan tests and the
-board build pass. No overall hardware PASS is claimed before native acceptance.
+board build passed. Those host results did not establish native API reliability.
 
 ### Previous fixed-job and nonblocking-export qualification
 

@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: SD fragmentation-floor c2b86f3 installed as eb2b2c88 after verified full backup. Native pressure and fresh endurance qualification running. Previous e25408f4 rejected on concurrent-export timeout; original evidence preserved. Physical SD charger/publication held.
-last_updated: "2026-11-26T12:54:45.176Z"
-state_head: c2b86f3adcb526f38ae009ef15fefaec5fcf4542
+stopped_at: API socket-state guard and timing diagnostics da95928 installed as 8e482e7d after verified full backup. Fresh native prequalification running. Prior eb2b2c88 rejected on blocked-client status timeout; no timed run started. Physical SD charger/publication held.
+last_updated: "2026-11-26T13:08:38.306Z"
+state_head: da95928b5d8cb68702c958ad5045bd933414a024
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application eb2b2c88bd07da16278e9e6e5cf86170cf1bd324aa5c24842eeb7812f8056ca2 (1,781,488 bytes), source c2b86f3. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified; exact factory inputs and ELF archived. Fixed mining requests and retained nonblocking exports remain. The contiguous transfer floor is 2 KB with a 16 KB aggregate reserve: the previous 4 KB floor waited at the observed 4084-byte fragmentation plateau. Full sanitizer suite and board build pass, including the native-reading regression. Feed/export pressure, page/reconnect and fresh endurance checks are running. Previous e25408f4 failed concurrent-export prequalification without a native fault; no timed run started. All earlier failures remain preserved.
+- Current installed application 8e482e7d1ba02ec162945fed847e5c8880a857f13d3268afb6b7650d1fbd8a7a (1,781,808 bytes), source da95928. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified; exact factory inputs and ELF archived. Retains fixed mining requests, partial nonblocking exports, 16 KB aggregate / 2 KB contiguous reserve and private-path aliases guard. API client passes clear stale socket errno before the SDK zero-length connected probe; real receive errors remain effective. Added request/SD pass timing and read/send failure diagnostics. Full sanitizer suite and board build pass. Fresh native prequalification is running. Previous eb2b2c88 passed feed/privacy/download/concurrency checks, then blocked-client status pressure timed out; no timed run started. The timeout cause is not established from the host boundary test. Original evidence is preserved.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Finish native pressure and endurance qualification of eb2b2c88/source c2b86f3. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
+- Finish native pressure and endurance qualification of 8e482e7d/source da95928. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T12:54:45.154Z
-**Stopped at:** SD fragmentation-floor c2b86f3 installed as eb2b2c88 after verified full backup. Native pressure and fresh endurance qualification running. Previous e25408f4 rejected on concurrent-export timeout; original evidence preserved. Physical SD charger/publication held.
+**Last session:** 2026-11-26T13:08:38.287Z
+**Stopped at:** API socket-state guard and timing diagnostics da95928 installed as 8e482e7d after verified full backup. Fresh native prequalification running. Prior eb2b2c88 rejected on blocked-client status timeout; no timed run started. Physical SD charger/publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification of installed eb2b2c88 remains open. Charger cold boot with SD requires owner availability; publication held.
+- Clean full-hour USB/SD qualification of installed 8e482e7d remains open. Charger cold boot with SD requires owner availability; publication held.
