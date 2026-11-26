@@ -45,3 +45,9 @@ including when called from another directory. A real local startup passed.
 All 91 Python tests and 15 subtests pass; dashboard statement coverage is 95%.
 The tracked-source forbidden-invocation audit again found zero matches.
 These host results do not establish native hardware acceptance.
+
+Factory packaging now consumes PlatformIO's resolved upload manifest, including
+the SDK's boot_app0 image. Five root-venv tests exercise actual packaging code,
+missing images, invalid layouts and alternate app offsets without serial access.
+The full root-venv Python suite passes 96 tests and 22 subtests. This change uses
+only the standard library and introduces no environment or dependency change.
