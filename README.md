@@ -45,11 +45,15 @@ client stopped reading. The current repair bounds file buffering to 512 bytes,
 checks TCP write readiness, reserves 20 KB / 6 KB contiguous before bulk sends,
 and expires stalled downloads. The saved-network startup path also now hands
 failed joins to runtime recovery instead of blocking in the setup portal.
-The installed repair passes complete/half-closed downloads, cancellation and
-blocked-client pressure with ten exports and 66 status requests. A fresh timed
-mining/endurance run is next.
-Earlier firmware maintained **968.153 kH/s** for 20 minutes, but failed its later
-export test, so that composite attempt is rejected. Charger cold boot with the
+The SD repair passed complete/half-closed downloads, cancellation and
+blocked-client pressure with ten exports and 66 status requests. Its fresh
+20-minute Mine test passed all 17 checks at **968.07 kH/s**, 2.61% below the
+994 kH/s baseline. All sampled 10/60-second rates stayed within 5%, and the
+post-window SD download passed. Its longer soak exposed an independent TCP
+port-reuse timeout. A bounded response-close repair also fixes cleanup before
+the next SD request; it is being installed and must pass fresh native checks
+and the complete soak.
+Charger cold boot with the
 SD card inserted still requires the owner's physical test. Publication remains
 on hold. Exact digests, tests and failed attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).

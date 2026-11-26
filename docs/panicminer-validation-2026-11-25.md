@@ -6,7 +6,41 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current saved-network retry qualification
+### Current response-close repair
+
+Firmware source `49afce5` passed the complete ASan/UBSan suite and the board
+build (59.759 seconds). Application: **1,781,040 bytes**, SHA-256
+`23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986`.
+Fresh verified backup, installation and native qualification are underway.
+After a full declared response has been queued, it now lets a Content-Length
+client close first, with a two-second deadline for clients waiting for server
+EOF. A request's read EOF never cancels an unfinished body. SD headers hand off
+to the file sender; only the end of that body starts the close deadline. Fresh
+native gates include reusing the same source ports for JSON and SD requests
+after 65 seconds, plus a client that waits for the bounded server close.
+Completed SD closes are polled before accepting another request, so an already
+finished, half-closed export can release ownership before the next busy check.
+The reusable native checker has four real host TCP fixture tests; the complete
+Python suite passes **105 tests and 29 subtests**. Native acceptance is separate.
+
+### Previous response-close attempt
+
+Source `47e1232` / application
+`a1278a71f139d4dfbba16321d8c2d417b1ad1299c43dc7b8db7c1bf2bfa730cd`
+(1,780,960 bytes) was installed after a fresh verified 4 MB backup and all four
+image comparisons. Sanitizers and board build passed (62.250 seconds), as did
+live-data smoke and private paths. Its first ordinary export timed out; packet
+headers show a missing 512-byte sequence range and retransmission after the
+client's ten-second read timeout. Mining and feeds continued without a native
+fault or reboot. Three ordinary retries returned all 377 records in 7.725,
+10.310 and 7.164 seconds; a complete half-closed export also passed. The next
+immediate export received 503 because completed-transfer cleanup ran after
+request dispatch. This attempt failed prequalification; no timed run began.
+A mistakenly overlapping fixed-port/ordinary-download probe also received the
+expected busy rejection; that invalid harness attempt is preserved separately
+and does not grade port reuse. Original failures and retry evidence are retained.
+
+### Previous saved-network retry qualification
 
 Installed application: **1,780,560 bytes**, SHA-256
 `1f59e35593885c57921a509b47c4e5076f29cfa34f1e064eacdf8e07c477a20c`,
@@ -22,7 +56,29 @@ pressure then passed **ten complete exports and 66 status requests**, including
 six while the bulk client stopped reading and a TCP-reset cancellation. Each
 CSV contained 335–336 nine-column records, with declared body lengths fully
 received. Minimum sampled free heap was **17,804 bytes**; no native fault,
-reboot or radio drop occurred during pressure. Timed endurance remains open.
+reboot or radio drop occurred during pressure. Five pages and automatic pool
+reauthorization after a controlled Wi-Fi drop passed in **36.263 seconds**.
+
+The fresh strict Mine run passed all **17 checks**, with an independent native
+grade: **1,202.707 seconds**, **221 samples**, **968.067 kH/s** completed-work
+mean (2.61% below the 994 baseline). The 10-second readings ranged from
+964.690–971.404 kH/s; 60-second readings from 967.519–968.664 kH/s. All were
+within 944.3–1043.7 kH/s. Twenty SD records were added; all 26 in-window feed
+cycles completed 5/5. Maximum wallet age was 46 seconds and minimum sampled
+free heap was 19,240 bytes. No API error, native fault, restart or SHA mismatch
+was recorded. The post-window download returned 359 consistent nine-column
+records in 7.113 seconds. Original timed/native snapshots are preserved locally.
+The same boot's longer soak **failed composite qualification**: one API connect
+timeout occurred around 25.8 minutes. Mining, SD and 5/5 feeds continued without
+a native fault or radio drop. TCP observation showed the client reusing a source
+port about 62 seconds after a successful request, then remaining in SYN-SENT
+while packets arrived. A controlled negative reproduction confirmed the cause:
+the initial fixed-port request passed, reuse after 65 seconds timed out while
+the board acknowledged the old connection, and reuse after about 140 seconds
+passed. Packet headers confirmed the board closed first; the SDK sets TCP MSL
+to 60 seconds. This is separate from the repaired bulk-memory exhaustion.
+Original soak samples/error, packet headers and failed reproduction are retained
+locally. No clean-hour or new-share PASS is claimed for this rejected attempt.
 
 A failed saved-network join previously entered WiFiManager's 180-second setup
 portal, then restarted the board. Normal mining tasks and runtime Wi-Fi recovery

@@ -34,7 +34,9 @@ To move to another network, hold BOOT, join the AP shown on Setup, and open
 `http://192.168.4.1`. Select the new 2.4 GHz network and save. The portal retains
 existing pool settings, and the new Wi-Fi credentials are copied into the app's
 saved configuration. Leaving Setup without saving resumes the old settings on
-restart. Failed automatic joins also open the portal temporarily before retrying.
+restart. If the saved network is temporarily unavailable, the miner finishes
+booting and retries in the background. Explicit BOOT Setup and a missing saved
+network still open the portal.
 
 ## Pages and measurements
 
@@ -68,11 +70,16 @@ Boot and Setup use the same visual system. Afterglow is the default; Hazard is
 available at build time. Formatting/animation work is limited to the visible page.
 The rate history uses fixed storage instead of allocating list nodes each second.
 
-The 2026-11-25 Mine run before the touch/Stats update averaged **972.6 kH/s** over
-20 minutes against a 994 kH/s baseline, with zero SHA mismatches. Eleven rolling
-readings were below the 5% band, so the strict per-reading gate remained open.
-See the parent workspace's runtime validation for binary identities and current
-hardware acceptance; rendering success alone does not establish physical touch.
+The 2026-11-26 SD-enabled Mine run passed all 17 strict checks at **968.07 kH/s**
+over 1,202.7 seconds against the 994 kH/s baseline. All 221 sampled 10/60-second
+rates stayed within 5%; native SHA checks and the post-window SD download passed.
+Blocked-client pressure also passed ten exports and 66 status requests. The
+longer soak then exposed a TCP port-reuse timeout. A bounded response-close
+repair includes cleanup before the next SD request and is being installed;
+fresh native checks, the complete soak and standalone
+cold boot with SD still require acceptance.
+See the [validation record](../../../docs/panicminer-validation-2026-11-25.md)
+for binary identities and preserved failed attempts.
 
 ## Build and flash safely
 
@@ -133,7 +140,9 @@ An AP's BSSID is not saved in application settings, so cold boots rescan after a
 move. USB provisioning can optionally select `Bssid` and `Channel` for one join;
 credentials remain in the existing private SPIFFS configuration. Native failures
 and the installed digest are recorded in the parent repository's runtime
-validation document; these recovery changes have not passed hardware acceptance.
+validation document. Saved-settings boot and a controlled runtime reconnect
+passed; charger boot with SD and recovery after a failed initial association
+remain separate native checks.
 
 Runtime reconnects have one owner and a 30-second retry interval. Each attempt
 clears the startup AP/channel restriction, allowing recovery if the matching

@@ -53,42 +53,31 @@ over serial so the agent can view the real pixels.
 
 ## Current acceptance
 
-Matching pages, manual touch, verified live feeds, configured-address balance,
-SD logging and automatic reconnect are implemented and observed on USB. The
-current image and exact passing/failed measurements are in
-[the validation record](../docs/panicminer-validation-2026-11-25.md). A full strict
-20-minute measurement has passed. The first full hour failed on an API timeout,
-a partial feed cycle and no new accepted share; a reset-only repeat of the same
-image was interrupted for an independently verified SD API private-path alias repair.
-The repaired source 6cf06a7 is installed as f9c8fe99 after full verified backup;
-that image was rejected after a post-window SD export triggered a JobPush
-allocation abort. Fixed request queues/nonblocking exports (aa23288) are now
-installed as e25408f4 after verified full backup, but concurrent-export
-prequalification timed out at a fragmented-heap plateau. The corrected 2 KB
-contiguous floor / 16 KB aggregate reserve (c2b86f3) is installed as eb2b2c88
-after another verified full backup. It passed ordinary concurrent exports, then
-failed blocked-client status pressure before any timed run. The SDK socket-state
-guard and timing diagnostics (da95928) are installed as 8e482e7d after verified
-full backup, but its blocked-client pressure check still failed. A native
-request pass took 18.826 seconds and speaker-only replies also truncated.
-Deferred response hooks now prioritize retained HTTP headers/JSON over SD
-bulk writes (3596762), installed as 744567d9 after verified full backup. That
-image failed blocked-client pressure with 13,064 bytes free / 628 largest and a
-512/591-byte incomplete response; no timed run started. The 24 KB / 4,000-byte
-control-memory reserve (cda9176) passed sanitizer tests and the board build, and
-is installed as a25a5ade after a fresh verified full backup. That image stalled
-an ordinary download before its first byte; no timed run started. Bounded
-512-byte file stdio, a 20 KB / 4,000-byte reserve and idle expiry (d5a39e4)
-were installed as d67f5107 after another verified full backup. Three CSV
-exports passed, but half-close and blocked-client pressure failed. The TCP
-write-readiness / 6 KB contiguous repair (5049bca, a0e20291) then failed
-startup prequalification because WiFiManager timed out and restarted. The
-saved-network retry repair (2fa0ea4) is installed as 1f59e355 after a fresh
-verified backup; first boot joined and authorized the pool. Native smoke,
-exports, pressure and endurance are running. Charger
-cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
-for another move tonight. Publication remains held until hardware acceptance.
-The application is open source; Espressif radio binaries and chip ROM are still
+Matching pages, manual touch, certificate-verified Chain/wallet feeds,
+configured-address balance, SD logging and automatic reconnect are implemented
+and observed on USB. Exact image digests, original failures and measurements
+are in [the validation record](../docs/panicminer-validation-2026-11-25.md).
+
+Source 2fa0ea4 / image 1f59e355 passed a fresh strict 20-minute Mine run:
+1,202.707 seconds, 221 samples, 968.067 kH/s and all 17 checks. Complete and
+half-closed exports, cancellation, ten blocked-peer pressure exports and
+66 status requests passed. The longer soak failed an API connect timeout;
+a fixed-port packet trace reproduced stale server state after 65 seconds.
+Source 47e1232 / image a1278a71 adds bounded client-first response close,
+but was rejected in prequalification: one ordinary export timed out after a
+TCP sequence gap (three repeats passed), and an immediate request after a
+complete half-closed export received 503 before lifecycle cleanup.
+Source 49afce5 reaps that completed close before accepting requests; sanitizer
+suite, board build and 105 Python tests / 29 subtests pass. Fresh verified
+backup/installation and native qualification are underway. Host results do
+not establish native acceptance.
+
+Charger cold boot with SD, a photo confirming final panel output, complete
+network egress capture, portal/pool persistence and observed audio/LED events
+remain distinct hardware gates unless their required evidence is recorded.
+The owner is asleep and authorized continued USB testing; do not prompt for
+another move tonight. Publication remains held until hardware acceptance.
+The application is open source; Espressif radio binaries and chip ROM remain
 part of the platform, as documented in firmware provenance.
 
 ## Constraints
