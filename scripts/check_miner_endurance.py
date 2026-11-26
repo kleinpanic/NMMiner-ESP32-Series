@@ -12,7 +12,7 @@ from pathlib import Path
 
 FATAL = re.compile(
     r"Guru Meditation|Brownout|abort\(\) was called|Rebooting\.\.\.|"
-    r"assert failed|CORRUPT HEAP|LV_ASSERT|No enough?t memory|"
+    r"assert failed|CORRUPT HEAP|LV_ASSERT|No enough(?:t)? memory|"
     r"Memory allocation failed|allocation failed:|reservation failed|hashrate nan|\[CHAIN TLS\]",
     re.IGNORECASE,
 )
