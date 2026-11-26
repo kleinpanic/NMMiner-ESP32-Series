@@ -1,6 +1,6 @@
 name: Build and test PanicMiner
 
-# This fork only targets the ESP32-2432S028R (CYD, ST7789) unit. The upstream
+# This workflow targets the ESP32-2432S028R CYD unit with its verified panel setup. The upstream
 # workflow built every board and gated releases on BitMaker-hub approval.
 # This workflow builds our board, checks host regressions and renders both themes.
 
@@ -47,7 +47,9 @@ jobs:
       - name: Run native regression tests with sanitizers
         run: bash firmware/custom/NerdMiner-CYD-Custom/tools/tests/run.sh
       - name: Check backup and restore safety
-        run: bash tests/test_restore_full_flash_backup.sh
+        run: |
+          bash tests/test_restore_full_flash_backup.sh
+          bash tests/test_flash_v2_0_02.sh
       - name: Render both UI themes
         run: |
           make -C firmware/custom/NerdMiner-CYD-Custom/tools/uisim .deps/lvgl/lvgl.h
