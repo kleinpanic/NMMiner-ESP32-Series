@@ -186,7 +186,9 @@ void setup()
   BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 12000, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
  #elif defined(ESP32_2432S028R) || defined(ESP32_2432S028_2USB)
   // Free a little bit of the heap to the screen
-  BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 13500, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
+  // checkError now borrows the 4 KB JSON document instead of copying it on
+  // this stack. Return part of that reservation to networking/mining.
+  BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 10240, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
  #else
   BaseType_t res2 = xTaskCreatePinnedToCore(runStratumWorker, "Stratum", 15000, (void*)stratum_name, 4, NULL, APP_TASK_CORE);
  #endif

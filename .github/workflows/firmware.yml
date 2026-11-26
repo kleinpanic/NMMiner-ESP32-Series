@@ -50,6 +50,8 @@ jobs:
         run: |
           bash tests/test_restore_full_flash_backup.sh
           bash tests/test_flash_v2_0_02.sh
+      - name: Check hardware acceptance evidence validation
+        run: ./.venv/bin/python -m unittest discover -s tests -p test_miner_endurance.py
       - name: Render both UI themes
         run: |
           make -C firmware/custom/NerdMiner-CYD-Custom/tools/uisim .deps/lvgl/lvgl.h

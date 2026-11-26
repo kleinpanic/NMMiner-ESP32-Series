@@ -19,3 +19,14 @@ invocation matches. Its PlatformIO build, regression orchestration, device
 reader, backup/flash and benchmark tools all use the root `.venv` interpreter.
 OpenSSL is a host C++ test dependency installed by the Linux package manager;
 no Python package was installed outside the project environment.
+
+The November 26 SD/TLS and recovery follow-up repeated the tracked-source
+audit with zero forbidden invocation patterns. All native observers, backup/
+flash operations, private scans and build orchestration used the root
+`./.venv/bin/python`. Restore and historical stock-flash safety tests use shell
+stubs at a sandboxed `.venv/bin/python` path and never invoke system Python.
+
+The parser-memory repair adds the standard-library-only endurance evidence
+validator and nine negative/positive fixture tests. Both run through the root
+virtual environment, including CI. The tracked-source invocation audit passes;
+no dependency or system-environment change was needed.

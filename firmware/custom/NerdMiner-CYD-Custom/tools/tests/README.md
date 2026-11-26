@@ -19,7 +19,9 @@ authorization IDs and credential log redaction, parsed jobs and difficulty, and
 eight-digit submitted nonces. A deterministic clock and scheduled TCP fragments
 exercise subscription retries, early difficulty notices, unrelated response IDs,
 near-deadline delivery, truncated frames and disconnected sockets without waiting
-five real seconds. All worker/password values are synthetic fixtures.
+five real seconds. A near-limit padded job checks whitespace handling and unchanged
+input while compile-time signatures prevent redundant message/document copies.
+All worker/password values are synthetic fixtures.
 
 The SD path tests exercise canonical paths, repeated normalization, and rejection
 of traversal, control characters and ambiguous separators. The pool watchdog
@@ -46,6 +48,22 @@ retains its pin routes, survives mount failures and retries, and never stops the
 display bus when unmounting. They also check capacity, CSV headers/rows and
 failed-write accounting. They cannot prove electrical pin routing or card
 compatibility; those require a native test with the actual card inserted.
+
+The runtime Wi-Fi tests cover retry spacing, the initial association grace
+period and clock wraparound. Wallet tests cover worker-suffix removal, address
+shape validation and checked signed satoshi arithmetic. TLS record-buffer tests
+exercise two-slot allocation, repeated zeroed reuse, exhaustion, multiplication
+overflow, foreign-pointer release and unequal buffer sizes. The latter also
+passes a separate C++11 sanitizer build matching the board's language level.
+These allocation tests do not replace repeated native HTTPS/SD operation or
+minimum-unused-stack checks.
+
+The TLS scratch tests compile the existing LVGL TLSF allocator and the
+production scratch wrapper under C++11/ASan/UBSan. They run 1,000 differently
+sized allocation/free cycles, check zeroed reuse and pool integrity, and cover
+coalescing, exhaustion, invalid initialization, ownership and overflow. Unused
+allocator entry points are discarded at link time as in firmware; no allocator
+stub replaces the implementation.
 
 These tests do not establish radio reliability, physical touch calibration,
 display operation, or a real pool accepting a share. Native hardware validation

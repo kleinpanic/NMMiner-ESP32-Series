@@ -2,6 +2,13 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <type_traits>
+
+// A near-limit pool message must stay in its receive buffer while parsing.
+// These signatures also prevent a 4 KB JSON document stack copy returning.
+static_assert(std::is_same<decltype(&parse_mining_method), stratum_method (*)(const String&)>::value, "borrow received messages");
+static_assert(std::is_same<decltype(&parse_mining_notify), bool (*)(const String&, mining_job&)>::value, "borrow job messages");
+static_assert(std::is_same<decltype(&checkError), bool (*)(const StaticJsonDocument<BUFFER_JSON_DOC>&)>::value, "borrow JSON documents");
 
 static unsigned cases;
 static const char* subscription_response = R"({"id":1,"result":[[["mining.notify","test"]],"aabbccdd",4],"error":null})";
@@ -31,6 +38,20 @@ int main() {
     method(R"({"id":null,"method":"mining.notify","params":[]})", MINING_NOTIFY);
     method(R"({"id":null,"method":"mining.set_difficulty","params":[0.00015]})", MINING_SET_DIFFICULTY);
     method(R"({"id":null,"method":"mining.unknown","params":[]})", STRATUM_UNKNOWN);
+
+    {
+        const String padded = std::string(7000, ' ') + std::string(job_with_bits("1d00ffff")) + " \r\n";
+        const std::string original = padded;
+        mining_job padded_job;
+        assert(parse_mining_method(padded) == MINING_NOTIFY);
+        assert(parse_mining_notify(padded, padded_job));
+        assert(padded_job.nbits == "1d00ffff");
+        assert(padded == original);
+        double padded_difficulty = 0;
+        assert(parse_mining_set_difficulty(" \t{\"method\":\"mining.set_difficulty\",\"params\":[1]} \r\n", padded_difficulty));
+        assert(padded_difficulty == 1);
+        ++cases;
+    }
 
     WiFiClient client;
     mining_subscribe subscription = init_mining_subscribe();

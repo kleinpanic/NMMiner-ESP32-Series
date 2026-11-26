@@ -155,6 +155,11 @@ static void poll_serial_command(void)
                 (unsigned)(mon.total_size - mon.free_size), (unsigned)mon.total_size,
                 (unsigned)mon.free_biggest_size, (unsigned)ESP.getFreeHeap(),
                 (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+            for (const char* name : {"Monitor", "Stratum", "MinerHw-0", "MinerSw-1", "ChainFeed", "loopTask"}) {
+                TaskHandle_t task = xTaskGetHandle(name);
+                if (task) Serial.printf("[STACK] %s minimum free %u bytes\n", name,
+                    (unsigned)uxTaskGetStackHighWaterMark(task));
+            }
         } else if (strcmp(s_cmd, "PMLOCK") == 0) {
             minerShaLockAll(!minerShaLockAllOn());
             Serial.printf("[SHA] lock %s\n", minerShaLockAllOn() ? "all" : "sha256");

@@ -36,7 +36,7 @@ bool verifyPayload (String* line){
   
 }
 
-bool checkError(const StaticJsonDocument<BUFFER_JSON_DOC> doc) {
+bool checkError(const StaticJsonDocument<BUFFER_JSON_DOC>& doc) {
   
   if (!doc.containsKey("error")) return false;
   
@@ -111,9 +111,9 @@ bool tx_mining_subscribe(WiFiClient& client, mining_subscribe& mSubscribe)
     return true;
 }
 
-bool parse_mining_subscribe(String line, mining_subscribe& mSubscribe)
+bool parse_mining_subscribe(const String& line, mining_subscribe& mSubscribe)
 {
-    if(!verifyPayload(&line)) return false;
+    if(line.isEmpty()) return false;
     Serial.print("  Receiving: "); Serial.println(line);
    
     DeserializationError error = deserializeJson(doc, line);
@@ -165,9 +165,9 @@ bool tx_mining_auth(WiFiClient& client, const char * user, const char * pass)
 }
 
 
-stratum_method parse_mining_method(String line)
+stratum_method parse_mining_method(const String& line)
 {
-    if(!verifyPayload(&line)) return STRATUM_PARSE_ERROR;
+    if(line.isEmpty()) return STRATUM_PARSE_ERROR;
     #ifdef DEBUG_MINING
     Serial.print("  Receiving: "); Serial.println(line);
     #endif
@@ -195,12 +195,12 @@ stratum_method parse_mining_method(String line)
     return result;
 }
 
-bool parse_mining_notify(String line, mining_job& mJob)
+bool parse_mining_notify(const String& line, mining_job& mJob)
 {
     #ifdef DEBUG_MINING
     Serial.println("    Parsing Method [MINING NOTIFY]");
     #endif
-    if(!verifyPayload(&line)) return false;
+    if(line.isEmpty()) return false;
    
     DeserializationError error = deserializeJson(doc, line);
 
@@ -259,7 +259,7 @@ bool parse_mining_notify(String line, mining_job& mJob)
 }
 
 
-bool tx_mining_submit(WiFiClient& client, mining_subscribe mWorker, mining_job mJob, unsigned long nonce, unsigned long &submit_id)
+bool tx_mining_submit(WiFiClient& client, const mining_subscribe& mWorker, const mining_job& mJob, unsigned long nonce, unsigned long &submit_id)
 {
     char payload[BUFFER] = {0};
     // Stratum wants exactly 8 hex digits. String(nonce, HEX) drops leading
@@ -272,7 +272,7 @@ bool tx_mining_submit(WiFiClient& client, mining_subscribe mWorker, mining_job m
     submit_id = id;
     sprintf(payload, "{\"id\":%u,\"method\":\"mining.submit\",\"params\":[\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]}\n",
         id,
-        mWorker.wName,//"bc1qvv469gmw4zz6qa4u4dsezvrlmqcqszwyfzhgwj", //mWorker.name,
+        mWorker.wName,
         mJob.job_id.c_str(),
         mWorker.extranonce2.c_str(),
         mJob.ntime.c_str(),
@@ -285,10 +285,10 @@ bool tx_mining_submit(WiFiClient& client, mining_subscribe mWorker, mining_job m
     return true;
 }
 
-bool parse_mining_set_difficulty(String line, double& difficulty)
+bool parse_mining_set_difficulty(const String& line, double& difficulty)
 {
     Serial.println("    Parsing Method [SET DIFFICULTY]");
-    if(!verifyPayload(&line)) return false;
+    if(line.isEmpty()) return false;
    
     DeserializationError error = deserializeJson(doc, line);
 
