@@ -1,6 +1,13 @@
 # PanicMiner local HTTP API
 
 Served by the firmware on port 80 after WiFi connects (see `src/webapi.cpp`).
+
+After queuing a complete declared response, the server gives the client up to
+two seconds to close first. This avoids retaining a server-side TCP TIME_WAIT
+entry when a normal client reuses its source port. A client waiting for server
+EOF is closed at that deadline. Request half-close does not cancel a response
+body still being sent. SD headers hand off to the retained file sender; only
+the end of the complete file starts the close grace period.
 Consumed by the local dashboard `apps/nmminer-control`. All responses are JSON
 unless noted. The API uses LAN trust, has no authentication, and does not send
 a wildcard CORS header. Keep it on a trusted local network.

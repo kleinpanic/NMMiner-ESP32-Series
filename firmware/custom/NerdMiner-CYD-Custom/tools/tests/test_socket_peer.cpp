@@ -10,12 +10,17 @@ int main() {
     errno = ECONNRESET; // A stale errno is independent of SO_ERROR.
     assert(socketPeerOpen(sockets[0]));
     assert(socketWriteReady(sockets[0]));
+    assert(!socketResponseMayClose(sockets[0], 0));
+    assert(!socketResponseMayClose(sockets[0], 1999));
+    assert(socketResponseMayClose(sockets[0], 2000));
     assert(send(sockets[1], "x", 1, 0) == 1);
+    assert(!socketResponseMayClose(sockets[0], 0)); // Never consume unread bytes.
     assert(socketPeerOpen(sockets[0]));
     assert(shutdown(sockets[1], SHUT_WR) == 0);
     assert(socketPeerOpen(sockets[0])); // Preserve unread bytes, even before EOF.
     char byte;
     assert(recv(sockets[0], &byte, 1, 0) == 1 && byte == 'x');
+    assert(socketResponseMayClose(sockets[0], 0));
     assert(socketPeerOpen(sockets[0])); // EOF only closes the request direction.
     assert(socketPeerOpen(sockets[0])); // Repeated checks must not consume FIN.
     assert(socketWriteReady(sockets[0]));
@@ -25,6 +30,7 @@ int main() {
     close(sockets[1]);
     assert(!socketPeerOpen(sockets[0]));
     assert(!socketPeerOpen(-1));
+    assert(socketResponseMayClose(-1, 0));
     assert(!socketWriteReady(-1));
     assert(!socketWriteReady(FD_SETSIZE));
     int blocked[2];
@@ -61,7 +67,8 @@ int main() {
         if (usable) usleep(1000);
     }
     assert(!usable);
+    assert(socketResponseMayClose(accepted, 0));
     close(accepted);
     close(listener);
-    puts("PASS socket peer: real idle/data/half-close/closed/reset/blocked sockets, stale errno and error-only probe");
+    puts("PASS socket peer: real idle/data/half-close/closed/reset/blocked sockets, stale errno, bounded passive response close");
 }

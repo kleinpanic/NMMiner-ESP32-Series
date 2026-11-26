@@ -43,8 +43,13 @@ static int socketSendOnce(int fd, const void* buffer, size_t count) {
 class DeferredApiServer : public WebServer {
   WiFiClient responseClient_;
   PendingResponse<String> response_;
-  bool active_ = false, failed_ = false;
+  bool active_ = false, failed_ = false, closing_ = false, handedOff_ = false;
   uint32_t began_ = 0;
+  void releaseResponse() {
+    responseClient_.stop();
+    response_.reset();
+    active_ = failed_ = closing_ = handedOff_ = false;
+  }
 protected:
   size_t _currentClientWrite(const char* bytes, size_t size) override {
     if (!active_) {
@@ -66,8 +71,15 @@ protected:
 public:
   DeferredApiServer() : WebServer(80) {}
   bool responsePending() const { return active_; }
+  // The retained SD client owns the rest of this response, including close.
+  void handoffBody() { handedOff_ = true; }
   void advanceResponse() {
     if (!active_) return;
+    if (closing_) {
+      if (socketResponseMayClose(responseClient_.fd(), uint32_t(millis() - began_)))
+        releaseResponse();
+      return;
+    }
     ResponseWriteState state = ResponseWriteState::Failed;
     if (!failed_ && responseClient_.fd() >= 0 && uint32_t(millis() - began_) < 10000)
       state = response_.advance([&](const char* bytes, size_t size) {
@@ -77,9 +89,13 @@ public:
     if (state != ResponseWriteState::Complete)
       Serial.printf("[WEBAPI] response incomplete: %u/%u bytes\n",
                     (unsigned)response_.sent(), (unsigned)response_.size());
-    responseClient_.stop();
-    response_.reset();
-    active_ = failed_ = false;
+    if (state == ResponseWriteState::Complete && !handedOff_) {
+      response_.reset();
+      closing_ = true;
+      began_ = millis();
+      return;
+    }
+    releaseResponse();
   }
 };
 
@@ -133,14 +149,19 @@ static fs::File sdTransferFile;
 static WiFiClient sdTransferClient;
 static size_t sdTransferLength = 0, sdTransferSent = 0;
 static uint32_t sdTransferStarted = 0, sdTransferProgress = 0;
-static bool sdTransferActive = false;
+static bool sdTransferActive = false, sdTransferClosing = false;
 static SdPendingTransfer sdPending;
 
 static void finishSdTransfer(bool complete) {
   sdTransferFile.close();
-  sdTransferClient.stop();
-  sdTransferActive = false;
   sdPending.reset();
+  if (complete) {
+    sdTransferClosing = true;
+    sdTransferProgress = millis();
+    return;
+  }
+  sdTransferClient.stop();
+  sdTransferActive = sdTransferClosing = false;
   if (!complete)
     Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes; heap %u, largest %u\n",
                   (unsigned)sdTransferSent, (unsigned)sdTransferLength,
@@ -159,6 +180,7 @@ static void sendSdFile(fs::File& file, const char* contentType) {
   apiServer.setContentLength(sdTransferLength);
   apiServer.send(200, contentType, "");
   sdTransferClient = apiServer.client();
+  apiServer.handoffBody();
   sdTransferClient.setTimeout(1);
   // Coalesce bulk data rather than allocating a packet for every small write.
   sdTransferClient.setNoDelay(false);
@@ -168,10 +190,18 @@ static void sendSdFile(fs::File& file, const char* contentType) {
   // copy without closing it. The transfer now owns its lifetime.
   file = fs::File();
   sdTransferActive = true;
+  sdTransferClosing = false;
 }
 
 static void advanceSdTransfer() {
   if (!sdTransferActive) return;
+  if (sdTransferClosing) {
+    if (socketResponseMayClose(sdTransferClient.fd(), uint32_t(millis() - sdTransferProgress))) {
+      sdTransferClient.stop();
+      sdTransferActive = sdTransferClosing = false;
+    }
+    return;
+  }
   if (sdTransferSent == sdTransferLength) { finishSdTransfer(true); return; }
   // This SDK's connected() uses recv(..., 0) plus errno; another request can
   // leave a stale socket error and reject a healthy retained connection.

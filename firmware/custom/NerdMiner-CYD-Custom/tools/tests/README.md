@@ -55,6 +55,12 @@ The Wi-Fi packet-budget tests check Arduino's default dynamic counts, preservati
 of lower/static limits, unlimited RX conversion and repeated application. They
 do not establish RF reliability or SDK memory behavior on the board.
 
+Real socket tests also check post-response close decisions: idle and unread
+connections stay open, a received FIN permits release, and a two-second bound
+releases a client that never closes. EOF cannot cancel an unfinished response.
+Native tests must establish actual FIN ordering and successful client-port reuse;
+host POSIX behavior alone does not establish lwIP TIME_WAIT behavior.
+
 The bounded-transfer tests exercise the production SD-download block loop with
 exact byte comparisons, failed/invalid reads, partial/invalid socket writes and
 disconnects. They verify that no-progress I/O terminates; native downloads are
