@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: Source consolidation committed locally; SD-isolated joins still fail; wallet and pool settings independently verified from host; awaiting physical SD removal and USB power-cycle test; publication held.
-last_updated: "2026-11-26T03:53:20.940Z"
-state_head: a730def899a62c2a848268660ec27ea03e3b7f90
+stopped_at: Native Wi-Fi still fails after verified AP/channel retry firmware and a 25-second pinned join. Laptop USB retained; no further flash. Hold publication; see measured runtime validation.
+last_updated: "2026-11-26T04:50:48.898Z"
+state_head: faf47ddd1d86e926b5469535c2850619ce2e15fc
 progress:
   total_phases: 5
   completed_phases: 0
@@ -130,13 +130,16 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - [Phase 1]: 2026-11-25 owner requests one canonical public repo with firmware source and reverse-engineering notes, and explicitly forbids release until hardware works. Firmware snapshot bf08ec8 is consolidated into ordinary source files under firmware/custom/NerdMiner-CYD-Custom; nested Git history remains local under ignored external/. Both GitHub repositories remain private; no public release or parent push is authorized while acceptance is open. — Latest firmware verifies after full backup but sees the AP and fails association. Stored credentials match the private configuration. Host tests pass; native pool/Chain/SD persistence and current performance still need verification. The owner is near the router; distance is not established as the cause.
 - [Phase 1]: SD-isolation native test failed: four Wi-Fi profiles, zero SD access, 43 AUTH_EXPIRE events in 126 seconds; app d2c601e8cb409714b72ba47269231b1e3e7900bb1bdca13e87b28f71934dd495. — The user is away and authorized disabling SD access. SD now mounts only after association or missing-internal-config recovery. Software initialization did not explain this failure; physical card power and USB power-cycle tests remain pending. Keep publication and hardware acceptance open.
 - [Phase 1]: Stored wallet checksum and recovered-wallet match verified; host pool subscription and authorization succeeded and received difficulty/work using the backed-up settings. — This isolates configuration and host reachability from the unresolved board Wi-Fi failure. No native mining or payout claim; raw configuration and logs remain ignored. Source consolidation is locally committed as a730def and publication is held.
+- [Phase 1]: User confirmed physical SD removal plus USB reconnection. The d2c601e8 build now joins, authorizes the saved wallet with the pool, mines, restores saved best on EN reset, and renders complete native Stats and Chain screens. The first timed run then failed with a Wi-Fi drop and a 415 kH/s minimum; do not mark stability passed. — Card removal and USB power cycle changed together, so neither is isolated as the cause. Preserve failed evidence locally. Fix the verified merkle buffer overrun, long-coinbase truncation, hot-path serial logging and incoherent work snapshots before retesting; keep publication held.
+- [Phase 1]: Owner disclosed moving the miner farther from the router while the laptop charged, then moved it back. Failed joins after the initial recovery are confounded by that relocation; native scans ranged from -62 to -80 dBm. RF-only recalibration succeeded but did not restore joining at that position. — Do not diagnose SD, firmware load, radio hardware or credentials as the sole cause. A read-only Wi-Fi isolation test was interrupted after 49 seconds to restore normal mining firmware before the owner relocates it; it did not complete all profiles. Restore app e8cfc642 and verify from the new position.
+- [Phase 1]: Owner requires laptop USB; alternate power test unavailable. Near-router scan sees two WPA2 APs; association still fails. — Do not treat distance or power as established causes. Test early reconnect policy and explicit AP/channel selection in normal firmware.
 
 ## Session
 
-**Last session:** 2026-11-26T03:53:20.913Z
-**Stopped at:** Source consolidation committed locally; SD-isolated joins still fail; wallet and pool settings independently verified from host; awaiting physical SD removal and USB power-cycle test; publication held.
+**Last session:** 2026-11-26T04:50:48.848Z
+**Stopped at:** Native Wi-Fi still fails after verified AP/channel retry firmware and a 25-second pinned join. Laptop USB retained; no further flash. Hold publication; see measured runtime validation.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Native acceptance cannot proceed: all four Wi-Fi profiles fail with SD initialization deferred and no SD access. User is away; physical SD removal and USB power-cycle test pending. Do not publish or claim mining, new-build persistence, or performance acceptance.
+- Near-router laptop-USB test still fails: all eight AP/channel/profile attempts and a separate 25-second known-channel join failed on verified image 82dca818. No fresh 20-minute run is possible until Wi-Fi joins; AP-side evidence or physical radio/network isolation is needed. SD reinsertion and publication remain held.

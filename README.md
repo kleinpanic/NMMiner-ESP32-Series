@@ -24,29 +24,30 @@ configuration is recorded in PlatformIO rather than inferred from that label.
 
 ## Current validation
 
-**Hardware acceptance is open.** The latest firmware is backed up, flashed and
-verified, but this unit is currently failing Wi-Fi authentication/association.
-SD initialization is deferred until Wi-Fi connects. All four radio profiles
-still failed with zero SD access. Live pool, CSV logging and restart persistence
-need verification on this binary. It is not yet cleared for unattended use.
+**Hardware acceptance is open.** Removing the SD card and reconnecting USB
+restored automatic Wi-Fi connection, pool authorization and mining. An EN reset
+also restored saved statistics and live Chain data. A later timed run caught
+Wi-Fi loss and a speed dip. Association still failed after returning near the
+router, so distance alone is not an established explanation. Testing continues
+with laptop USB power and the SD card out.
 
-The redesigned Mine, Hash, Chain, Clock, Stats, Boot and Setup screens share the
-Afterglow visual system; Hazard is also available. The touch update restores the
-original CYD touch bus and calibration, polls each display frame and debounces
-held presses. Physical acceptance and firmware digests are recorded in
+The current repair fixes a mining-job buffer overrun, long-coinbase truncation,
+blocking job logging and inconsistent work-counter reads. It also tries normal
+Wi-Fi rates first, scans all channels and retries individual access points
+on their detected channels while retaining recovery profiles. The exact firmware digests,
+failed runs and restart results are in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
-An earlier native run fetched all five mempool.space endpoints with certificate
-verification enabled. RSA verification was failing from insufficient usable
-heap; reducing the LVGL reservation by 12 KB fixed that failure. Live Chain data
-must be checked again after this unit reconnects.
+Mine, Hash, Chain, Clock, Stats, Boot and Setup share the Afterglow design;
+Hazard is also available. Native captures show live price, retarget, network
+difficulty, CPU/RAM/temperature and pool authorization. Pages stay manual, with
+one action per debounced press. The original TLS allocation failure was fixed
+by freeing 12 KB from LVGL; certificate verification remains enabled.
 
-The original 20-minute Mine check averaged **972.6 kH/s**, 2.15% below the
-994 kH/s baseline, with zero SHA mismatches. Eleven rolling readings briefly
-fell below the 5% band, so the strict per-reading gate remains open. This run
-predates the touch/Stats update; the evidence distinguishes the tested binaries.
-Two restart/rejoin checks passed; those were EN resets, not literal USB power
-removal. See the validation document for the current limits of hardware testing.
+The original 20-minute Mine run averaged **972.6 kH/s**, 2.15% below the
+994 kH/s baseline, but some rolling readings fell outside the 5% band. A new
+20-minute run is required on the repaired binary. SD operation after reinsertion
+and unattended-use acceptance remain open. Publication stays on hold.
 
 ## Get the source and build
 
@@ -70,9 +71,12 @@ also backs up and verifies the current device before writing:
 ./scripts/restore_full_flash_backup.sh hardware/backups/<full-image.bin>
 ```
 
-The connected unit uses `/dev/ttyUSB0` and has an ESP32-D0WD-V3 with 4 MB flash.
-Close serial monitors before flashing. Generated builds, full backups and serial
-logs stay local in ignored directories.
+The connected unit has an ESP32-D0WD-V3 with 4 MB flash. Flash and restore prefer
+its stable `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0` link because the
+`ttyUSB` number can change after reconnection. An explicit `PORT` overrides it;
+without the link, the helpers retain the `/dev/ttyUSB0` fallback. Close serial
+monitors before flashing. Generated builds, full backups and serial logs stay
+local in ignored directories.
 
 ## Workspace map
 

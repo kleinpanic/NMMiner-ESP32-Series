@@ -4,7 +4,131 @@ The CYD runs the matching Mine, Hash, Chain, Clock, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
 
-## Latest build: hardware acceptance remains open
+## Current repair and physical SD test
+
+The owner confirmed **SD removed and USB reconnected**. With the card absent,
+the SD-isolation binary below joined the saved network, authorized its wallet
+worker with the pool and mined. A subsequent EN reset restored best difficulty
+`0.139651`, rejoined and recovered all five Chain endpoints without provisioning.
+This confirms automatic recovery in that configuration; card removal and USB
+power cycling happened together, so it does not isolate their individual effects.
+
+Complete native frame captures showed live Stats and Chain data: RAM, sampled
+CPU use, internal chip temperature, pool authorization, a nonzero best candidate,
+price, network difficulty and next retarget. Frame dumps were outside the timed
+performance window because their serial traffic interrupts the monitor task.
+
+The first fresh Mine run **failed** after about 300 seconds. It recorded 281
+rolling samples, a 415–1001 kH/s range, 16 below 944.3 kH/s, a Wi-Fi disconnect
+and an incomplete Chain refresh. The board reconnected automatically, but this
+is insufficient for unattended-use acceptance. The earlier successful join does
+not mean Wi-Fi stability is solved.
+
+Source repair `599e170` addresses verified application defects:
+
+- `merkle_root[65]` wrote past a 65-byte array. ASan/UBSan reproduce the stack
+  overrun in the previous production source; the repaired source passes.
+- Fixed-size coinbase concatenation silently truncated inputs above 511 hex
+  characters. SHA now streams all four fragments through a bounded 64-byte
+  workspace. Six independent SHA256d fixtures exercise short/long transactions,
+  complete 13/32-branch merkle paths and 80-byte header byte ordering.
+- Per-job payload and merkle logging no longer block the release mining path.
+- Work increments, compaction and read snapshots share a mutex. Monitor and
+  watchdog receive a coherent count; API totals include the current job, and
+  checkpoints include completed megahashes from that job.
+- Normal b/g/n rates at moderate power are attempted first; legacy and other
+  power profiles remain bounded fallbacks. This is a recovery change to test,
+  not proof of the physical cause of the radio failures.
+- Flash/restore use the stable USB device link across ttyUSB re-enumeration.
+
+The production-code host suite passes **132 cases** under ASan/UBSan, plus the
+separate speaker tests. Eight restore safety scenarios and workflow lint pass.
+Host mining-data tests require OpenSSL development headers; CI installs them.
+
+Repair application SHA-256:
+`ccb973bcbaac03902626019a4bc7221d13b0a2f688a516f3b8a1b7a987930ded`
+(1,791,680 bytes). The build preceded the source commit, so the embedded revision
+can say `b4805cf-dirty`; identify the tested application by its full digest.
+Installation and native acceptance results are recorded below when complete.
+Raw logs, failed runs, captures, credentials and backup images remain ignored.
+No release, public visibility change or push is cleared while acceptance is open.
+
+## Radio retest and location change
+
+The first post-repair boot and an EN reset both failed association with the
+card physically absent. An explicit Espressif RF-calibration reset returned
+`ESP_OK`, but the next join still failed. This rules out claiming that the
+application buffer repair or calibration alone fixed the observed radio issue.
+The official [ESP-IDF RF calibration guide](https://github.com/espressif/esp-idf/blob/v4.4/docs/en/api-guides/RF_calibration.rst)
+describes the selective calibration reset; this test did not erase the app's
+Wi-Fi, pool, wallet or statistics configuration.
+
+RF-diagnostic-capable normal application SHA-256:
+`e8cfc6427ec8ea1be002f0fadf5e0f9febbf3412857fd0b35c9c0c15a0c6c870`
+(1,792,256 bytes; source `4126b7e`, embedded `599e170-dirty`).
+
+The owner then disclosed moving the miner farther from the router so the laptop
+could charge. That confounds the failed joins after the first successful run.
+Native AP scans during failures returned signals between -62 and -80 dBm;
+proximity, power and SD state have not been independently isolated. Distance is
+plausible and remains a testable explanation, not an established root cause.
+
+A separate, read-only Wi-Fi-only diagnostic was built and flashed after a
+fresh verified backup. Its SHA-256 was
+`8e09df2be97f4a7030fa8cee1d38e70395d68c473d17d44c50e512c1105c9b97`.
+It disables the backlight and omits mining, touch/display SPI, SD access and
+sound. It was interrupted after about 49 seconds to restore the normal firmware
+when the owner moved the unit back toward the router. It had not joined, but
+**did not complete all four profiles**; do not report an isolation-test pass or
+failure from that partial run. The temporary diagnostic is documented under
+`firmware/diagnostics/wifi-only/` and is not the normal device firmware.
+
+The normal e8cfc642 application was restored through a fresh verified full
+backup; all images passed verification. After the owner returned near the
+router, association still failed. Two WPA2 access points advertised the saved
+network at approximately -58 and -70 dBm on different channels. These are scan
+observations, not proof of successful bidirectional radio traffic. A manually
+pinned alternate-AP attempt used channel zero and returned `NO_AP_FOUND`; it
+does not certify an explicit known-channel attempt.
+
+The owner requires laptop USB power and cannot perform a different-supply test.
+Power remains unisolated, not a demonstrated cause. No further power-source or
+physical relocation test is required to continue the authorized software work.
+
+The next normal application disables automatic reconnection before starting
+STA mode, uses RAM for driver credentials while retaining the existing SPIFFS
+application configuration, scans all channels, and retries each matching AP
+on its detected channel. It starts with normal b/g/n at the SDK's maximum power
+and includes the previously untested maximum-power 802.11b fallback. BSSIDs
+are not saved in the application configuration, so a cold boot rescans after
+moving. Authentication timeouts no longer label the password as likely wrong.
+The normal retry application was built, installed after a fresh verified 4 MB
+backup, and all four images passed verification. Installed application SHA-256:
+`82dca8181f64c04be39835fc3db2ea94e5076265988061d77bd2affe51644548`
+(1,794,400 bytes). The scan saw channel 5 at -63 dBm and channel 1 at -71 dBm.
+All **eight** profile/AP attempts completed without joining: the native log
+recorded three `AUTH_EXPIRE`, four `NO_AP_FOUND`, and one application-initiated
+`ASSOC_LEAVE`. The configured maximum-power profile's driver readback was
+15.25–15.75 dBm; requested power is not proof of radiated power.
+
+A subsequent EN reset sent the saved settings with only the stronger AP's BSSID
+and known channel selected. That separate **25-second** attempt timed out and
+recorded two `AUTH_EXPIRE` events. Neither test establishes a wrong password,
+a bad supply, or a defective board. Laptop USB remained the power source and
+the SD card remained absent. No fresh 20-minute mining run was started because
+there was no joined network or authorized pool session.
+
+Final source review additionally restored automatic reconnection on successful
+serial and Setup paths, which can bypass the saved-network loop. This final
+source safeguard is build-checked but is not in the installed 82dca818 image;
+the failed cold-boot test above exercises the same retry logic. No further flash
+was started while the owner needed to move the laptop back to its charger.
+The installed normal firmware remains in its network recovery path. Hardware
+acceptance, SD reinsertion and publication remain held until an actual network
+join and sustained mining can be verified. AP-side authentication evidence or a
+controlled physical radio/network test is still needed to narrow the cause.
+
+## Earlier SD-isolation build and failure
 
 The current source was consolidated from firmware fork commit `bf08ec8` into
 the parent repository as ordinary source files. There is no required submodule.
@@ -43,21 +167,21 @@ reopened Setup. The CI workflow was linted and updated to run these checks.
 On this binary the display/touch bus initializes and LVGL uses 33,328 of 45,056
 bytes at boot. SD initialization is deferred until Wi-Fi connects; the SD config
 fallback mounts on demand only when internal configuration is missing.
-Wi-Fi currently sees the
-configured AP but fails authentication/association. A backup comparison confirmed
+Before physical card removal, Wi-Fi saw the
+configured AP but failed authentication/association. A backup comparison confirmed
 the stored SSID/password match the private device configuration; values are not
 published. Four bounded legacy/mixed-mode and power profiles were tried without
 a successful initial join. This is unresolved; proximity alone does not diagnose
 the cause. Pool acceptance, live Chain/Stats, SD CSV writes, saved-stat recovery
 and the 20-minute hashrate gate must be rerun on this exact binary after recovery.
-No new unplug-and-replug success is claimed.
+At this point, no unplug-and-replug success had been observed.
 
 The user authorized a firmware-only SD isolation test while away from the unit.
 Over the first 126 seconds, all four join profiles ran, with 43 authentication
 timeouts, zero SD mount attempts, zero mining rate readings and zero Chain
 refreshes. The test did not resolve the failure. It checks SD initialization and
 access; the inserted card remains electrically connected, so its power draw has
-not been excluded. A physical card removal and USB power cycle remain pending.
+not been excluded. That physical test was later completed as recorded above.
 The unit continues its bounded join attempts and portal/restart recovery loop.
 No release or public repository publication is authorized until the hardware
 acceptance checks pass.

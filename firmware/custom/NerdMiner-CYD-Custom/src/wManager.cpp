@@ -288,7 +288,11 @@ static bool tryConfigOverSerial(TSettings* settings, uint32_t window_ms)
                     if (!nvMem.saveConfig(settings)) {
                         Serial.println(F("[CFG] Could not save configuration")); line = ""; continue;
                     }
+#ifdef PANICMINER_UI
+                    WiFi.persistent(false); // SPIFFS owns the saved credentials.
+#else
                     WiFi.persistent(true);
+#endif
                     // Optional "Bssid": join one access point of a multi-AP network
                     // for this attempt, to tell a bad AP from a bad password.
                     uint8_t bssid[6];
@@ -296,7 +300,9 @@ static bool tryConfigOverSerial(TSettings* settings, uint32_t window_ms)
                     if (sscanf(pin, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &bssid[0], &bssid[1], &bssid[2],
                                &bssid[3], &bssid[4], &bssid[5]) == 6) {
                         Serial.printf("[CFG] pinned to BSSID %s\n", pin);
-                        WiFi.begin(settings->WifiSSID.c_str(), settings->WifiPW.c_str(), 0, bssid);
+                        int channel = doc["Channel"] | 0;
+                        if (channel < 0 || channel > 14) channel = 0;
+                        WiFi.begin(settings->WifiSSID.c_str(), settings->WifiPW.c_str(), channel, bssid);
                     } else {
                         WiFi.begin(settings->WifiSSID.c_str(), settings->WifiPW.c_str());
                     }
@@ -315,7 +321,7 @@ static bool tryConfigOverSerial(TSettings* settings, uint32_t window_ms)
                         for (int i = 0; i < n; i++) {
                             if (WiFi.SSID(i) == settings->WifiSSID) {
                                 found = true;
-                                Serial.printf("[CFG] SSID '%s' VISIBLE: %s ch %d RSSI %d, enc %d -> auth likely rejected (check password)\n",
+                                Serial.printf("[CFG] SSID '%s' VISIBLE: %s ch %d RSSI %d, enc %d -> association failed\n",
                                               WiFi.SSID(i).c_str(), WiFi.BSSIDstr(i).c_str(), (int)WiFi.channel(i),
                                               WiFi.RSSI(i), (int)WiFi.encryptionType(i));
                             }
@@ -375,6 +381,12 @@ void init_WifiManager()
 #endif
 #ifdef PANICMINER_UI
     // The name the router lists this unit under; set before the STA starts.
+    // Configure reconnect policy before STA starts, so the event task cannot
+    // restart an old association while the application changes radio profiles.
+    WiFi.persistent(false);
+    WiFi.setAutoReconnect(false);
+    WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
+    WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
     WiFi.setHostname(defaultAPName().c_str());
 #endif
     // Explicitly set WiFi mode
@@ -392,8 +404,8 @@ void init_WifiManager()
     Serial.printf("[WIFI] 802.11b only: %s\n",
                   esp_err_to_name(esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B)));
 #endif
-    // The status codes WiFi.status() returns cannot tell a wrong password from
-    // an AP that refuses the station; the 802.11 reason code can.
+    // Log the native reason: an authentication timeout alone does not establish
+    // whether credentials, the AP, or radio traffic caused the failure.
     WiFi.onEvent([](WiFiEvent_t, WiFiEventInfo_t info) {
         const uint8_t* b = info.wifi_sta_disconnected.bssid;
         uint8_t r = info.wifi_sta_disconnected.reason;
@@ -566,33 +578,60 @@ void init_WifiManager()
         // with the loaded credentials first; only fall back to the portal.
         if (WiFi.status() != WL_CONNECTED && Settings.WifiSSID.length() > 0) {
             Serial.printf("[WIFI] Connecting to '%s' from stored config...\n", Settings.WifiSSID.c_str());
-            WiFi.persistent(true);
 #ifdef PANICMINER_UI
-            // A fixed legacy rate/power worked on the bring-up AP but is not
-            // portable to other locations. Stop each failed association before
-            // changing profile; scanning while connecting just returns -2.
+            WiFi.persistent(false);
             WiFi.setAutoReconnect(false);
+            WiFi.disconnect(false, false);
+            delay(120);
+            // A repeated unpinned begin can select the same failing AP forever.
+            // Capture each matching AP and its actual channel before joining.
+            // Do not persist a BSSID: the miner must also work after moving.
+            struct AccessPoint { uint8_t bssid[6]; int32_t channel; int32_t rssi; };
+            AccessPoint accessPoints[4];
+            unsigned accessPointCount = 0;
+            int networks = WiFi.scanNetworks();
+            for (int i = 0; i < networks && accessPointCount < 4; i++) {
+                if (WiFi.SSID(i) != Settings.WifiSSID) continue;
+                AccessPoint& ap = accessPoints[accessPointCount++];
+                memcpy(ap.bssid, WiFi.BSSID(i), sizeof(ap.bssid));
+                ap.channel = WiFi.channel(i);
+                ap.rssi = WiFi.RSSI(i);
+                Serial.printf("[WIFI] candidate %u: channel %ld, RSSI %ld dBm\n",
+                    accessPointCount, (long)ap.channel, (long)ap.rssi);
+            }
+            WiFi.scanDelete();
             struct Profile { uint8_t protocols; wifi_power_t power; };
             const Profile profiles[] = {
-                {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N, WIFI_POWER_13dBm},
                 {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N, WIFI_POWER_19_5dBm},
+                {WIFI_PROTOCOL_11B, WIFI_POWER_19_5dBm},
                 {WIFI_PROTOCOL_11B, WIFI_POWER_13dBm},
                 {WIFI_PROTOCOL_11B, WIFI_POWER_8_5dBm}
             };
             for (unsigned i = 0; i < sizeof(profiles) / sizeof(profiles[0]); i++) {
-                WiFi.disconnect(false, false); // preserve all saved credentials
-                delay(120);
-                esp_wifi_set_protocol(WIFI_IF_STA, profiles[i].protocols);
-                WiFi.setTxPower(profiles[i].power);
-                Serial.printf("[WIFI] join profile %u: modes %u, power %.2f dBm\n",
-                    i + 1, profiles[i].protocols, WiFi.getTxPower() / 4.0f);
-                WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
-                uint32_t started = millis();
-                while (WiFi.status() != WL_CONNECTED && millis() - started < 10000) delay(100);
+                for (unsigned a = 0; a < (accessPointCount ? accessPointCount : 1); a++) {
+                    WiFi.disconnect(false, false);
+                    delay(120);
+                    esp_err_t modeResult = esp_wifi_set_protocol(WIFI_IF_STA, profiles[i].protocols);
+                    bool powerResult = WiFi.setTxPower(profiles[i].power);
+                    Serial.printf("[WIFI] join profile %u, candidate %u: modes %u, power %.2f dBm, config %s/%s\n",
+                        i + 1, a + 1, profiles[i].protocols, WiFi.getTxPower() / 4.0f,
+                        esp_err_to_name(modeResult), powerResult ? "OK" : "FAILED");
+                    if (accessPointCount) {
+                        WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str(),
+                                   accessPoints[a].channel, accessPoints[a].bssid);
+                    } else {
+                        // Hidden SSIDs or a failed scan still get a normal join.
+                        WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
+                    }
+                    uint32_t started = millis();
+                    while (WiFi.status() != WL_CONNECTED && millis() - started < 10000) delay(100);
+                    if (WiFi.status() == WL_CONNECTED) break;
+                }
                 if (WiFi.status() == WL_CONNECTED) break;
             }
             WiFi.setAutoReconnect(true);
 #else
+            WiFi.persistent(true);
             WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
             uint32_t cstart = millis();
             while (WiFi.status() != WL_CONNECTED && millis() - cstart < 25000) delay(250);
@@ -605,7 +644,7 @@ void init_WifiManager()
                 delay(120);
                 int n = WiFi.scanNetworks(); bool found = false;
                 for (int i = 0; i < n; i++) if (WiFi.SSID(i) == Settings.WifiSSID) { found = true;
-                    Serial.printf("[WIFI] '%s' VISIBLE %s ch %d RSSI %d enc %d -> password likely wrong\n",
+                    Serial.printf("[WIFI] '%s' VISIBLE %s ch %d RSSI %d enc %d -> association failed\n",
                                   WiFi.SSID(i).c_str(), WiFi.BSSIDstr(i).c_str(), (int)WiFi.channel(i),
                                   WiFi.RSSI(i), (int)WiFi.encryptionType(i)); }
                 if (!found) Serial.printf("[WIFI] '%s' NOT seen among %d networks\n", Settings.WifiSSID.c_str(), n);
@@ -646,6 +685,11 @@ void init_WifiManager()
     
     //Conectado a la red Wifi
     if (WiFi.status() == WL_CONNECTED) {
+#ifdef PANICMINER_UI
+        // Serial provisioning and Setup can join without entering the saved-
+        // network retry loop; every successful path must restore recovery.
+        WiFi.setAutoReconnect(true);
+#endif
         //tft.pushImage(0, 0, MinerWidth, MinerHeight, MinerScreen);
         Serial.println("");
         Serial.println("WiFi connected");

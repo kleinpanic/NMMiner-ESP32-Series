@@ -124,6 +124,14 @@ serial configuration window at boot. It stops Wi-Fi, clears only Espressif's
 saved RF calibration, then restarts for full calibration. App configuration and
 mining statistics are preserved; it does not run on normal boots.
 
+Saved-network startup scans all channels and tries up to four matching access
+points on their detected channels, with bounded normal and legacy radio profiles.
+An AP's BSSID is not saved in application settings, so cold boots rescan after a
+move. USB provisioning can optionally select `Bssid` and `Channel` for one join;
+credentials remain in the existing private SPIFFS configuration. Native failures
+and the installed digest are recorded in the parent repository's runtime
+validation document; these recovery changes have not passed hardware acceptance.
+
 Run `bash tools/tests/run.sh` for 132 production-code regression cases and the
 speaker tests. The suite covers target decoding/comparison, fragmented pool
 messages, authorization and acceptance responses, touch, SD paths, stalled work,

@@ -13,3 +13,9 @@ notes and CI were corrected. Ignored environments, build output, secrets, logs,
 backups and upstream experimental checkouts were excluded. The pre-existing
 untracked `build_fidb_examples.py` was outside this change and left untouched.
 No system Python package installation was performed.
+
+The job-buffer repair repeated the source/document scan with zero forbidden
+invocation matches. Its PlatformIO build, regression orchestration, device
+reader, backup/flash and benchmark tools all use the root `.venv` interpreter.
+OpenSSL is a host C++ test dependency installed by the Linux package manager;
+no Python package was installed outside the project environment.
