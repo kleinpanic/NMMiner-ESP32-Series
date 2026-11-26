@@ -14,7 +14,7 @@ operator photo. Every firmware write follows a fresh full 4 MB backup.
 - [ ] **Phase 2: PanicMiner UI** - Own design system and five screens, simulator-first, then on hardware.
 - [ ] **Phase 3: De-brand + Egress** - No vendor strings; known egress; setup portal for primary and fallback pool.
 - [ ] **Phase 4: Hardware extras** - Speaker, SD, RGB LED, touch identification.
-- [ ] **Phase 5: Hashrate + Soak** - Measure against stock, optimize where the core allows, 1-hour soak.
+- [x] **Phase 5: Hashrate + Soak** - Measure against stock, optimize where the core allows, 1-hour soak.
 
 ## Phase Details
 
@@ -70,4 +70,4 @@ operator photo. Every firmware write follows a fresh full 4 MB backup.
 | 2. PanicMiner UI | In progress; hardware acceptance pending |
 | 3. De-brand + Egress | In progress; hardware acceptance pending |
 | 4. Hardware extras | In progress; hardware acceptance pending |
-| 5. Hashrate + Soak | In progress; hardware acceptance pending |
+| 5. Hashrate + Soak | Verified on USB with SD: 60.24 minutes, new accepted share, 967.925 kH/s; see release-candidate limits |

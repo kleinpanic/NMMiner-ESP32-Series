@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: Source 49afce5 passes sanitizers/build/Python; fresh verified installation and native qualification are running. Prior response-close image failed immediate next-export cleanup. Previous strict 20-minute PASS is retained; full-hour USB/SD and physical acceptance remain open. Publication held.
-last_updated: "2026-11-26T15:05:44.932Z"
-state_head: 49afce559587d347bbef0900c66e1e6cf88c8db0
+stopped_at: USB/SD endurance and saved-settings reboot PASS on 23236906 / source 49afce5. Owner authorized public source and release; final secret scan, publication and release verification are underway. Remaining hardware checks are explicitly release-candidate limitations.
+last_updated: "2026-11-26T17:56:42.617Z"
+state_head: e15c836dc3d8b96ee4af5b4d7d2634cdd200d9bd
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application a1278a71f139d4dfbba16321d8c2d417b1ad1299c43dc7b8db7c1bf2bfa730cd (1,780,960 bytes), source 47e1232. Fresh full 4 MB backup and all four written images verified. Smoke/private paths passed; an initial ordinary export timed out after a TCP sequence gap, with three complete retries and a complete half-close export passing. Immediate next export failed 503 because completed-transfer cleanup ran after dispatch. This attempt is rejected before timing; original evidence is retained. Source 49afce5 polls completed SD close before dispatch and includes a reusable fixed-port native regression checker. Full ASan/UBSan suite, 59.759-second board build and 105 Python tests / 29 subtests pass. Candidate application 23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986 (1,781,040 bytes) is being installed after a fresh verified backup; native qualification is pending. Previous 1f59e355 / source 2fa0ea4 passed strict 1,202.707 seconds / 221 samples / 968.067 kH/s, all 17 checks, ten pressure exports / 66 status requests and full post-window CSV, then failed longer-soak API connection reuse. Fixed-port negative control reproduced stale ACKs after 65 seconds and recovery after 140 seconds. No clean-hour or composite PASS is established yet. SD retains 512-byte file/transfer buffers, TCP write readiness, 20,480 aggregate / 6,144 contiguous memory guards and 15-second idle expiry. Saved-network startup hands configured offline retries to the runtime owner while preserving explicit Setup.
+- Current installed application 23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986 (1,781,040 bytes), firmware source 49afce5. Fresh full 4 MB backup and all four written images verified; matching factory inputs/ELF archived. USB/SD composite qualification PASS: strict 1,203.988 seconds / 222 samples / 967.899 kH/s, all 17 checks; same-boot hour 3,614.418 seconds / 236 samples / 967.925 kH/s, one new pool-accepted share, 60 SD records and 78 complete in-window feeds. All 23 continuous checks passed: zero API errors, reboots, native faults, radio drops, SHA mismatches or uncommanded navigation. Full post-window CSV contained 409 nine-column records. Smoke/private paths, complete/half-closed exports, immediate follow-up/cancellation, ten pressure exports / 66 status requests and 65-second JSON/SD port reuse passed. Five pages and controlled Wi-Fi recovery passed in 36.216 seconds. Subsequent observation reached 164.51 minutes on one boot without native faults. A separate saved-settings EN reset with SD passed: pool, wallet data and persisted lifetime 3 accepted / best 3.077973282 restored. This is laptop USB restart evidence, not charger cold boot. C++ sanitizers/build and 105 Python tests / 29 subtests pass. Earlier rejected images and failures remain in the validation record. No firmware changed after source 49afce5.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -36,7 +36,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - Earlier bounded-work application e0bf4c691ba7d073a94b2ab267e59b98966e8d0b16e6d59650ff88893412c71f (1,779,488 bytes), source commit b686681, records actual completed work at most every 32K nonces and removes per-job queue/accounting delay. Its fresh full 4 MB backup passed checksum and full flash comparison; all four installed images independently verified. Sixteen batch sanitizer cases, full host suite, board build and 91 Python tests pass.
 - Bounded-work native prequalification passed SD, complete Chain/wallet cycles, all five pages and controlled Wi-Fi recovery in 42.250 seconds, with no native fault or SHA mismatch/drop. Its strict attempt failed after 10.401 seconds at 943.44 kH/s (minimum 944.3); the 60-window rate was 964.05. Pool, SD and wallet remained valid. Failed run and interrupted soak are preserved. Timing diagnostics measured 52 ms between-job and 129 ms preparation gaps; they recovered from a controlled Wi-Fi drop in 43.063 seconds and were interrupted for the continuous-work repair. No endurance acceptance is inferred.
 - Earlier native Stats capture is complete and SD CSV contains measured nine-column records. Configured payout address and confirmed/pending amounts match an independent explorer query privately; no address or wallet amount belongs in tracked evidence.
-- The owner explicitly requests continued USB testing while asleep and cannot move the board now. Charger cold boot with SD remains a physical gate. Publication stays held.
+- After the passing endurance results, the owner authorized publishing the single repository and releasing the project. Publish as v4.0.0-rc.1 with remaining physical/egress/portal acceptance explicit; the full milestone is still open. Charger cold boot with SD is not established by the EN reset.
 - Airtime fairness remains disabled on the EA8300; WPA2 is unchanged. The original radio failure is not isolated. No router changes are part of this qualification.
 - Saved settings, backups, captures and raw logs remain ignored. Every firmware write requires a fresh verified full 4 MB backup. Daily use is saved 2.4 GHz Wi-Fi/pool, manual left/right pages and BOOT hold for Setup.
 
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T15:05:44.906Z
-**Stopped at:** Source 49afce5 passes sanitizers/build/Python; fresh verified installation and native qualification are running. Prior response-close image failed immediate next-export cleanup. Previous strict 20-minute PASS is retained; full-hour USB/SD and physical acceptance remain open. Publication held.
+**Last session:** 2026-11-26T17:56:42.594Z
+**Stopped at:** USB/SD endurance and saved-settings reboot PASS on 23236906 / source 49afce5. Owner authorized public source and release; final secret scan, publication and release verification are underway. Remaining hardware checks are explicitly release-candidate limitations.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification of candidate 23236906 remains open. Charger cold boot with SD and remaining required hardware evidence need owner availability; publication held.
+- No blocker remains for the authorized release candidate. Full milestone acceptance still requires charger cold boot with SD, complete egress capture, portal/fallback-pool persistence and observed audio/LED hardware checks.

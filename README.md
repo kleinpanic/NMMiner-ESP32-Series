@@ -9,6 +9,7 @@ This single repository includes the firmware source and reverse-engineering note
 
 Plug in USB power. The board loads its saved Wi-Fi and pool settings and starts
 mining without a computer. Wi-Fi must be **2.4 GHz**.
+Allow about a minute for the rolling hashrate windows to fill after startup.
 
 - Tap right for the next page, left for the previous page. A held press acts once.
 - Short BOOT press: next page. Double press: rotate. Triple press: backlight.
@@ -38,24 +39,24 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**Hardware acceptance is still open.** Fixed mining-job queues and nonblocking
-SD/API writes are implemented, with private SD paths protected against case and
-filename aliases. Native pressure testing exposed memory exhaustion when an SD
-client stopped reading. The current repair bounds file buffering to 512 bytes,
-checks TCP write readiness, reserves 20 KB / 6 KB contiguous before bulk sends,
-and expires stalled downloads. The saved-network startup path also now hands
-failed joins to runtime recovery instead of blocking in the setup portal.
-The SD repair passed complete/half-closed downloads, cancellation and
-blocked-client pressure with ten exports and 66 status requests. Its fresh
-20-minute Mine test passed all 17 checks at **968.07 kH/s**, 2.61% below the
-994 kH/s baseline. All sampled 10/60-second rates stayed within 5%, and the
-post-window SD download passed. Its longer soak exposed an independent TCP
-port-reuse timeout. A bounded response-close repair also fixes cleanup before
-the next SD request; it is being installed and must pass fresh native checks
-and the complete soak.
-Charger cold boot with the
-SD card inserted still requires the owner's physical test. Publication remains
-on hold. Exact digests, tests and failed attempts are preserved in
+**USB/SD endurance passed on the installed release candidate.** The strict
+20-minute Mine test passed all 17 checks at **967.90 kH/s**, 2.63% below the
+994 kH/s baseline. The same boot then passed a **60.24-minute soak** at
+**967.93 kH/s**, with a new pool-accepted share, 60 SD records and 78 complete
+live-data cycles. No reboot, API error, radio drop, SHA mismatch or uncommanded
+page change was recorded. Both rolling rates remained within 5%.
+
+Complete/half-closed downloads, immediate follow-up requests, cancellation,
+ten blocked-client pressure exports and 66 status requests passed. Reusing
+JSON/SD source ports after 65 seconds passed. A saved-settings EN reboot with
+SD also passed: pool authorization, wallet data and lifetime counters returned.
+File buffers and TCP writes are bounded, control traffic retains memory, and
+configured offline startup retries run in the background.
+
+This is a hardware-specific **release candidate**. Charger cold boot with SD,
+the remaining physical audio/LED checks, full egress capture and portal-pool
+persistence still need acceptance. See the
+[release notes](docs/releases/v4.0.0-rc.1.md). Exact digests, tests and failed attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
 Wallet BTC/USD values come from the **configured payout address**, after removing

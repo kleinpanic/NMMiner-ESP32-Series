@@ -6,12 +6,65 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current response-close repair
+### Qualified USB/SD release candidate
 
 Firmware source `49afce5` passed the complete ASan/UBSan suite and the board
 build (59.759 seconds). Application: **1,781,040 bytes**, SHA-256
 `23236906a43745274836183fa75348ceca927dee2350919bea08c25ce96de986`.
-Fresh verified backup, installation and native qualification are underway.
+Installation followed a fresh full 4 MB backup, checksum/full-flash comparison
+and independent verification of all four written images. Matching factory
+inputs and ELF are archived locally. The first boot authorized the pool in
+16.539 seconds. Smoke and 24 private-path checks passed. Three complete CSV
+downloads returned 381–382 records in 7.307, 7.700 and 6.962 seconds. A complete
+half-closed export and its immediate follow-up passed, as did cancellation and
+three overlapping busy/status checks. Blocked-peer pressure passed ten full
+exports and 66 status requests, with 17,732 bytes minimum sampled free heap,
+zero native faults and zero radio drops. The CSVs contained 383–385 records;
+each declared body arrived in full. Fixed source-port JSON/SD requests passed
+initially and after a 65-second delay (both reused ports); the EOF-reader test
+closed after 2.079 seconds. Packet headers show the Content-Length clients
+closing first and fresh SYN/SYN-ACK handshakes on both reused ports.
+
+All five pages passed programmatic navigation/stack checks; automatic pool
+recovery after a controlled Wi-Fi drop took **36.216 seconds**. The fresh strict
+Mine run then passed **all 17 checks**, independently graded against retained
+native/serial snapshots: **1,203.988 seconds**, **222 samples**, **967.899 kH/s**
+completed-work mean. The 10-second range was 964.003–970.669 kH/s and the
+60-second range 967.208–968.372 kH/s, all within 944.3–1043.7 kH/s. Twenty SD
+records were added, all 26 in-window feeds completed 5/5, maximum wallet age
+was 46 seconds and minimum sampled free heap was 23,556 bytes. The post-window
+CSV returned **409 nine-column records** in **8.464 seconds** with its full
+declared body. No API error, native fault, restart or SHA mismatch occurred.
+
+The same boot passed the complete hour and independent continuous qualification:
+**3,614.418 seconds**, **236 samples**, **967.925 kH/s**, **one newly accepted
+pool share** and **60 new SD records**. All **78 in-window feed cycles** completed
+5/5. Minimum sampled free heap was 22,600 bytes and maximum wallet age 48 seconds.
+There were zero API gaps, reboots, native faults, radio drops, SHA mismatches or
+uncommanded page changes. All 23 continuous-qualification checks passed. The
+observer subsequently reached **164.51 minutes on the same boot** without a
+native fault; this longer observation is separate from the sampled one-hour test.
+
+After preserving the hour's native evidence, a separate saved-settings EN reset
+with SD mounted passed: the pool reauthorized, verified wallet data returned,
+and persisted lifetime counters showed **3 accepted shares** with verified best
+difficulty **3.077973282**. Wallet amounts/address remain private. This tests
+saved restart behavior on laptop USB, not removal/reinsertion of charger power.
+The fresh 60-second rate window fills after restart; it is not an endurance
+measurement until warmed up. No firmware changed after source `49afce5`.
+
+The owner subsequently authorized publishing the single repository and a release.
+Version `v4.0.0-rc.1` records these passing USB/SD results and explicitly leaves
+charger cold boot with SD, complete network egress capture, portal/fallback-pool
+persistence and observed audio/LED hardware acceptance open. Prior failures
+below remain part of the record; the full milestone is not marked complete.
+
+| Same-unit measurement | Hashrate | Evidence boundary |
+| --- | --- | --- |
+| Historical stock API readback | About 1.04 MH/s | Earlier stock configuration; not this SD-enabled run |
+| Agreed acceptance baseline | 994 kH/s | Required range: 944.3–1043.7 kH/s |
+| Current strict Mine run | 967.899 kH/s | Completed-work mean over 1,203.988 seconds |
+| Current USB/SD hour | 967.925 kH/s | Completed-work mean over 3,614.418 seconds |
 After a full declared response has been queued, it now lets a Content-Length
 client close first, with a two-second deadline for clients waiting for server
 EOF. A request's read EOF never cancels an unfinished body. SD headers hand off

@@ -53,32 +53,25 @@ over serial so the agent can view the real pixels.
 
 ## Current acceptance
 
-Matching pages, manual touch, certificate-verified Chain/wallet feeds,
-configured-address balance, SD logging and automatic reconnect are implemented
-and observed on USB. Exact image digests, original failures and measurements
-are in [the validation record](../docs/panicminer-validation-2026-11-25.md).
+Image 23236906 / source 49afce5 passed USB/SD composite qualification after
+fresh full 4 MB backup and verification of all four written images. The strict
+20-minute Mine run passed all 17 checks: 1,203.988 seconds, 222 samples and
+967.899 kH/s. The same boot passed 3,614.418 seconds at 967.925 kH/s with one
+new accepted share, 60 SD records, 78 complete in-window feeds and no reboot,
+API gap, radio drop, SHA mismatch or uncommanded navigation. Complete exports,
+blocked-client pressure, 65-second source-port reuse and controlled recovery
+passed. A separate saved-settings EN reset with SD restored pool authorization,
+wallet data and lifetime counters. Full sanitizer suite/build and 105 Python
+tests / 29 subtests pass. Exact identity, snapshots and original failures are
+in [the validation record](../docs/panicminer-validation-2026-11-25.md).
 
-Source 2fa0ea4 / image 1f59e355 passed a fresh strict 20-minute Mine run:
-1,202.707 seconds, 221 samples, 968.067 kH/s and all 17 checks. Complete and
-half-closed exports, cancellation, ten blocked-peer pressure exports and
-66 status requests passed. The longer soak failed an API connect timeout;
-a fixed-port packet trace reproduced stale server state after 65 seconds.
-Source 47e1232 / image a1278a71 adds bounded client-first response close,
-but was rejected in prequalification: one ordinary export timed out after a
-TCP sequence gap (three repeats passed), and an immediate request after a
-complete half-closed export received 503 before lifecycle cleanup.
-Source 49afce5 reaps that completed close before accepting requests; sanitizer
-suite, board build and 105 Python tests / 29 subtests pass. Fresh verified
-backup/installation and native qualification are underway. Host results do
-not establish native acceptance.
-
-Charger cold boot with SD, a photo confirming final panel output, complete
-network egress capture, portal/pool persistence and observed audio/LED events
-remain distinct hardware gates unless their required evidence is recorded.
-The owner is asleep and authorized continued USB testing; do not prompt for
-another move tonight. Publication remains held until hardware acceptance.
-The application is open source; Espressif radio binaries and chip ROM remain
-part of the platform, as documented in firmware provenance.
+The owner authorized publishing the single repository and releasing the project
+after these results. Version v4.0.0-rc.1 is a hardware-specific release candidate;
+the full milestone remains open. Charger cold boot with SD, complete egress
+capture, portal/fallback-pool persistence and observed audio/LED events still
+require acceptance. Panel settings were already confirmed (SEE-03). The owned
+application is open; Espressif radio binaries and chip ROM remain platform
+components, as documented in firmware provenance.
 
 ## Constraints
 

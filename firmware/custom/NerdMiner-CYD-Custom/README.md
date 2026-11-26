@@ -70,14 +70,16 @@ Boot and Setup use the same visual system. Afterglow is the default; Hazard is
 available at build time. Formatting/animation work is limited to the visible page.
 The rate history uses fixed storage instead of allocating list nodes each second.
 
-The 2026-11-26 SD-enabled Mine run passed all 17 strict checks at **968.07 kH/s**
-over 1,202.7 seconds against the 994 kH/s baseline. All 221 sampled 10/60-second
-rates stayed within 5%; native SHA checks and the post-window SD download passed.
-Blocked-client pressure also passed ten exports and 66 status requests. The
-longer soak then exposed a TCP port-reuse timeout. A bounded response-close
-repair includes cleanup before the next SD request and is being installed;
-fresh native checks, the complete soak and standalone
-cold boot with SD still require acceptance.
+The installed 2026-11-26 release candidate passed all 17 strict Mine checks at
+**967.90 kH/s** over 1,203.99 seconds, with all 222 sampled 10/60-second rates
+within 5% of 994 kH/s. The same boot passed a **60.24-minute soak** at
+**967.93 kH/s**, with a newly accepted share, 60 SD records and no reboot,
+API error, radio drop, SHA mismatch or uncommanded navigation. All 78 in-window
+live-data cycles completed. Complete and half-closed exports, cancellation,
+ten pressure exports / 66 status requests, 65-second source-port reuse and
+a saved-settings EN reboot with SD passed. Charger cold boot with SD and
+the remaining physical/egress/portal checks are listed in the
+[release notes](../../../docs/releases/v4.0.0-rc.1.md).
 See the [validation record](../../../docs/panicminer-validation-2026-11-25.md)
 for binary identities and preserved failed attempts.
 

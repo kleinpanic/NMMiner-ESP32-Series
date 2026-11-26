@@ -7,7 +7,7 @@
 
 - [x] **BASE-01**: Branch `v4/panicminer` from `61aae97` builds for `ESP32-2432S028R` with the repo's PlatformIO.
 - [x] **BASE-02**: One script backs up the full 4 MB flash, flashes, and runs `verify_flash`. It refuses to flash without a fresh backup.
-- [ ] **BASE-03**: The unmodified base mines on hardware: pool subscribed, nonzero hashrate, at least one accepted share.
+- [x] **BASE-03**: The open mining core mines on hardware: pool subscribed, nonzero hashrate, at least one accepted share. Current optimized-core evidence is in the 2026-11-26 qualification.
 
 ## See what we make (SEE)
 
@@ -20,7 +20,7 @@
 - [x] **UI-01**: A written design system: palette, type scale, grid, motion rules.
 - [ ] **UI-02**: Screens Boot, Mine, Chain, Clock and Setup render in the simulator and on hardware.
 - [x] **UI-03**: The Setup screen shows the AP name, `192.168.4.1` and a Wi-Fi QR code.
-- [ ] **UI-04**: The `BOOT` button pages through screens; pages also rotate on a timer.
+- [ ] **UI-04**: Short `BOOT` or a deliberate left/right touch pages through screens; held presses act once. Pages stay selected without automatic timer rotation (owner correction after unwanted paging).
 - [ ] **UI-05**: The UI holds 30 fps-class redraws without dropping hashrate more than 5 %.
 
 ## Privacy and branding (PRIV)
@@ -31,14 +31,14 @@
 
 ## Mining (MINE)
 
-- [ ] **MINE-01**: PanicMiner mines on hardware for 1 hour with accepted shares and no reboot.
-- [ ] **MINE-02**: Hashrate is measured and compared against stock (about 1.04 MH/s); the gap is recorded.
+- [x] **MINE-01**: PanicMiner mines on hardware for 1 hour with accepted shares and no reboot.
+- [x] **MINE-02**: Hashrate is measured and compared against stock (about 1.04 MH/s); the gap is recorded.
 - [ ] **MINE-03**: Primary and fallback pool, both set from the setup portal.
 
 ## Hardware extras (HW)
 
 - [ ] **HW-01**: Speaker beeps once per accepted share and stays silent at boot.
-- [ ] **HW-02**: SD card mounts and logs shares.
+- [x] **HW-02**: SD card mounts and logs shares.
 - [ ] **HW-03**: RGB LED shows mining, share and disconnect states.
 - [x] **HW-04**: The touch controller is identified (XPT2046, capacitive, or none) and touch works or is declared absent.
 
