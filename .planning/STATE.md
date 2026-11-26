@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: SD initialization deferred and tested on-device; Wi-Fi still fails; local source consolidation and checks complete; publication held.
-last_updated: "2026-11-26T03:50:24.446Z"
-state_head: 15e9d899ace94e70a90dcaffc56a675b5f084522
+stopped_at: Source consolidation committed locally; SD-isolated joins still fail; wallet and pool settings independently verified from host; awaiting physical SD removal and USB power-cycle test; publication held.
+last_updated: "2026-11-26T03:53:20.940Z"
+state_head: a730def899a62c2a848268660ec27ea03e3b7f90
 progress:
   total_phases: 5
   completed_phases: 0
@@ -129,9 +129,14 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - [Phase 1]: 2026-11-25 latest runtime work supersedes earlier device notes: manual debounced touch, verified block targets, honest pool acceptance, CPU/RAM/SD stats, nonblocking audio, and five-minute enabled NVS checkpoints are implemented with 126 passing native host cases plus audio tests. Runtime-stats firmware flashed with verified full backup; automatic Wi-Fi association is currently failing. Adaptive radio-profile recovery build is being installed; native acceptance remains open. — Do not mark hardware or hashrate acceptance complete from host tests. Current evidence is docs/panicminer-validation-2026-11-25.md; source and Espressif binary boundaries are docs/firmware-provenance.md.
 - [Phase 1]: 2026-11-25 owner requests one canonical public repo with firmware source and reverse-engineering notes, and explicitly forbids release until hardware works. Firmware snapshot bf08ec8 is consolidated into ordinary source files under firmware/custom/NerdMiner-CYD-Custom; nested Git history remains local under ignored external/. Both GitHub repositories remain private; no public release or parent push is authorized while acceptance is open. — Latest firmware verifies after full backup but sees the AP and fails association. Stored credentials match the private configuration. Host tests pass; native pool/Chain/SD persistence and current performance still need verification. The owner is near the router; distance is not established as the cause.
 - [Phase 1]: SD-isolation native test failed: four Wi-Fi profiles, zero SD access, 43 AUTH_EXPIRE events in 126 seconds; app d2c601e8cb409714b72ba47269231b1e3e7900bb1bdca13e87b28f71934dd495. — The user is away and authorized disabling SD access. SD now mounts only after association or missing-internal-config recovery. Software initialization did not explain this failure; physical card power and USB power-cycle tests remain pending. Keep publication and hardware acceptance open.
+- [Phase 1]: Stored wallet checksum and recovered-wallet match verified; host pool subscription and authorization succeeded and received difficulty/work using the backed-up settings. — This isolates configuration and host reachability from the unresolved board Wi-Fi failure. No native mining or payout claim; raw configuration and logs remain ignored. Source consolidation is locally committed as a730def and publication is held.
 
 ## Session
 
-**Last session:** 2026-11-26T03:50:24.421Z
-**Stopped at:** SD initialization deferred and tested on-device; Wi-Fi still fails; local source consolidation and checks complete; publication held.
+**Last session:** 2026-11-26T03:53:20.913Z
+**Stopped at:** Source consolidation committed locally; SD-isolated joins still fail; wallet and pool settings independently verified from host; awaiting physical SD removal and USB power-cycle test; publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
+
+### Blockers
+
+- Native acceptance cannot proceed: all four Wi-Fi profiles fail with SD initialization deferred and no SD access. User is away; physical SD removal and USB power-cycle test pending. Do not publish or claim mining, new-build persistence, or performance acceptance.

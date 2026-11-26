@@ -62,6 +62,15 @@ The unit continues its bounded join attempts and portal/restart recovery loop.
 No release or public repository publication is authorized until the hardware
 acceptance checks pass.
 
+An independent host check used the settings recovered from the verified backup.
+The saved Wi-Fi credentials match the private device configuration. The saved
+wallet matches the previously recovered device wallet and passes its Bitcoin
+address checksum. Statistics persistence is enabled. The pool accepted a host
+subscription and authorization with those settings and returned difficulty and
+mining work. No share was fabricated or submitted by this check. This verifies
+the stored configuration and pool reachability from the computer; it does not
+establish that the board is connected, mining or receiving a payout.
+
 ## Chain feed diagnosis and fix
 
 The certificate verification failure came from exhausted/fragmented heap during

@@ -9,12 +9,16 @@ This project is a fork of NerdMiner_v2 by BitMaker (BitMaker-hub):
 Distributed under the MIT License (see LICENSE), retained from upstream.
 
 Modifications in this fork (Copyright (c) 2026 kleinpanic), also MIT:
-  - Non-blocking LEDC speaker/buzzer driver (GPIO26): beep on accepted share,
-    alarm on pool/WiFi disconnect, boot chime, volume/mute, web test-tone.
+  - Non-blocking LEDC reward audio (GPIO26): confirmed-share chirp, distinct
+    confirmed-block melody, volume/mute and bounded web test-tone. PanicMiner
+    keeps boot and reconnect silent.
   - microSD support (VSPI/FAT32): CSV mining-stats logging with rotation,
     config.json read/write, path-sanitized file operations, screensaver store.
   - Custom JSON HTTP API (port 80) exposing status + speaker + SD control
     (see docs/API.md), consumed by the companion local control dashboard.
+  - Matching LVGL screens, filtered touch paging, measured runtime statistics,
+    verified live Chain data, pool protocol and mining target corrections,
+    persistence fixes and native host regression tests.
 
 Pipelined classic-ESP32 HW SHA256d mining loop, its self-test, the SW/HW
 nonce split and the on-chip SHA engine bench are ported from NerdMiner
