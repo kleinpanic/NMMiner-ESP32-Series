@@ -24,7 +24,10 @@ input while compile-time signatures prevent redundant message/document copies.
 All worker/password values are synthetic fixtures.
 
 The SD path tests exercise canonical paths, repeated normalization, and rejection
-of traversal, control characters and ambiguous separators. The pool watchdog
+of traversal, control characters and ambiguous separators. The API's production
+guard also rejects case variants of private configuration/secrets paths,
+trailing-dot/space aliases and tilde short-name aliases. Public filenames retain
+their case and internal spaces. The pool watchdog
 tests exercise cumulative progress at different sampling phases, actual stalls,
 resets, recovery, timer rollover and work-counter rollover.
 

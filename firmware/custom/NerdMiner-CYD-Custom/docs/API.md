@@ -51,9 +51,13 @@ backlight. Test tones accept 100–10,000 Hz and cap duration at two seconds.
 
 ## SD card
 
-All `path` inputs pass `SDStore::sanitizePath` (rejects traversal, ambiguous
-separators and control characters, constrains to `/sd/`). Config and secrets
-paths are denied at the API boundary. Downloads stream from the card.
+All `path` inputs pass the shared SD normalizer (rejects traversal, ambiguous
+separators, control characters and leading/trailing spaces or trailing dots in
+components; constrains to `/sd/`). The API additionally denies configuration
+and secrets paths case-insensitively and rejects tilde short-name aliases.
+Invalid/private paths receive `400` before list, open or delete operations.
+Public filenames retain their case and internal spaces. Downloads stream from
+the card.
 Only one SD download runs at a time; a second receives `503` with
 `download busy`. The transfer sends at most 512 bytes per main-loop pass,
 retains its original Content-Length even if logging appends rows, and closes

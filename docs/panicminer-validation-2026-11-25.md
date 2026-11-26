@@ -6,6 +6,21 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
+### SD private-path repair candidate
+
+The shared API guard previously compared private filenames case-sensitively,
+although the SD filesystem accepts case variants. The repaired production helper
+blocks case variants of configuration/secrets paths and their descendants,
+leading/trailing-space or trailing-dot aliases, and tilde short-name aliases.
+All three SD list/download/delete handlers use it before touching the card.
+Public filenames preserve case and internal spaces.
+
+The full C++ sanitizer suite and board build pass. SD paths now have **68**
+acceptance/idempotence/rejection scenarios. A separate C++11 negative control
+using the old API guard permits all four synthetic aliases; the repaired helper
+blocks all four. No actual private file was fetched or deleted for this check.
+Native rejection checks and fresh-image endurance qualification are pending.
+
 ### Current socket-lifetime qualification
 
 Current application: **1,781,888 bytes**, SHA-256

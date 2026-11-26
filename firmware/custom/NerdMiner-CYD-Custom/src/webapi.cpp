@@ -14,6 +14,7 @@
 #include "chainFeed.h"
 #include "boundedTransfer.h"
 #include "sdTransferPolicy.h"
+#include "sdPath.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -63,9 +64,7 @@ static void sendError(int code, const char* msg) {
 // sanitizes). Returns sanitized path, or empty string if rejected.
 static std::string apiSafePath(const String& raw) {
   if (raw.length() == 0) return std::string();
-  std::string s = SDStore::sanitizePath(raw.c_str());
-  if (s == SD_CONFIG_PATH || s == "/sd/secrets" || s.compare(0, 12, "/sd/secrets/") == 0) return "";
-  return s;
+  return publicSdPath(raw.c_str(), SD_CONFIG_PATH);
 }
 
 // Keep the SDK's shared socket/file handles after WebServer releases its
