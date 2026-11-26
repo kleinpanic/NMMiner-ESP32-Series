@@ -65,7 +65,7 @@ retain unsent bytes for the next pass. It retains its original Content-Length
 even if logging appends rows, and closes
 on failed progress or a 180-second deadline. Temporary memory pressure pauses
 the transfer without discarding pending bytes; it reserves 16 KB free heap
-and a 4 KB contiguous block. The same deadline still applies. Clients must
+and a 2 KB contiguous block. The same deadline still applies. Clients must
 verify Content-Length before treating a download as complete.
 
 | Method | Path | Input | Returns |
