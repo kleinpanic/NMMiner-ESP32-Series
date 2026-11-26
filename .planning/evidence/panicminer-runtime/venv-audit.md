@@ -1,5 +1,13 @@
 # Python environment audit — 2026-11-25
 
+November 26 public CI follow-up: `tests/test_ss_decode.py` now uses the root
+virtual-environment shebang and adds independently constructed public format
+fixtures. No dependency changed. All Python execution used `./.venv/bin/python`.
+The updated local suite passes 108 tests and 29 subtests; an isolated public
+decoder checkout passes six tests with one explicit private-image skip. A
+requested missing or incomplete stock-image directory remains a hard failure.
+The scoped forbidden-invocation scan of the changed test is clean.
+
 All host Python invoked during this work used the parent `./.venv/bin/python`.
 The firmware build used `../../../.venv/bin/python -m platformio` from the fork.
 Root requirements pin esptool 4.8.1, pyserial 3.5, Pillow 13.0.0 and PlatformIO

@@ -20,7 +20,11 @@ bash tests/test_flash_v2_0_02.sh
 ```
 
 The Python suite includes dashboard proxy unit/HTTP contract tests, strict
-hardware-evidence fixtures and factory-image packaging checks. Its dependencies
+hardware-evidence fixtures and factory-image packaging checks. Decoder format
+fixtures are generated from public, independently specified bytes. The separate
+17-image stock check uses ignored local assets and is explicitly skipped in a
+public checkout; set `PANICMINER_STOCK_SS_DIR` to require those private inputs
+(missing or incomplete requested sets fail). Its dependencies
 are pinned in root requirements; the dashboard launcher also uses that root
 virtual environment. The mock HTTP
 tests do not establish native firmware behavior.

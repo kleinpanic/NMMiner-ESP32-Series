@@ -59,6 +59,15 @@ charger cold boot with SD, complete network egress capture, portal/fallback-pool
 persistence and observed audio/LED hardware acceptance open. Prior failures
 below remain part of the record; the full milestone is not marked complete.
 
+The first public CI run built both firmware targets and passed sanitizers and
+restore safety, then exposed a test that required ignored recovered stock
+screensavers. Public decoder tests now construct full-size RLE, literal-color
+and overlapping LZSS cases independently. The separate stock check still
+requires all 17 images when present or explicitly requested; public checkouts
+report its absence as a skip. The updated local suite passes 108 tests and 29
+subtests; public CI runs 107 with one explicit private-fixture skip. Firmware
+source and the hardware-tested application are unchanged by this test repair.
+
 | Same-unit measurement | Hashrate | Evidence boundary |
 | --- | --- | --- |
 | Historical stock API readback | About 1.04 MH/s | Earlier stock configuration; not this SD-enabled run |
