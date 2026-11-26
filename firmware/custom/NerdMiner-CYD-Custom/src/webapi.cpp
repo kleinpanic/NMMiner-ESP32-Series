@@ -411,6 +411,10 @@ void webApiSetup() {
 
 void webApiLoop() {
   if (apiStarted) {
+    // A peer may send its next request immediately after receiving the last
+    // file byte. Reap a completed body's FIN before deciding whether that
+    // request conflicts with an active download (notably SHUT_WR clients).
+    if (sdTransferClosing) advanceSdTransfer();
     uint32_t began = millis();
     if (!apiServer.responsePending()) handleSocketServerPass(apiServer);
     uint32_t elapsed = millis() - began;

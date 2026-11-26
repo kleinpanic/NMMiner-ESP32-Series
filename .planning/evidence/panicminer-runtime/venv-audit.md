@@ -63,3 +63,11 @@ root-venv pytest suite and unittest discovery pass. A repeated tracked-source
 forbidden-invocation scan found zero matches; no dependency or environment
 change was needed. Builds, capture, installation and qualification continue
 through the root virtual environment.
+
+The native source-port reuse checker uses only the standard library and runs
+through the root virtual environment. Four real host TCP fixture tests cover
+complete JSON/CSV, invalid and truncated responses, EOF timing and socket
+cleanup without retaining wallet values. The complete root-venv Python suite
+passes 105 tests and 29 subtests. A scoped forbidden-invocation audit of the new
+checker, tests, root requirements and CI found zero matches; no dependency or
+environment change was needed. Native behavior is checked separately.

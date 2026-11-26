@@ -66,6 +66,21 @@ It keeps wallet amounts and configuration out of the report. Optional
 `--image-sha256` records a digest from the separately verified flash manifest;
 the sampler itself does not establish which image was flashed.
 
+Before the timed run, check completed-response cleanup and TCP source-port
+reuse. Run this alone: another SD download would intentionally receive 503.
+
+```bash
+./.venv/bin/python scripts/check_miner_port_reuse.py --host <miner-ip> --out logs/<run>
+```
+
+It checks complete JSON and nine-column CSV responses, reuses both source ports
+after 65 seconds, and checks the bounded server close for an EOF reader. The
+default source ports 47123, 47124 and 61001 must be unused. Results preserve
+timings and response sizes without saving wallet values or downloaded rows.
+Existing results are preserved; use a fresh capture directory for another run.
+Host socket fixtures cover completeness, validation and client cleanup; the
+native check is needed to exercise the ESP32 TCP stack.
+
 `scripts/check_miner_endurance.py` independently validates the API sample JSON,
 native observer JSON and raw serial log from a qualification run:
 
