@@ -1,5 +1,20 @@
 # PanicMiner validation — 2026-11-25
 
+## Repository closeout audit — November 26
+
+All shipped firmware, tests, documentation and release records are committed on
+`main`. GitHub has no open pull requests and no other remote branch awaiting a
+merge. Stable v4.0.0 remains published; its immutable tag and tested binary
+identities are unchanged.
+
+Two pre-existing June scratch artifacts (the root fingerprint-example builder
+and an unused test-logo image) were copied byte-for-byte into ignored local
+storage, checksum-verified and removed from the working tree. They are preserved
+locally, contain no current firmware implementation and are not release inputs.
+The obsolete paused handoff was preserved privately before replacement with a
+completed handoff; its obsolete resume marker was retired. No device operation,
+firmware change or additional flash was involved.
+
 ## Stable v4.0.0 publication — November 26
 
 [Stable v4.0.0](https://github.com/kleinpanic/NMMiner-ESP32-Series/releases/tag/v4.0.0)
