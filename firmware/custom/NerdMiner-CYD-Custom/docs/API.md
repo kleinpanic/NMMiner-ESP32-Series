@@ -71,10 +71,13 @@ with a retained block of at most 512 bytes. Short sends and temporary backpressu
 retain unsent bytes for the next pass. It retains its original Content-Length
 even if logging appends rows, and closes
 on failed progress or a 180-second deadline. Temporary memory pressure pauses
-the transfer without discarding pending bytes; it reserves 24 KB free heap
+the transfer without discarding pending bytes; it reserves 20 KB free heap
 and a 4,000-byte contiguous block before queuing more bulk data. This leaves
 space for concurrent API connections and authenticated feeds even when a
-download client stops reading. The same deadline still applies. Clients must
+download client stops reading. File stdio buffering is limited to 512 bytes.
+A stalled transfer closes after 15 seconds without progress, within the
+three-minute total deadline; a half-closed HTTP request can still receive its
+response. Clients must
 verify Content-Length before treating a download as complete.
 
 | Method | Path | Input | Returns |

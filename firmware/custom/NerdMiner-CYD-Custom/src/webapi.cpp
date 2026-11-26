@@ -18,6 +18,7 @@
 #include "sdTransferPolicy.h"
 #include "sdPath.h"
 #include "socketErrorState.h"
+#include "socketPeer.h"
 #include "pendingResponse.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
@@ -131,7 +132,7 @@ static std::string apiSafePath(const String& raw) {
 static fs::File sdTransferFile;
 static WiFiClient sdTransferClient;
 static size_t sdTransferLength = 0, sdTransferSent = 0;
-static uint32_t sdTransferStarted = 0;
+static uint32_t sdTransferStarted = 0, sdTransferProgress = 0;
 static bool sdTransferActive = false;
 static SdPendingTransfer sdPending;
 
@@ -149,9 +150,12 @@ static void finishSdTransfer(bool complete) {
 
 static void sendSdFile(fs::File& file, const char* contentType) {
   if (sdTransferActive) { sendError(503, "download busy"); return; }
+  // The SDK otherwise uses a separate 4096-byte stdio buffer. Our retained
+  // read block is only 512 bytes; bound stdio before any file operation.
+  if (!file.setBufferSize(512)) { sendError(503, "download buffer unavailable"); return; }
   sdTransferLength = file.size();
   sdTransferSent = 0;
-  sdTransferStarted = millis();
+  sdTransferStarted = sdTransferProgress = millis();
   apiServer.setContentLength(sdTransferLength);
   apiServer.send(200, contentType, "");
   sdTransferClient = apiServer.client();
@@ -173,9 +177,10 @@ static void advanceSdTransfer() {
   // leave a stale socket error and reject a healthy retained connection.
   // write() detects actual peer failure. Temporary low memory waits without
   // reading the file or queuing another packet, within the total deadline.
-  const SdTransferStep step = sdTransferStep(sdTransferClient.fd() >= 0,
+  const SdTransferStep step = sdTransferStep(socketPeerOpen(sdTransferClient.fd()),
     uint32_t(millis() - sdTransferStarted), ESP.getFreeHeap(),
-    heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+    heap_caps_get_largest_free_block(MALLOC_CAP_8BIT),
+    uint32_t(millis() - sdTransferProgress));
   if (step == SdTransferStep::Abort) { finishSdTransfer(false); return; }
   if (step == SdTransferStep::Wait) return;
   const size_t left = sdTransferLength - sdTransferSent;
@@ -192,6 +197,7 @@ static void advanceSdTransfer() {
       return sent;
     });
   sdTransferSent += progress.sent;
+  if (progress.sent) sdTransferProgress = millis();
   if (progress.state == SdWriteState::Failed) finishSdTransfer(false);
   else if (sdTransferSent == sdTransferLength) finishSdTransfer(true);
 }

@@ -106,7 +106,7 @@ allocations; result/submission bookkeeping still uses the heap.
 The pending SD writer tests force repeated zero-progress backpressure and short
 sends, checking the complete byte stream and that a block is not reread or
 skipped. Failed/invalid I/O and reset are covered. Production bulk sends use
-one nonblocking socket call per pass with retained bytes, and reserve 24 KB free
+one nonblocking socket call per pass with retained bytes, and reserve 20 KB free
 heap / 4,000 bytes contiguous space for mining and concurrent requests. The
 budget regression includes the native blocked-peer trace that exhausted the
 previous 16 KB / 2 KB reserve. A regression
@@ -127,3 +127,8 @@ frame bytes; the 8 KB bound, append failure, invalid socket results, empty input
 and reset are checked. The SDK server's write hooks retain replies for one
 nonblocking send per pass, prioritizing them over SD bulk traffic. Native
 blocked-download/status pressure tests are required to validate that integration.
+
+Socket-peer tests use real host sockets to check idle sockets, non-consuming
+reads, valid HTTP half-closes and invalid descriptors. Transfer-policy tests
+ensure a low-memory stalled peer reaches its 15-second idle deadline. These
+checks do not replace native ESP32 backpressure qualification.
