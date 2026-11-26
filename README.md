@@ -37,17 +37,18 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**Hardware acceptance is still open.** The installed firmware passed a full
-20-minute speed test at **967.639 kH/s** against the 994 kH/s baseline, with all
-sampled rolling rates inside the required 944.3–1043.7 band and all 17 checks
-passing. Complete SD downloads also passed, including cancellation recovery and
-simultaneous status requests. Bounded, paced exports and smaller Wi-Fi buffer
-budgets address the crashes and incomplete downloads found in earlier builds.
-The first hour attempt encountered an API timeout and a partial feed cycle;
-automatic recovery worked, but a clean full-hour retry is still required.
-Charger cold boot with the SD card
-inserted still requires the owner's physical test. Publication remains on hold.
-Exact binary digests and failed attempts are preserved in
+**Hardware acceptance is still open.** The newest image adds case-insensitive
+SD private-path protection and rejects FAT filename aliases. It was installed
+after a fresh verified full backup; fresh native qualification is running.
+The previous image passed a strict 20-minute speed test at **967.639 kH/s**
+against the 994 kH/s baseline, with all sampled rolling rates in the required
+944.3–1043.7 band and all 17 checks passing. Complete SD downloads passed,
+including cancellation recovery and simultaneous status requests. Its first
+hour attempt encountered an API timeout and a partial feed cycle; automatic
+recovery worked, but that attempt failed. A repeat was interrupted for the
+verified SD privacy repair. Charger cold boot with the SD card inserted still
+requires the owner's physical test. Publication remains on hold.
+Exact binary digests and all failed/interrupted attempts are preserved in
 [runtime validation](docs/panicminer-validation-2026-11-25.md).
 
 Wallet BTC/USD values come from the **configured payout address**, after removing

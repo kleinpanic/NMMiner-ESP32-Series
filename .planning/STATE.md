@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: "Original hour finished: 3,614.990 seconds, 967.828 kH/s, 60 SD rows, no reset/radio loss; FAIL on API gap, partial feed and no new accepted share. Reset-only retry of installed 3d180043/source 412e2c9 is running. Physical SD charger and publication held."
-last_updated: "2026-11-26T11:46:20.739Z"
-state_head: "0b217a914cebcec84951ac18063ee5beb3aa629c"
+stopped_at: SD API private-path alias repair 6cf06a7 installed as f9c8fe99 after fresh verified full backup; native preflight and fresh endurance qualification running. Previous hour FAIL and reset retry INTERRUPTED preserved. Physical SD charger and publication held.
+last_updated: "2026-11-26T12:06:07.685Z"
+state_head: 6cf06a7829b205185c48276850d5049bf69f43fb
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application 3d180043903e9302e1a090b635a9f3328fd72017472be5b19064e82ee1e5c582 (1,781,888 bytes), source 412e2c9. Fresh full 4 MB backup/checksum/flash comparison and all four written images verified. Complete feeds, three full downloads, cancellation recovery and three overlapping busy/status-request exports pass without native fault or radio loss. Five pages and controlled automatic reconnect pass (54.651 seconds, one boot/no fault). Strict 20-minute test passed: 1,202.960 seconds, 227 samples, 967.639 kH/s, all 17 checks and complete 197-row CSV. The hour attempt from 2026-11-26T10:44:55.763Z encountered an API timeout near minute 47.5 and a 3/5 feed cycle (57.994 seconds), then recovered. No native fault or radio loss; hashing stayed in band. The full 3,614.990-second / 236-sample attempt averaged 967.828 kH/s and saved 60 rows, but failed exactly new-share, no-API-gap and complete-feed gates. Its native capture is closed and preserved. Fresh reset-only retry is observing saved Wi-Fi/pool recovery on the unchanged image. Earlier a6712fce passed strict timing but failed overlapping requests; its soak was interrupted.
+- Current installed application f9c8fe99b59c91f396a5e54d0880c13e55aa068ff700bd04b260e3dfee22fba8 (1,782,816 bytes), source 6cf06a7. Fresh full 4 MB backup/checksum/full-flash comparison and all four written images verified; exact factory inputs and matching ELF archived. This candidate repairs case-sensitive SD API privacy checks and rejects filename aliases. The full sanitizer suite, 68 SD path scenarios, four-alias old-code negative control and board build pass. Fresh native rejection, feed/export/page/reconnect checks and timed/one-hour qualification are running.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Finish the fresh reset-only qualification of the unchanged installed image; the complete original hour FAIL and raw capture are preserved. The new run still needs a newly accepted pool share. Native preflight, cancellation/concurrent exports, reconnect and the original strict 20-minute qualification passed. Keep the unchanged 944.3–1043.7 kH/s band and all native/wallet/SD gates.
+- Finish native qualification of the SD API privacy repair image f9c8fe99/source 6cf06a7. Preserve the previous complete hour FAIL and interrupted reset retry. Keep the unchanged 944.3–1043.7 kH/s band, native/wallet/SD gates and a newly accepted pool share.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T11:46:20.719Z
-**Stopped at:** Original hour finished: 3,614.990 seconds, 967.828 kH/s, 60 SD rows, no reset/radio loss; FAIL on API gap, partial feed and no new accepted share. Reset-only retry of installed 3d180043/source 412e2c9 is running. Physical SD charger and publication held.
+**Last session:** 2026-11-26T12:06:07.666Z
+**Stopped at:** SD API private-path alias repair 6cf06a7 installed as f9c8fe99 after fresh verified full backup; native preflight and fresh endurance qualification running. Previous hour FAIL and reset retry INTERRUPTED preserved. Physical SD charger and publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification remains open after the original full-hour FAIL; the reset-only retry is running. Charger cold boot with SD requires owner availability; publication held.
+- Clean full-hour USB/SD qualification of installed f9c8fe99 remains open. Charger cold boot with SD requires owner availability; publication held.

@@ -6,7 +6,13 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### SD private-path repair candidate
+### Current SD private-path qualification
+
+Installed application: **1,782,816 bytes**, SHA-256
+`f9c8fe99b59c91f396a5e54d0880c13e55aa068ff700bd04b260e3dfee22fba8`,
+firmware source `6cf06a7`. A fresh full 4 MB backup passed checksum/full-flash
+comparison before installation; all four written images verified. The archived
+application, ELF and four exact factory-image slices are preserved locally.
 
 The shared API guard previously compared private filenames case-sensitively,
 although the SD filesystem accepts case variants. The repaired production helper
@@ -21,9 +27,9 @@ using the old API guard permits all four synthetic aliases; the repaired helper
 blocks all four. No actual private file was fetched or deleted for this check.
 Native rejection checks and fresh-image endurance qualification are pending.
 
-### Current socket-lifetime qualification
+### Previous socket-lifetime qualification
 
-Current application: **1,781,888 bytes**, SHA-256
+Previous application: **1,781,888 bytes**, SHA-256
 `3d180043903e9302e1a090b635a9f3328fd72017472be5b19064e82ee1e5c582`,
 firmware source `412e2c9`. A fresh full 4 MB backup passed checksum/full-flash
 comparison before installation; all four written images verified. The archived
@@ -54,8 +60,10 @@ pool-accepted share appeared; saved lifetime shares were not counted as new.
 The report is **FAIL** on exactly those three gates, with its original evidence
 preserved. A fresh native capture then deliberately reset the unchanged image;
 saved Wi-Fi joined automatically after the first candidate failed authentication.
-That repeat is in progress. No speculative firmware change is inferred from
-the transient failure, and no overall hardware PASS is claimed.
+That repeat was interrupted for the independently verified SD API privacy
+repair before its timed window completed; it is not a PASS. No speculative
+firmware change is inferred from the transient failure, and no overall hardware
+PASS is claimed.
 
 ### Paced-export qualification
 

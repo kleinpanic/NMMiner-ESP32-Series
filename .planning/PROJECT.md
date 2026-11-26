@@ -49,7 +49,7 @@ over serial so the agent can view the real pixels.
 - Touch: resistive controller on HSPI (CLK25/MISO39/MOSI32/CS33/IRQ36). The owner confirmed left/right navigation. Stable-press, release and cooldown filtering suppress repeated or phantom paging.
 - Extras fitted: microSD (FAT32), speaker on GPIO26, RGB LED on GPIO4/16/17.
 - Wi-Fi is 2.4 GHz only. Saved settings load automatically; Setup selects a new network after relocation.
-- Historical stock API readback was about 1.04 MH/s. Current acceptance uses the agreed 994 kH/s baseline, with a 944.3–1043.7 band. The installed SD-enabled image passed a strict 1,202.960-second run at 967.639 kH/s, with all sampled 10/60-second rates in band and all 17 checks passing.
+- Historical stock API readback was about 1.04 MH/s. Current acceptance uses the agreed 994 kH/s baseline, with a 944.3–1043.7 band. The previous SD-enabled image passed a strict 1,202.960-second run at 967.639 kH/s, with all sampled 10/60-second rates in band and all 17 checks passing.
 
 ## Current acceptance
 
@@ -59,7 +59,9 @@ current image and exact passing/failed measurements are in
 [the validation record](../docs/panicminer-validation-2026-11-25.md). A full strict
 20-minute measurement has passed. The first full hour failed on an API timeout,
 a partial feed cycle and no new accepted share; a reset-only repeat of the same
-image is running. Charger
+image was interrupted for an independently verified SD API private-path alias repair.
+The repaired source 6cf06a7 is installed as f9c8fe99 after full verified backup;
+fresh native qualification is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still
