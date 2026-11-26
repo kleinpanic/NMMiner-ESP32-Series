@@ -106,8 +106,10 @@ allocations; result/submission bookkeeping still uses the heap.
 The pending SD writer tests force repeated zero-progress backpressure and short
 sends, checking the complete byte stream and that a block is not reread or
 skipped. Failed/invalid I/O and reset are covered. Production bulk sends use
-one nonblocking socket call per pass with retained bytes, and reserve 16 KB free
-heap / 2 KB contiguous space for mining and concurrent requests. A regression
+one nonblocking socket call per pass with retained bytes, and reserve 24 KB free
+heap / 4,000 bytes contiguous space for mining and concurrent requests. The
+budget regression includes the native blocked-peer trace that exhausted the
+previous 16 KB / 2 KB reserve. A regression
 also covers the native 4084-byte fragmentation plateau that stalled the previous
 4 KB cutoff despite more than 21 KB free. Native pressure
 checks remain necessary; these host tests do not establish radio throughput.
