@@ -98,6 +98,7 @@ bool minerHwPauseForChain(bool pause)
 #endif
 #ifdef PIPELINED_CLASSIC
 #include <stddef.h>
+#include "miningBatches.h"
 #include <driver/periph_ctrl.h>
 #include <hal/efuse_hal.h>
 #endif
@@ -111,6 +112,12 @@ uint32_t templates = 0;
 uint32_t hashes = 0;
 uint32_t Mhashes = 0;
 static std::mutex s_work_mutex;
+static void recordCompletedWork(uint32_t completed) {
+  std::lock_guard<std::mutex> lock(s_work_mutex);
+  uint64_t accumulated = (uint64_t)hashes + completed;
+  Mhashes += accumulated / 1000000;
+  hashes = accumulated % 1000000;
+}
 uint64_t minerTotalHashes(void) {
   std::lock_guard<std::mutex> lock(s_work_mutex);
   return (uint64_t)Mhashes * 1000000ULL + hashes;
@@ -847,10 +854,7 @@ void runStratumWorker(void *name) {
       std::shared_ptr<JobResult> res = job_result_list.front();
       job_result_list.pop_front();
 
-      {
-        std::lock_guard<std::mutex> lock(s_work_mutex);
-        hashes += res->nonce_count;
-      }
+      recordCompletedWork(res->nonce_count);
       if (res->difficulty > currentPoolDifficulty && job_pool == res->id && res->nonce != 0xFFFFFFFF)
       {
         if (!client.connected())
@@ -1598,7 +1602,6 @@ static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &
 
   memcpy(s_pl_ctx.hdr, job->sha_buffer, sizeof(s_pl_ctx.hdr));
   s_pl_ctx.nonce = cursor;
-  s_pl_ctx.budget = job->nonce_count;
   s_pl_ctx.pad = 0x80000000u;
   // Set, then look at the job id: whichever way this interleaves with the
   // stratum task switching jobs (it changes the id first and clears run
@@ -1612,11 +1615,14 @@ static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &
   // previous chunk's abandoned block) is finished; start from a clean one.
   periph_module_reset(PERIPH_SHA_MODULE);
 
-  while (s_pl_ctx.run && s_pl_ctx.budget > 0)
-  {
+  MiningBatchResult work = runMiningBatches(job->nonce_count, [&](uint32_t requested) {
+    if (!s_pl_ctx.run) return MiningBatchProgress{0, false};
+    s_pl_ctx.budget = requested;
     s_pl_ctx.has_hash = 0;
-    if (!s_pl_loops[s_pl_loop].fn((volatile uint32_t *)SHA_TEXT_BASE, &s_pl_ctx))
-      break;
+    bool candidate = s_pl_loops[s_pl_loop].fn((volatile uint32_t *)SHA_TEXT_BASE, &s_pl_ctx);
+    uint32_t completed = requested - s_pl_ctx.budget;
+    if (completed > requested) return MiningBatchProgress{completed, false};
+    if (!candidate) return MiningBatchProgress{completed, s_pl_ctx.run != 0};
 
     // The fast loops only look at 16 bits of the digest and don't keep it;
     // recompute the candidate (the nonce before the one it stopped on) in
@@ -1645,13 +1651,18 @@ static uint32_t pl_mine_chunk(const std::shared_ptr<JobRequest> &job, uint32_t &
       std::lock_guard<std::mutex> lock(s_job_mutex);
       pushJobResult(share, 64);
     }
-  }
+    return MiningBatchProgress{completed, s_pl_ctx.run != 0};
+  }, recordCompletedWork);
   sha_unlock_job(true);
+  if (!work.valid) {
+    s_pl_ctx.run = 0;
+    Serial.println("[SHA] invalid batch progress");
+  }
 
   // The next chunk of this job continues from here instead of re-deriving a
   // (possibly overlapping) start from its own native nonce_start.
   cursor = s_pl_ctx.nonce;
-  const uint32_t hashed = job->nonce_count - s_pl_ctx.budget;
+  const uint32_t hashed = work.completed;
   pl_dry_check(hashed);
   return hashed;
 }
@@ -1701,13 +1712,17 @@ void minerWorkerHw(void * task_id)
     }
     if (job)
     {
+#ifndef PIPELINED_CLASSIC
       result = std::make_shared<JobResult>();
       result->id = job->id;
       result->nonce = 0xFFFFFFFF;
       result->nonce_count = job->nonce_count;
       result->difficulty = job->difficulty;
+#endif
 #ifdef PIPELINED_CLASSIC
-      result->nonce_count = pl_mine_chunk(job, pl_cursor);
+      // pl_mine_chunk records completed 32K steps directly. Do not queue the
+      // same work for a second accounting pass through Stratum.
+      pl_mine_chunk(job, pl_cursor);
 #else
       uint8_t job_in_work = job->id & 0xFF;
       memcpy(sha_buffer, job->sha_buffer, 80);

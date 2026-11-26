@@ -37,7 +37,7 @@ class EnduranceEvidenceTests(unittest.TestCase):
         self.assertFalse(result["checks"]["one_observed_boot"])
 
     def test_allocation_failure_and_nan_fail(self):
-        for fault in ("String(): No enought memory for the operation.", "String(): No enough memory for the operation.", "avg. hashrate nan KH/s", "SSL - Memory allocation failed"):
+        for fault in ("String(): No enought memory for the operation.", "String(): No enough memory for the operation.", "avg. hashrate nan KH/s", "SSL - Memory allocation failed", "[SHA] invalid batch progress"):
             with self.subTest(fault=fault):
                 self.serial = "panicminer 0.1.0 starting\n" + fault
                 self.assertFalse(self.result()["checks"]["no_native_faults"])
