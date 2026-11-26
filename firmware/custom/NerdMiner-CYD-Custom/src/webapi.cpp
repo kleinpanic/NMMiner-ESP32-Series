@@ -13,6 +13,7 @@
 #include "monitor.h"
 #include "chainFeed.h"
 #include "boundedTransfer.h"
+#include "sdTransferPolicy.h"
 
 // Mining globals (defined in mining.cpp) — the same ones logCSVStats() uses.
 extern volatile uint32_t shares;
@@ -107,15 +108,21 @@ static void sendSdFile(fs::File& file, const char* contentType) {
 static void advanceSdTransfer() {
   if (!sdTransferActive) return;
   if (sdTransferSent == sdTransferLength) { finishSdTransfer(true); return; }
+  // This SDK's connected() uses recv(..., 0) plus errno; another request can
+  // leave a stale socket error and reject a healthy retained connection.
+  // write() detects actual peer failure. Temporary low memory waits without
+  // reading the file or queuing another packet, within the total deadline.
+  const SdTransferStep step = sdTransferStep(sdTransferClient.fd() >= 0,
+    uint32_t(millis() - sdTransferStarted), ESP.getFreeHeap(),
+    heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+  if (step == SdTransferStep::Abort) { finishSdTransfer(false); return; }
+  if (step == SdTransferStep::Wait) return;
   const size_t left = sdTransferLength - sdTransferSent;
   const size_t count = left < 512 ? left : 512;
   const size_t sent = transferBlocks(count,
     [&](uint8_t* buffer, size_t n) { return sdTransferFile.read(buffer, n); },
     [&](const uint8_t* buffer, size_t n) { return sdTransferClient.write(buffer, n); },
-    [&]() { return sdTransferClient.connected() &&
-                   uint32_t(millis() - sdTransferStarted) < 180000 &&
-                   ESP.getFreeHeap() >= 8192 &&
-                   heap_caps_get_largest_free_block(MALLOC_CAP_8BIT) >= 2048; },
+    []() { return true; },
     []() {});
   sdTransferSent += sent;
   if (sent != count) finishSdTransfer(false);
@@ -238,6 +245,7 @@ static void handleSdDownload() {
   if (!apiServer.hasArg("path")) { sendError(400, "path required"); return; }
   std::string path = apiSafePath(apiServer.arg("path"));
   if (path.empty()) { sendError(400, "invalid path"); return; }
+  if (sdTransferActive) { sendError(503, "download busy"); return; }
   fs::File file = sdStore.openRead(path.c_str());
   if (!file || file.isDirectory()) { sendError(404, "not found"); return; }
   // Sanitized basename for the download filename.
@@ -265,6 +273,7 @@ static void handleSdDelete() {
 }
 
 static void handleSdLog() {
+  if (sdTransferActive) { sendError(503, "download busy"); return; }
   fs::File file = sdStore.openRead(SD_CSV_PATH);
   if (!file) { sendError(404, "no log"); return; }
   sendSdFile(file, "text/csv");
