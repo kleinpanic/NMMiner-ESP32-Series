@@ -4,7 +4,7 @@ The CYD runs the matching Mine, Hash, Chain, Clock, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
 
-## November 26: SD reinsertion update, ready for native installation
+## November 26: SD update installed; offline card mount verified
 
 The owner requested reinserting the purchased card and updating the firmware.
 The charger observer was preserved as interrupted, with 54 samples through
@@ -30,16 +30,34 @@ The GPIO routing mechanism is also documented in Espressif's
 This repair addresses a source-level conflict; it does not establish the cause
 of previous Wi-Fi failures.
 
-The updated application builds for `ESP32-2432S028R`: 1,794,480 bytes, SHA-256
-`2a58b816ae8b1cbe94c8814f37b0c11208c89ca9ee0cad47f475400249e28fb9`.
+The installed application builds for `ESP32-2432S028R`: 1,794,416 bytes, SHA-256
+`161f02c2831ac32a2265dc5e49706757968e33fa5eca513f6fc72cd6dfbaf3e9`.
+Startup now probes the shared SD bus before Wi-Fi, so the card can be checked
+even when the saved network is out of range. The previous uninstalled build
+`2a58b816…` was superseded by this startup change.
 Production SDStore host checks cover shared ownership, retained display routes,
 missing-card/retry paths, non-disruptive unmount, capacity, CSV records and
 short-write accounting. Existing 132 regression cases and speaker tests pass.
 The negative control compiles the previous production SDStore with the same
 host boundaries and fails the shared-bus assertion; the repaired source passes.
-Native backup/installation, mounted capacity, downloaded CSV records, display
-and touch coexistence, and the 20-minute run remain pending laptop USB access.
-No new image has been flashed and no native SD success is claimed.
+The owner reconnected laptop USB with the card inserted and explicitly reported
+that this location is out of Wi-Fi range. The flash helper read a fresh 4 MB
+backup, checked its SHA-256, verified it against flash, then wrote and separately
+verified the bootloader, partitions, boot-app selector and application. Saved
+configuration partitions were preserved. An ordinary EN boot reported
+`[SD] SD card mounted successfully` about 3.8 seconds after reset, before the
+Wi-Fi join. No SD failure or directory warning, panic, brownout or heap assertion
+was observed in the offline USB check. Touch initialization also completed;
+this does not establish visual/touch coexistence after card use.
+
+The USB observer was released for the owner's move downstairs. A fresh observer
+waits for USB removal, router association, mounted SD and pool authorization,
+then warms up the 10/60-second rates before starting a new 20-minute window.
+It preserves API gaps and out-of-band observations, checks independent work
+progress and SD rows, and downloads CSV after the timed window. Mounted
+capacity, real downloaded CSV records, post-mount display/touch behavior and
+the new 20-minute result remain pending that charger boot near the router.
+An offline zero rate is not evidence of a failure to mine while connected.
 
 ## November 26: JNAP recovery and saved-settings restart
 
@@ -56,7 +74,7 @@ subsequently reported full laptop connectivity. WPA2 remained configured. The
 working configuration retains the disabled fairness setting, rather than making
 another radio change during acceptance testing.
 
-Installed application remains
+At the earlier recovery, the installed application was
 `82dca8181f64c04be39835fc3db2ea94e5076265988061d77bd2affe51644548`.
 A fresh EN boot joined the stronger AP with the first normal b/g/n profile,
 authorized the existing wallet worker and loaded **5/5 Chain endpoints**.
@@ -94,9 +112,10 @@ response took 0.113 seconds, remained authorized, and showed increasing work at
 972.77/977.43 kH/s. All 12 ICMP probes responded during that later check. Both
 failed observations are retained. The continued work-counter observer was
 interrupted for the requested SD update as recorded above. There is no new
-20-minute PASS. The installed code is
-unchanged; the common success-path reconnection safeguard in `92a0f4d` is
-build-checked but not flashed. Its saved-network success path already enables
+20-minute PASS. At that point the installed code was
+unchanged; the common success-path reconnection safeguard in `92a0f4d` was
+build-checked but not flashed. It is included in the SD update above. The older
+image's saved-network success path already enables
 automatic reconnection and is the path exercised in the successful EN test.
 Secrets, full responses containing credentials and device logs remain excluded
 from Git; JNAP diagnostic output is projected and redacted.

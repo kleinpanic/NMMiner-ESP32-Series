@@ -37,8 +37,12 @@ Automatic boot and mining were verified with the card removed.
 The SD update fixes separate display/card owners reconfiguring the same SPI
 controller. They now share the display's SPI object and transaction lock, with
 clock/data routed to both wired buses and separate chip selects. Touch retains
-its existing controller. The update builds and passes host regression checks;
-installation, card logging and a fresh endurance run require laptop USB access.
+its existing controller. The update builds, passes host regression checks and
+was installed with a fresh verified full backup on November 26. All four flash
+images verify, and a native saved-settings boot detects the inserted SD card
+before joining Wi-Fi. The owner reports this USB location is out of range;
+card CSV writes, display/touch coexistence and the fresh endurance run still
+need the downstairs charger boot near the router.
 With a mounted FAT32 card, firmware writes measured rates, accepted/rejected
 shares, best difficulty, memory and temperature once per minute to
 `/sd/mining_stats_v2.csv`, rotating at 1 MB. The Stats page and local API report

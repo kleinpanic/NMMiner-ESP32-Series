@@ -151,24 +151,18 @@ void setup()
 #endif
 
   /******** INIT SD STORE (VSPI for stats/config) *****/
-#ifndef PANICMINER_UI
+  // Shared controller ownership now keeps SD initialization from resetting
+  // the display. Probe before Wi-Fi so card failures are visible over USB
+  // even when the saved access point is out of range.
   if (sdStore.mount()) {
     Serial.println("[Main] SD store mounted successfully");
   } else {
     Serial.println("[Main] Warning: SD store mount failed (SD is optional)");
   }
-#else
-  Serial.println("[SD] Initialization deferred until after Wi-Fi association");
-#endif
 
   /******** INIT WIFI ************/
   init_WifiManager();
 #ifdef PANICMINER_UI
-  // Isolate the join from card/bus initialization. A configured device does
-  // not need SD access to associate; restoreConfigFromSD mounts on demand only
-  // when no internal configuration exists.
-  if (sdStore.mount()) Serial.println("[Main] SD store mounted after Wi-Fi join");
-  else Serial.println("[Main] SD optional; continuing without card");
   systemHealthStart();
 #endif
 

@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: SD shared-SPI repair built and host-tested; waiting for laptop USB with SD inserted to back up, flash, verify card logging/display/touch and complete the 20-minute Mine test. Publication held.
-last_updated: "2026-11-26T05:48:57.215Z"
-state_head: c17498a4d71b1a199a7f3be42f2f8724966a7c2d
+stopped_at: SD shared-SPI firmware backed up, flashed and verified; inserted card mounts on native offline EN boot. Waiting for owner to relocate downstairs on charger, then CSV/display/touch checks and fresh 20-minute Mine run. Publication held.
+last_updated: "2026-11-26T05:58:56.940Z"
+state_head: 23199a62544b2209e2034efa6ea1b586a601dc7d
 progress:
   total_phases: 5
   completed_phases: 0
@@ -25,7 +25,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 ## Device
 
 - Current hardware evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). Earlier failed joins below are historical, superseded by the November 26 recovery.
-- Installed normal application SHA-256: `82dca8181f64c04be39835fc3db2ea94e5076265988061d77bd2affe51644548`. The common success-path reconnect safeguard in source commit `92a0f4d` is build-checked but not installed; the saved-network boot path tested on hardware already enables reconnection.
+- Installed normal application SHA-256: `161f02c2831ac32a2265dc5e49706757968e33fa5eca513f6fc72cd6dfbaf3e9` (1,794,416 bytes). Fresh full 4 MB backup and its flash comparison passed before the write; all four installed images independently verified. This includes the common success-path reconnect safeguard and shared-SPI SD repair.
 - Owner confirmed USB charger power near the router with the SD card removed. Laptop USB disappeared; JNAP independently listed the 2.4 GHz client and its API reported the saved worker pool-authorized, best restored to 0.702206052, and a 999.4 kH/s startup reading. Saved-settings EN restart also passed before moving to the charger.
 - All five Chain endpoints, native Stats/Chain frames and zero SHA mismatches/drops were observed before USB removal. These serial observations do not establish continuous post-unplug TLS/SHA coverage.
 - Airtime fairness is disabled on the EA8300; WPA2 remains configured. Placement, power cycling and the router setting changed together, so no single root cause is established.
@@ -77,7 +77,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Owner requests SD re-enabled and tested. SDStore/display VSPI ownership repair builds and passes the production host checks. Candidate SHA-256 is `2a58b816ae8b1cbe94c8814f37b0c11208c89ca9ee0cad47f475400249e28fb9`; it is not installed. Wait for laptop USB, take a fresh verified full backup, install, verify native SD CSV/display/touch and restart the full 20-minute Mine run.
+- Owner reconnected laptop USB with the SD inserted. The installed shared-SPI update mounted the card successfully before Wi-Fi on a saved-settings EN boot, with no observed SD warning or crash. The owner states this location is out of range and will move the miner downstairs after flashing. Native CSV/capacity, post-mount display/touch coexistence and a fresh 20-minute Mine run await that charger boot. An observer is ready; no new performance PASS is claimed.
 - Intermittent HTTP status timeouts need diagnosis if they recur. At the last check the miner stayed associated, pool-authorized and advancing work, with 12/12 ICMP replies.
 - SD reinsertion, a one-hour unattended soak, native egress capture and a pool-confirmed share/block remain unverified. Zero accepted shares is an observed result, not evidence of a payout or a license problem.
 - The owner's manual-page requirement supersedes the old UI-04 timer-rotation wording. Touch direction and one action per held press were confirmed on hardware.
@@ -99,10 +99,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T05:48:10.302Z
-**Stopped at:** SD shared-SPI repair built and host-tested; waiting for laptop USB with SD inserted to back up, flash, verify card logging/display/touch and complete the 20-minute Mine test. Publication held.
+**Last session:** 2026-11-26T05:58:56.914Z
+**Stopped at:** SD shared-SPI firmware backed up, flashed and verified; inserted card mounts on native offline EN boot. Waiting for owner to relocate downstairs on charger, then CSV/display/touch checks and fresh 20-minute Mine run. Publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Native SD update and endurance test require the owner to reconnect the miner to laptop USB with the SD inserted. Shared-VSPI repair builds and passes production host tests, but is not flashed. Miner API and router association disappeared around the card change. No public release or push until the directed hardware checks pass.
+- SD firmware installation and offline native mount are verified. The owner must relocate the miner from the explicitly out-of-range laptop position to downstairs charger power near the router. Then verify SD CSV/capacity, display/touch and the full fresh 20-minute Mine run. No public release or push until the directed hardware checks pass.
