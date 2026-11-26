@@ -47,6 +47,24 @@ nvMemory nvMem;
 // power cycle never needs this flag: saved credentials are loaded as usual.
 static RTC_NOINIT_ATTR uint32_t s_setup_request;
 static constexpr uint32_t SETUP_REQUEST = 0x504D5345;
+
+static void joinSavedWifi(const char* reason) {
+    WiFi.setAutoReconnect(false);
+    WiFi.disconnect(false, false);
+    delay(120);
+    WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
+    WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
+    esp_err_t mode = esp_wifi_set_protocol(WIFI_IF_STA,
+        WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
+#ifdef PM_WIFI_TXPOWER
+    WiFi.setTxPower(PM_WIFI_TXPOWER);
+#endif
+    // The startup candidates must not pin later retries to one AP/channel or
+    // leave the radio in the last low-power, B-only fallback profile.
+    wl_status_t status = WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
+    Serial.printf("[WIFI] %s: unpinned all-channel join, mode %s, status %d\n",
+                  reason, esp_err_to_name(mode), status);
+}
 #endif
 
 extern SDCard SDCrd;
@@ -528,7 +546,12 @@ void init_WifiManager()
   #endif
 
     Serial.println("AllDone: ");
-    if (forceConfig)    
+#ifdef PANICMINER_UI
+    if (wifiStartupAction(forceConfig, Settings.WifiSSID.length() > 0,
+                          WiFi.status() == WL_CONNECTED) == WifiStartupAction::Setup)
+#else
+    if (forceConfig)
+#endif
     {
         // Run if we need a configuration
         //No configuramos timeout al modulo
@@ -576,7 +599,7 @@ void init_WifiManager()
         mMonitor.NerdStatus = NM_Connecting;
         // NerdMiner stores app config (incl. SSID/PW) in SPIFFS, but WiFiManager's
         // autoConnect uses its own (often empty) credential store. Connect directly
-        // with the loaded credentials first; only fall back to the portal.
+        // with the loaded credentials first.
         if (WiFi.status() != WL_CONNECTED && Settings.WifiSSID.length() > 0) {
             Serial.printf("[WIFI] Connecting to '%s' from stored config...\n", Settings.WifiSSID.c_str());
 #ifdef PANICMINER_UI
@@ -650,8 +673,15 @@ void init_WifiManager()
                                   WiFi.SSID(i).c_str(), WiFi.BSSIDstr(i).c_str(), (int)WiFi.channel(i),
                                   WiFi.RSSI(i), (int)WiFi.encryptionType(i)); }
                 if (!found) Serial.printf("[WIFI] '%s' NOT seen among %d networks\n", Settings.WifiSSID.c_str(), n);
+                WiFi.scanDelete();
             }
         }
+#ifdef PANICMINER_UI
+        if (WiFi.status() != WL_CONNECTED) {
+            Serial.println("[WIFI] saved network unavailable; finishing startup for runtime retry");
+            joinSavedWifi("startup retry");
+        }
+#else
         // disable captive portal redirection
         wm.setCaptivePortalEnable(true);
         wm.setConfigPortalBlocking(true);
@@ -683,6 +713,7 @@ void init_WifiManager()
             }        
             ESP.restart();                            
         } 
+#endif
     }
     
     //Conectado a la red Wifi
@@ -790,18 +821,7 @@ void wifiRecoverConnection() {
     static WifiRecovery recovery;
     if (!recovery.due(millis(), WiFi.status() == WL_CONNECTED)) return;
     if (!Settings.WifiSSID.length()) return;
-    WiFi.setAutoReconnect(false);
-    WiFi.disconnect(false, false);
-    delay(120);
-    WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
-    WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
-    esp_err_t mode = esp_wifi_set_protocol(WIFI_IF_STA,
-        WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
-    // Startup's explicit BSSID/channel was only for trying candidate APs.
-    // Rebuild the config without that restriction after a runtime drop.
-    wl_status_t status = WiFi.begin(Settings.WifiSSID.c_str(), Settings.WifiPW.c_str());
-    Serial.printf("[WIFI] runtime recovery: unpinned all-channel join, mode %s, status %d\n",
-                  esp_err_to_name(mode), status);
+    joinSavedWifi("runtime recovery");
 #endif
 }
 

@@ -1,6 +1,16 @@
 #pragma once
 #include <stdint.h>
 
+enum class WifiStartupAction { Setup, Join, Run };
+
+// A temporarily unavailable saved network is not a request to reconfigure it.
+// Finish startup so the regular retry owner and the display can keep running.
+constexpr WifiStartupAction wifiStartupAction(bool explicitSetup, bool hasSsid,
+                                              bool connected) {
+    return explicitSetup || !hasSsid ? WifiStartupAction::Setup :
+           connected ? WifiStartupAction::Run : WifiStartupAction::Join;
+}
+
 // Give a join time to finish before restarting it. Arduino reconnect() forces
 // a disconnect, so invoking it every five seconds can prevent recovery.
 class WifiRecovery {

@@ -67,8 +67,9 @@ display bus when unmounting. They also check capacity, CSV headers/rows and
 failed-write accounting. They cannot prove electrical pin routing or card
 compatibility; those require a native test with the actual card inserted.
 
-The runtime Wi-Fi tests cover retry spacing, the initial association grace
-period and clock wraparound. Wallet tests cover worker-suffix removal, address
+The Wi-Fi tests cover saved-network startup, explicit Setup and missing-config
+decisions, retry spacing after an initial failure or a later drop, the initial
+association grace period and clock wraparound. Wallet tests cover worker-suffix removal, address
 shape validation and checked signed satoshi arithmetic. TLS record-buffer tests
 exercise two-slot allocation, repeated zeroed reuse, exhaustion, multiplication
 overflow, foreign-pointer release and unequal buffer sizes. The latter also
