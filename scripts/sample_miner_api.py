@@ -6,6 +6,7 @@ recorded. This tool neither changes settings nor flashes/restarts the miner.
 """
 import argparse
 import csv
+import http.client
 import io
 import ipaddress
 import json
@@ -17,6 +18,22 @@ import urllib.request
 from pathlib import Path
 
 from check_miner_endurance import evaluate
+
+
+def read_response(response):
+    """Reject truncated downloads even when their last CSV row looks complete."""
+    limit = 2 * 1024 * 1024
+    declared = response.headers.get("Content-Length")
+    if declared is not None:
+        if not declared.isascii() or not declared.isdecimal() or int(declared) > limit:
+            raise ValueError("Invalid or oversized Content-Length")
+        declared = int(declared)
+    body = response.read(limit + 1)
+    if response.status != 200 or len(body) > limit:
+        raise ValueError("Invalid or oversized API response")
+    if declared is not None and len(body) != declared:
+        raise ValueError("Incomplete API response")
+    return body
 
 
 def status_point(data, epoch, latency):
@@ -67,9 +84,7 @@ def main():
     def fetch(path):
         began = time.monotonic()
         with urllib.request.urlopen(f"http://{args.host}{path}", timeout=10) as response:
-            body = response.read(2 * 1024 * 1024 + 1)
-            if response.status != 200 or len(body) > 2 * 1024 * 1024:
-                raise ValueError("Invalid or oversized API response")
+            body = read_response(response)
         return body, time.monotonic() - began
 
     def point():
@@ -94,7 +109,7 @@ def main():
                 sample = point()
                 consecutive = consecutive + 1 if ready(sample) else 0
                 report["latest_warmup"] = sample
-            except (OSError, ValueError, KeyError) as error:
+            except (OSError, http.client.HTTPException, ValueError, KeyError) as error:
                 report["warmup_errors"].append({"epoch": time.time(), "error": type(error).__name__})
                 consecutive = 0
             save()
@@ -112,7 +127,7 @@ def main():
             native()
             try:
                 sample = point()
-            except (OSError, ValueError, KeyError) as error:
+            except (OSError, http.client.HTTPException, ValueError, KeyError) as error:
                 report["api_errors"].append({"epoch": time.time(), "error": type(error).__name__})
                 raise
             sample["seconds"] = time.monotonic() - began
@@ -133,7 +148,7 @@ def main():
                                   "consistent_records": consistent, "response_seconds": latency}
         (out / "mining_stats_v2.csv").write_bytes(body)
         report["status"] = "PASS" if verdict["status"] == "PASS" and consistent else "FAIL"
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (OSError, http.client.HTTPException, ValueError, KeyError, TypeError) as error:
         report.update(status="FAIL", failure=type(error).__name__ + ": " + str(error))
     except KeyboardInterrupt:
         report["status"] = "INTERRUPTED"

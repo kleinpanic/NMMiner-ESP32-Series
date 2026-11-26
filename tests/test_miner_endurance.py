@@ -1,8 +1,10 @@
 import copy
 import importlib.util
+import io
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 spec = importlib.util.spec_from_file_location("endurance", Path(__file__).parents[1] / "scripts/check_miner_endurance.py")
 module = importlib.util.module_from_spec(spec)
@@ -112,6 +114,28 @@ class NativeCaptureParserTests(unittest.TestCase):
 
 
 class ApiSamplerTests(unittest.TestCase):
+    def response(self, body, length=None, status=200):
+        headers = {} if length is None else {"Content-Length": length}
+        return SimpleNamespace(headers=headers, status=status, read=io.BytesIO(body).read)
+
+    def test_complete_response_and_lengthless_response(self):
+        self.assertEqual(sample_miner_api.read_response(self.response(b"abc", "3")), b"abc")
+        self.assertEqual(sample_miner_api.read_response(self.response(b"abc")), b"abc")
+
+    def test_truncated_csv_ending_at_valid_row_is_rejected(self):
+        body = b"a,b,c\n1,2,3\n"
+        with self.assertRaisesRegex(ValueError, "Incomplete"):
+            sample_miner_api.read_response(self.response(body, str(len(body) + 6)))
+
+    def test_invalid_lengths_oversized_and_error_responses(self):
+        for length in ("-1", "invalid", "3.0", "\u0663", str(2 * 1024 * 1024 + 1)):
+            with self.subTest(length=length), self.assertRaises(ValueError):
+                sample_miner_api.read_response(self.response(b"abc", length))
+        with self.assertRaises(ValueError):
+            sample_miner_api.read_response(self.response(b"x" * (2 * 1024 * 1024 + 1)))
+        with self.assertRaises(ValueError):
+            sample_miner_api.read_response(self.response(b"error", status=503))
+
     def test_selected_fields_exclude_wallet_values_and_settings(self):
         data = {"miner": {"hashrate10sKhs": 980, "hashrate60sKhs": 980, "totalMHashes": 100,
             "poolAuthorized": True, "heapFreeBytes": 25000, "chipTempC": 45,

@@ -67,28 +67,59 @@ static std::string apiSafePath(const String& raw) {
   return s;
 }
 
+// Keep the SDK's shared socket/file handles after WebServer releases its
+// request. Only one 512-byte block is sent per Arduino loop pass; buttons,
+// speaker updates, SD logging and other API requests keep running between them.
+static fs::File sdTransferFile;
+static WiFiClient sdTransferClient;
+static size_t sdTransferLength = 0, sdTransferSent = 0;
+static uint32_t sdTransferStarted = 0;
+static bool sdTransferActive = false;
+
+static void finishSdTransfer(bool complete) {
+  sdTransferFile.close();
+  sdTransferClient.stop();
+  sdTransferActive = false;
+  if (!complete)
+    Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes; heap %u, largest %u\n",
+                  (unsigned)sdTransferSent, (unsigned)sdTransferLength,
+                  (unsigned)ESP.getFreeHeap(),
+                  (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+}
+
 static void sendSdFile(fs::File& file, const char* contentType) {
-  const size_t length = file.size();
-  apiServer.setContentLength(length);
+  if (sdTransferActive) { sendError(503, "download busy"); return; }
+  sdTransferLength = file.size();
+  sdTransferSent = 0;
+  sdTransferStarted = millis();
+  apiServer.setContentLength(sdTransferLength);
   apiServer.send(200, contentType, "");
-  WiFiClient client = apiServer.client();
-  client.setTimeout(2);
-  const uint32_t started = millis();
-  const size_t sent = transferBlocks(length,
-    [&](uint8_t* buffer, size_t count) { return file.read(buffer, count); },
-    [&](const uint8_t* buffer, size_t count) { return client.write(buffer, count); },
-    [&]() { return client.connected() && uint32_t(millis() - started) < 30000 &&
+  sdTransferClient = apiServer.client();
+  sdTransferClient.setTimeout(1);
+  sdTransferClient.setNoDelay(true);
+  sdTransferFile = file;
+  // File::close closes the shared underlying file, so release the handler's
+  // copy without closing it. The transfer now owns its lifetime.
+  file = fs::File();
+  sdTransferActive = true;
+}
+
+static void advanceSdTransfer() {
+  if (!sdTransferActive) return;
+  if (sdTransferSent == sdTransferLength) { finishSdTransfer(true); return; }
+  const size_t left = sdTransferLength - sdTransferSent;
+  const size_t count = left < 512 ? left : 512;
+  const size_t sent = transferBlocks(count,
+    [&](uint8_t* buffer, size_t n) { return sdTransferFile.read(buffer, n); },
+    [&](const uint8_t* buffer, size_t n) { return sdTransferClient.write(buffer, n); },
+    [&]() { return sdTransferClient.connected() &&
+                   uint32_t(millis() - sdTransferStarted) < 180000 &&
                    ESP.getFreeHeap() >= 8192 &&
                    heap_caps_get_largest_free_block(MALLOC_CAP_8BIT) >= 2048; },
-    []() { vTaskDelay(1); });
-  if (sent != length) {
-    // An incomplete Content-Length response must close, rather than hanging
-    // this API task or allowing a client to mistake it for a complete file.
-    client.stop();
-    Serial.printf("[WEBAPI] SD transfer incomplete: %u/%u bytes; heap %u, largest %u\n",
-                  (unsigned)sent, (unsigned)length, (unsigned)ESP.getFreeHeap(),
-                  (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-  }
+    []() {});
+  sdTransferSent += sent;
+  if (sent != count) finishSdTransfer(false);
+  else if (sdTransferSent == sdTransferLength) finishSdTransfer(true);
 }
 
 // --- handlers --------------------------------------------------------------
@@ -266,5 +297,8 @@ void webApiSetup() {
 }
 
 void webApiLoop() {
-  if (apiStarted) apiServer.handleClient();
+  if (apiStarted) {
+    apiServer.handleClient();
+    advanceSdTransfer();
+  }
 }
