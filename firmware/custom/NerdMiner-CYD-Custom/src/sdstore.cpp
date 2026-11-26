@@ -4,7 +4,24 @@
 #include <FS.h>
 #include "sdPath.h"
 
+#if defined(ESP32_2432S028R) && defined(PANICMINER_UI)
+#include <TFT_eSPI.h>
+#include <esp32-hal-matrix.h>
+#include <soc/gpio_sig_map.h>
+// CYD has three wired SPI devices but only two usable hardware controllers.
+// Touch owns HSPI. TFT_eSPI owns VSPI; a second SPIClass(VSPI) would reset its
+// registers/pin routing and use a different transaction mutex. Share the TFT's
+// actual SPIClass instead. Fan out clock/MOSI to both wired buses; separate CS
+// pins select the device, while the SD's MISO is the only VSPI input.
+#if defined(USE_HSPI_PORT) || !defined(TFT_MISO)
+#error "CYD SD sharing requires TFT on VSPI with TFT_MISO=19"
+#endif
+static_assert(TFT_MISO == SD_MISO_PIN, "CYD VSPI input must be SD MISO");
+static SPIClass& cardSPI() { return TFT_eSPI::getSPIinstance(); }
+#else
 static SPIClass vspi(VSPI);
+static SPIClass& cardSPI() { return vspi; }
+#endif
 static SDStore* g_sdstore = nullptr;
 
 SDStore::SDStore() : mounted_(false) {
@@ -25,11 +42,22 @@ bool SDStore::mount() {
 
   Serial.println("[SD] Mounting VSPI SD card...");
 
-  // Initialize VSPI bus on the specified pins
-  vspi.begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+  pinMode(SD_CS_PIN, OUTPUT);
+  digitalWrite(SD_CS_PIN, HIGH);
+#if defined(ESP32_2432S028R) && defined(PANICMINER_UI)
+  // TFT is initialized first. Do not call begin() on another VSPI instance or
+  // detach its pins. GPIO matrix outputs can drive both sets of clock/data
+  // pins; both libraries then serialize on the same SPIClass transaction lock.
+  pinMode(SD_CLK_PIN, OUTPUT);
+  pinMode(SD_MOSI_PIN, OUTPUT);
+  pinMatrixOutAttach(SD_CLK_PIN, VSPICLK_OUT_IDX, false, false);
+  pinMatrixOutAttach(SD_MOSI_PIN, VSPID_OUT_IDX, false, false);
+#else
+  cardSPI().begin(SD_CLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+#endif
 
   // Attempt to mount SD card with VSPI at specified frequency
-  if (!SD.begin(SD_CS_PIN, vspi, SD_FREQUENCY_MHZ * 1000000)) {
+  if (!SD.begin(SD_CS_PIN, cardSPI(), SD_FREQUENCY_MHZ * 1000000)) {
     Serial.println("[SD] Failed to mount SD card on VSPI");
     mounted_ = false;
     return false;
@@ -71,7 +99,10 @@ bool SDStore::unmount() {
 
   Serial.println("[SD] Unmounting SD card");
   SD.end();
-  vspi.end();
+#if !defined(ESP32_2432S028R) || !defined(PANICMINER_UI)
+  cardSPI().end();
+#endif
+  digitalWrite(SD_CS_PIN, HIGH);
   mounted_ = false;
   return true;
 }

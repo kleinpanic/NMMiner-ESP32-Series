@@ -40,6 +40,13 @@ terminator; the repaired code passes under ASan/UBSan. The long fixtures also
 detect the former silent 512-character coinbase truncation. Release builds must
 prepare jobs without dumping payloads to the blocking serial port.
 
+The SD-store tests compile production `src/sdstore.cpp` with host filesystem and
+SPI boundaries. They verify that SD uses the display's existing SPI object,
+retains its pin routes, survives mount failures and retries, and never stops the
+display bus when unmounting. They also check capacity, CSV headers/rows and
+failed-write accounting. They cannot prove electrical pin routing or card
+compatibility; those require a native test with the actual card inserted.
+
 These tests do not establish radio reliability, physical touch calibration,
 display operation, or a real pool accepting a share. Native hardware validation
 is required for those claims.

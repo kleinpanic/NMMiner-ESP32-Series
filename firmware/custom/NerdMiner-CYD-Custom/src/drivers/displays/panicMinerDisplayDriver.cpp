@@ -185,6 +185,9 @@ static void boot_log(const char* fmt, ...)
 
 static void pm_init(void)
 {
+    // Keep the SD deselected before any shared VSPI display traffic.
+    pinMode(SD_CS_PIN, OUTPUT);
+    digitalWrite(SD_CS_PIN, HIGH);
     // Panel bring-up is the stock CYD sequence, unchanged.
     tft.init();
     if (nvMem.loadConfig(&Settings)) invertColors = Settings.invertColors;

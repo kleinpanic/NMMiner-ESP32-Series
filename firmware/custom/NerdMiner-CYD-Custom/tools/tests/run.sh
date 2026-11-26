@@ -22,6 +22,10 @@ done
 "$CXX" "${COMMON[@]}" -DPANICMINER_UI -I"$ROOT/tools/tests/stubs" -I"$ROOT/src" -I"$JSON" \
   "$ROOT/src/utils.cpp" "$ROOT/tools/tests/test_mining_data.cpp" -lcrypto -o "$BUILD/test_mining_data"
 "$BUILD/test_mining_data"
+"$CXX" "${COMMON[@]}" -DPANICMINER_UI -DESP32_2432S028R -DTFT_MISO=19 \
+  -I"$ROOT/tools/tests/sd_stubs" -I"$ROOT/include" -I"$ROOT/src" \
+  "$ROOT/src/sdstore.cpp" "$ROOT/tools/tests/test_sd_store.cpp" -o "$BUILD/test_sd_store"
+"$BUILD/test_sd_store"
 if [[ -f "$ROOT/tools/tests/run_speaker.sh" ]]; then
   bash "$ROOT/tools/tests/run_speaker.sh"
 fi
