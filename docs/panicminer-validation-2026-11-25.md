@@ -6,14 +6,41 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current API socket-state qualification
+### Current deferred-API qualification
+
+Installed application: **1,783,152 bytes**, SHA-256
+`744567d982e4c33f019647f961bb801e6521c6f2bdfeaf4623b33da67c7ccb3c`,
+firmware source `3596762`. Fresh full 4 MB backup checksum/full-flash comparison
+and all four written images verified. Exact application, ELF and all four
+factory inputs are archived locally. Three complete feed cycles and native
+private-path checks passed. Export pressure/page/reconnect and fresh endurance
+qualification remain open; no overall hardware PASS is claimed.
+
+Both the SD body and the HTTP headers/JSON replies now avoid the SDK's repeated
+synchronous writes. The server write hooks retain one response (at most 8 KB),
+send at most 512 bytes per loop without blocking, and preserve exact bytes
+across short sends and temporary backpressure. Bulk writes pause while a reply
+is pending, so control/status output gets the next send opportunity. A reply
+has a ten-second total deadline and releases its buffer/socket reference after
+completion; an SD header retains the separate file-transfer socket reference.
+Host cases cover exact headers/body under repeated backpressure, bounds,
+allocation failure, invalid writes and reset. Full ASan/UBSan tests and board
+build pass; native blocked-client pressure is still required.
+
+### Previous API socket-state qualification
 
 Installed application: **1,781,808 bytes**, SHA-256
 `8e482e7d1ba02ec162945fed847e5c8880a857f13d3268afb6b7650d1fbd8a7a`,
 firmware source `da95928`. Fresh full 4 MB backup checksum/full-flash comparison
 and all four written images verified. Exact factory inputs and ELF are archived
-locally. Native pressure/page/reconnect and fresh endurance qualification are
-running; no overall hardware PASS is claimed.
+locally. Feed/privacy/download/concurrency preflight passed, but the fourth
+status request with a blocked SD client timed out. Native timing recorded an
+**18,826 ms request pass**, without a slow SD send pass. A separate speaker-only
+probe also produced a truncated HTTP body during a blocked download, excluding
+SD capacity reads as a necessary trigger. The image failed prequalification;
+no timed run started. Original evidence is preserved, with one boot/no native
+fault. The next candidate defers API headers and JSON replies as well as bulk
+bytes; the SDK's synchronous response writer was still in use here.
 
 The API initializes errno before the installed Arduino-ESP32 SDK's client pass.
 That SDK probes `connected()` with a zero-length receive; success need not clear

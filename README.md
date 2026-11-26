@@ -38,7 +38,7 @@ Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
 **Hardware acceptance is still open.** The newest installed image uses fixed
-mining-job queues and nonblocking SD exports with retained bytes and a larger
+mining-job queues and nonblocking SD exports/API replies with retained bytes and a larger
 memory reserve. Its contiguous reserve also handles the observed 4,084-byte
 fragmentation plateau without stalling. It protects private SD paths against case and filename
 aliases. A fresh verified backup preceded installation; native export pressure

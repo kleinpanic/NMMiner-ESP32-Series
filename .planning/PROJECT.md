@@ -69,7 +69,11 @@ contiguous floor / 16 KB aggregate reserve (c2b86f3) is installed as eb2b2c88
 after another verified full backup. It passed ordinary concurrent exports, then
 failed blocked-client status pressure before any timed run. The SDK socket-state
 guard and timing diagnostics (da95928) are installed as 8e482e7d after verified
-full backup; fresh native qualification is running. Charger
+full backup, but its blocked-client pressure check still failed. A native
+request pass took 18.826 seconds and speaker-only replies also truncated.
+Deferred response hooks now prioritize retained HTTP headers/JSON over SD
+bulk writes (3596762), installed as 744567d9 after verified full backup; fresh
+native qualification is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still
