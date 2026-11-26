@@ -6,9 +6,26 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
+### Current socket-lifetime qualification
+
+Current application: **1,781,888 bytes**, SHA-256
+`3d180043903e9302e1a090b635a9f3328fd72017472be5b19064e82ee1e5c582`,
+firmware source `412e2c9`. A fresh full 4 MB backup passed checksum/full-flash
+comparison before installation; all four written images verified. The archived
+application digest and all four factory-image slices match those verified inputs.
+
+Three complete Chain/wallet cycles passed with pool authorization, mounted SD,
+two reserved TLS records and zero scratch fallbacks. Three complete SD downloads
+then passed (7,844–7,889 bytes, 173–174 rows). Cancellation after 512 bytes and
+three overlapping-request scenarios also passed: all 7,889 bytes / 174 rows
+arrived, a second download returned 503, and status requests worked during the
+active export. No native fault or radio loss occurred. Five pages and automatic reconnect
+passed (54.651 seconds, one boot/no fault). The fresh strict 20-minute and
+full one-hour USB/SD tests started at **10:44:55 UTC** and are still running.
+
 ### Paced-export qualification
 
-Current application: **1,781,808 bytes**, SHA-256
+Earlier paced-export application: **1,781,808 bytes**, SHA-256
 `a6712fcef1ef3f7989478f25b6e97e110b35afbf080e551612bf02a9cb5207e0`,
 firmware source `b0282a3`. A fresh full 4 MB backup passed checksum and full-flash
 comparison before writing; all four written images verified. Three complete
@@ -20,8 +37,22 @@ Three consecutive native SD downloads each returned all **6,562 bytes / 145
 rows**, in 2.581–2.789 seconds. There was no radio drop or native fault, including
 the post-download watch. Five pages were exercised and Mine restored; controlled
 Wi-Fi disconnection recovered pool authorization in **41.416 seconds**, with
-one boot and no native fault. The fresh strict 20-minute run and full one-hour
-soak started at **10:10:21 UTC**; neither is accepted before its full duration. Charger cold boot with SD remains unavailable
+one boot and no native fault. Its strict run started at **10:10:21 UTC** and
+passed **1,201.593 seconds / 228 samples / 967.780 kH/s** by independent work
+counters. All 17 checks passed; minimum sampled rates were 964.259 and 967.140
+kH/s. The post-window CSV also passed: 168 rows, nine columns, 3.247 seconds.
+
+A subsequent overlapping-request test cut off the active export at 512/7,609
+bytes without a crash or radio drop. Repetition with simultaneous status queries
+also produced truncated responses. One trace had sufficient memory (largest
+block 6,900 bytes); another reached a temporary 1,908-byte largest block. The
+SDK connection check uses zero-length recv plus errno, which can retain another
+request's socket error. Source `412e2c9` uses the retained descriptor and actual
+write progress instead, waits through temporary low memory within the existing
+deadline, and rejects a busy download before opening another file. Native
+concurrency checks precede timing for the next image. Host policy/sanitizer tests
+pass; installation/qualification is pending. This candidate's hour soak was
+explicitly interrupted for that repair; it is not accepted. Charger cold boot with SD remains unavailable
 while the owner is asleep; publication stays held.
 
 ### Packet-memory follow-up

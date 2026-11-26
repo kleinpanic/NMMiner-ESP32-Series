@@ -57,7 +57,8 @@ paths are denied at the API boundary. Downloads stream from the card.
 Only one SD download runs at a time; a second receives `503` with
 `download busy`. The transfer sends at most 512 bytes per main-loop pass,
 retains its original Content-Length even if logging appends rows, and closes
-on failed progress, insufficient memory or a 180-second deadline. Clients must
+on failed progress or a 180-second deadline. Temporary memory pressure pauses
+the transfer without advancing the file; the same deadline still applies. Clients must
 verify Content-Length before treating a download as complete.
 
 | Method | Path | Input | Returns |

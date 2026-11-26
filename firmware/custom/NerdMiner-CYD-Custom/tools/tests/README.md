@@ -89,3 +89,8 @@ boundary fakes. Nine scenarios check one fresh-connection transport retry,
 bounded repeated failure, HTTP 404/429/503 without blind retries, begin failure,
 empty-body rejection, response cleanup and retention of the successful result.
 The actual pinned-CA path is exercised by repeated native feed/wallet cycles.
+
+SD transfer policy cases cover temporary low-memory wait/resume, exact heap/block
+bounds, a closed descriptor and the total deadline. Native checks additionally
+exercise client cancellation, busy-download refusal and status queries during
+an export; host tests alone do not establish SDK socket behavior.

@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: "Paced-export a6712fce/source b0282a3 passed feed, download, page and automatic reconnect preflight. Fresh strict 20-minute and full one-hour USB/SD qualification is running from 10:10:21 UTC. Physical SD charger test and publication held."
-last_updated: "2026-11-26T10:14:17.414Z"
-state_head: cb5bed698e6945d2c3eb923d2d12387b32b7da88
+stopped_at: "Socket-lifetime 3d180043/source 412e2c9 passed feeds, full downloads, cancellation, three overlapping request cases, five pages and automatic reconnect. Strict 20-minute and one-hour USB/SD tests started 2026-11-26T10:44:55.763Z. Physical SD charger test/publication held."
+last_updated: "2026-11-26T10:46:10.809Z"
+state_head: 412e2c98c0672ec330291d0db6e3b45b3c1a3141
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application a6712fcef1ef3f7989478f25b6e97e110b35afbf080e551612bf02a9cb5207e0 (1,781,808 bytes), firmware source b0282a3. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified. Three complete feed cycles and three full CSV downloads (6,562 bytes/145 rows each) pass without fault/radio drop. SD writes at most 512 bytes per main-loop pass; packet budget remains TX 4/RX 8. Page checks and controlled reconnect pass (41.416 seconds, one boot/no fault). Fresh timed/soak qualification is running from 10:10:21 UTC.
+- Current installed application 3d180043903e9302e1a090b635a9f3328fd72017472be5b19064e82ee1e5c582 (1,781,888 bytes), source 412e2c9. Fresh full 4 MB backup/checksum/flash comparison and all four written images verified. Complete feeds, three full downloads, cancellation recovery and three overlapping busy/status-request exports pass without native fault or radio loss. Five pages and controlled automatic reconnect pass (54.651 seconds, one boot/no fault). Strict 20-minute and one-hour USB/SD tests started 2026-11-26T10:44:55.763Z. Earlier a6712fce passed strict timing but failed overlapping requests; its soak was interrupted.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Qualify the paced-export candidate: feed, repeated-download, page and reconnect preflight passed; finish the fresh strict 20-minute and full one-hour USB/SD tests. Require sampled 10/60-second rates and work mean within 944.3–1043.7 kH/s, pool authorization, SD progress, fresh wallet and no native/API faults. Earlier packet-budget download stopped safely but incomplete (1,536/6,338 bytes, largest block 660); no timed run was started for it.
+- Qualify the socket-lifetime candidate: complete feeds, repeated full downloads, cancellation, overlapping busy/status requests and reconnect must pass before fresh strict 20-minute and one-hour USB/SD checks. Keep the unchanged 944.3–1043.7 kH/s band and all native/wallet/SD gates.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T10:14:17.395Z
-**Stopped at:** Paced-export a6712fce/source b0282a3 passed feed, download, page and automatic reconnect preflight. Fresh strict 20-minute and full one-hour USB/SD qualification is running from 10:10:21 UTC. Physical SD charger test and publication held.
+**Last session:** 2026-11-26T10:46:10.788Z
+**Stopped at:** Socket-lifetime 3d180043/source 412e2c9 passed feeds, full downloads, cancellation, three overlapping request cases, five pages and automatic reconnect. Strict 20-minute and one-hour USB/SD tests started 2026-11-26T10:44:55.763Z. Physical SD charger test/publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- No accepted SD-enabled composite qualification yet. Paced-export preflight passed downloads and feeds; final USB timing/soak is pending. Charger cold boot with SD requires owner availability; publication held.
+- Final-image USB qualification remains pending after the concurrent-export repair. Charger cold boot with SD requires owner availability; publication held.
