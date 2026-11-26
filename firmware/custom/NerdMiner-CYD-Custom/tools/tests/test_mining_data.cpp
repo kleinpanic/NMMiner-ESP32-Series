@@ -15,6 +15,21 @@ static std::string hex_bytes(const uint8_t* bytes, size_t length) {
 }
 
 int main() {
+    {
+        uint8_t bytes[4] = {0xcc, 0xcc, 0xcc, 0xcc};
+        const char raw[] = {'1', '2', 'a', 'B'};
+        assert(to_byte_array(raw, sizeof(raw), bytes) == 2);
+        assert(bytes[0] == 0x12 && bytes[1] == 0xab && bytes[2] == 0xcc);
+        assert(to_byte_array("abcdef", 2, bytes) == 1 && bytes[0] == 0xab);
+        bytes[1] = 0xcc;
+        assert(to_byte_array("123", 3, bytes) == 1 && bytes[0] == 0x12 && bytes[1] == 0xcc);
+        assert(to_byte_array("", 10, bytes) == 0);
+        assert(to_byte_array("1", 2, bytes) == 0);
+        assert(to_byte_array(raw, 0, bytes) == 0);
+        assert(to_byte_array(raw, 1, bytes) == 0);
+        assert(to_byte_array(nullptr, 4, bytes) == 0);
+        assert(to_byte_array(raw, 4, nullptr) == 0);
+    }
     // Independent hashlib SHA256d fixtures include coinbases larger than the
     // former 512-character buffer and complete 13/32-level merkle paths.
     struct Vector { size_t prefix_bytes; unsigned branches; const char* merkle; };
@@ -56,5 +71,5 @@ int main() {
         assert(Serial.output.empty()); // no blocking job payload on release builds
         ++cases;
     }
-    std::cout << "PASS mining data: " << cases << " coinbase/merkle/header vectors\n";
+    std::cout << "PASS mining data: " << cases << " coinbase/merkle/header vectors and 9 bounded hex decoding cases\n";
 }

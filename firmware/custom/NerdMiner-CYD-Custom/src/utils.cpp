@@ -30,24 +30,16 @@ uint8_t hex(char ch) {
 }
 
 int to_byte_array(const char *in, size_t in_size, uint8_t *out) {
+    if (!in || !out) return 0;
     int count = 0;
-    if (in_size % 2) {
-        while (*in && out) {
-            *out = hex(*in++);
-            if (!*in)
-                return count;
-            *out = (*out << 4) | hex(*in++);
-            *out++;
-            count++;
-        }
-        return count;
-    } else {
-        while (*in && out) {
-            *out++ = (hex(*in++) << 4) | hex(*in++);
-            count++;
-        }
-        return count;
+    // Respect the supplied input bound, including non-terminated buffers.
+    // Separate reads avoid the former unsequenced pair of pointer increments.
+    for (size_t i = 0; i + 1 < in_size && in[i] && in[i + 1]; i += 2) {
+        uint8_t high = hex(in[i]);
+        uint8_t low = hex(in[i + 1]);
+        out[count++] = (high << 4) | low;
     }
+    return count;
 }
 
 void swap_endian_words(const char * hex_words, uint8_t * output) {
