@@ -16,7 +16,8 @@ mining without a computer. Wi-Fi must be **2.4 GHz**.
 - Hold BOOT for 5 seconds to open Setup without erasing the current settings.
   Join the AP shown on the screen and open `http://192.168.4.1`.
 - At a new location, choose the new 2.4 GHz network and save. Existing pool
-  settings remain populated. A failed join opens Setup temporarily, then retries.
+  settings remain populated. A temporarily unavailable saved network retries
+  in the background; hold BOOT to choose a different network.
 
 The screen colours use the verified `ILI9341_2_DRIVER` + `TFT_INVERSION_ON`
 configuration. The vendor identifies this unit as ST7789; the working custom
@@ -40,9 +41,13 @@ screen. Recovery tools take and verify a full backup before every firmware write
 **Hardware acceptance is still open.** Fixed mining-job queues and nonblocking
 SD/API writes are implemented, with private SD paths protected against case and
 filename aliases. Native pressure testing exposed memory exhaustion when an SD
-client stopped reading. The new 24 KB / 4,000-byte memory reserve passed the
-sanitizer suite and board build. It is installed after a fresh verified full
-backup; native retesting is underway.
+client stopped reading. The current repair bounds file buffering to 512 bytes,
+checks TCP write readiness, reserves 20 KB / 6 KB contiguous before bulk sends,
+and expires stalled downloads. The saved-network startup path also now hands
+failed joins to runtime recovery instead of blocking in the setup portal.
+The installed repair passes complete/half-closed downloads, cancellation and
+blocked-client pressure with ten exports and 66 status requests. A fresh timed
+mining/endurance run is next.
 Earlier firmware maintained **968.153 kH/s** for 20 minutes, but failed its later
 export test, so that composite attempt is rejected. Charger cold boot with the
 SD card inserted still requires the owner's physical test. Publication remains

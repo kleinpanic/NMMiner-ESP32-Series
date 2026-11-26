@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: Control-memory reserve cda9176 installed as a25a5ade after verified full backup. Native prequalification running. Previous deferred reply image failed blocked SD pressure with a 628-byte largest heap block; no timed run. Physical SD charger/publication held.
-last_updated: "2026-11-26T13:37:23.906Z"
-state_head: cda91761a20c4e975ce77e55520a4763527a8839
+stopped_at: Source 2fa0ea4 installed as 1f59e355 after verified backup. Native feeds, privacy, complete/half-closed downloads, pressure, pages and controlled reconnect pass. Fresh timed mining/endurance warming up; physical SD charger and publication gates remain.
+last_updated: "2026-11-26T14:17:27.378Z"
+state_head: 2fa0ea4db8af5a3ad0c9f118b73ddb8341991b17
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application a25a5ade0ae43679aa38de5356d2311d92bb6ec2b42ee931ea4bda5467044adb (1,783,152 bytes), source cda9176. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified; exact factory inputs and ELF archived. The SD sender now waits below 24,576 bytes free / 4,000 contiguous, preserving control-connection and feed headroom. Full ASan/UBSan suite and board build pass, including regressions from the native blocked-peer memory trace. Native prequalification is running. Previous 744567d9 passed feed/privacy and ordinary exports but failed blocked-client pressure: free heap 13,064 / largest block 628, reply incomplete 512/591. That image had one boot/no native fault; no timed run started. All original failed evidence is preserved.
+- Current installed application 1f59e35593885c57921a509b47c4e5076f29cfa34f1e064eacdf8e07c477a20c (1,780,560 bytes), source 2fa0ea4. Fresh full 4 MB backup checksum/full-flash comparison and all four images verified; matching factory inputs and ELF archived. Saved-network startup now bypasses the timed setup/restart fallback, handing offline retries to the runtime owner while preserving explicit Setup. Full sanitizer suite and board build pass. First native boot joined candidate 1 and authorized the pool. Three complete live-data cycles, private-path guards, complete/half-closed downloads, cancellation and blocked-peer pressure passed (ten exports / 66 status requests). Five pages and automatic reauthorization after a controlled drop passed in 36.263 seconds. Timed mining/endurance is warming up. SD uses bounded 512-byte stdio, TCP write readiness, a 20,480-byte aggregate / 6,144-byte contiguous reserve and 15-second idle expiry. Previous a0e20291 failed startup prequalification: timed setup restarted after initial association failed. Earlier d67f5107 passed three CSV exports but failed half-close and blocked-client pressure (15,064 free / 2,036 largest). No timed run started on those rejected images. Original failed evidence is preserved.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Finish native pressure and endurance qualification of a25a5ade/source cda9176. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
+- Finish native pressure and endurance qualification of d67f5107/source d5a39e4. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T13:37:23.883Z
-**Stopped at:** Control-memory reserve cda9176 installed as a25a5ade after verified full backup. Native prequalification running. Previous deferred reply image failed blocked SD pressure with a 628-byte largest heap block; no timed run. Physical SD charger/publication held.
+**Last session:** 2026-11-26T14:17:27.358Z
+**Stopped at:** Source 2fa0ea4 installed as 1f59e355 after verified backup. Native feeds, privacy, complete/half-closed downloads, pressure, pages and controlled reconnect pass. Fresh timed mining/endurance warming up; physical SD charger and publication gates remain.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification of installed a25a5ade remains open. Charger cold boot with SD requires owner availability; publication held.
+- Clean full-hour USB/SD qualification of installed 1f59e355 remains open. Charger cold boot with SD requires owner availability; publication held.

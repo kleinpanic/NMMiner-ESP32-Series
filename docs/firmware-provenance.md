@@ -30,7 +30,7 @@ Paths below are relative to the firmware checkout.
 | Wi-Fi setup, runtime recovery, packet memory and saved configuration | `src/wManager.cpp`, `src/wifiRecovery.h`, `src/wifiMemory.cpp`, `src/wifiBufferBudget.h`, `src/drivers/storage/nvMemory.cpp` |
 | SD logging and path validation | `src/sdstore.cpp`, `include/sdstore.h`, `src/sdPath.h` |
 | Sound events, volume and mute | `src/speaker.cpp`, `include/speaker.h` |
-| Local status/control API, bounded SD transfers and resource measurements | `src/webapi.cpp`, `src/sdPendingTransfer.h`, `src/sdTransferPolicy.h`, `src/pendingResponse.h`, `src/socketErrorState.h`, `src/monitor.cpp`, `src/systemHealth.cpp` |
+| Local status/control API, bounded SD transfers and resource measurements | `src/webapi.cpp`, `src/sdPendingTransfer.h`, `src/sdTransferPolicy.h`, `src/pendingResponse.h`, `src/socketErrorState.h`, `src/socketPeer.h`, `src/monitor.cpp`, `src/systemHealth.cpp` |
 
 The application originates from [BitMaker's NerdMiner_v2](https://github.com/BitMaker-hub/NerdMiner_v2).
 The pipelined classic ESP32 mining loop was ported from

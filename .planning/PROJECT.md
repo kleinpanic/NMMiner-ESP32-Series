@@ -76,8 +76,16 @@ bulk writes (3596762), installed as 744567d9 after verified full backup. That
 image failed blocked-client pressure with 13,064 bytes free / 628 largest and a
 512/591-byte incomplete response; no timed run started. The 24 KB / 4,000-byte
 control-memory reserve (cda9176) passed sanitizer tests and the board build, and
-is installed as a25a5ade after a fresh verified full backup. Native
-prequalification is running. Charger
+is installed as a25a5ade after a fresh verified full backup. That image stalled
+an ordinary download before its first byte; no timed run started. Bounded
+512-byte file stdio, a 20 KB / 4,000-byte reserve and idle expiry (d5a39e4)
+were installed as d67f5107 after another verified full backup. Three CSV
+exports passed, but half-close and blocked-client pressure failed. The TCP
+write-readiness / 6 KB contiguous repair (5049bca, a0e20291) then failed
+startup prequalification because WiFiManager timed out and restarted. The
+saved-network retry repair (2fa0ea4) is installed as 1f59e355 after a fresh
+verified backup; first boot joined and authorized the pool. Native smoke,
+exports, pressure and endurance are running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still

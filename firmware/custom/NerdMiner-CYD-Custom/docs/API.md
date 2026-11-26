@@ -78,8 +78,7 @@ download client stops reading. Zero-timeout write readiness also honors the
 SDK TCP send low-water mark, rather than filling the entire send queue. File stdio buffering is limited to 512 bytes.
 A stalled transfer closes after 15 seconds without progress, within the
 three-minute total deadline; a half-closed HTTP request can still receive its
-response. Clients must
-verify Content-Length before treating a download as complete.
+response. Clients must verify Content-Length before treating a download as complete.
 
 | Method | Path | Input | Returns |
 |--------|------|-------|---------|

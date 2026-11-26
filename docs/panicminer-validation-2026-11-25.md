@@ -6,14 +6,98 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current control-memory reserve qualification
+### Current saved-network retry qualification
+
+Installed application: **1,780,560 bytes**, SHA-256
+`1f59e35593885c57921a509b47c4e5076f29cfa34f1e064eacdf8e07c477a20c`,
+firmware source `2fa0ea4`. Fresh full 4 MB backup checksum/full-flash comparison
+and all four written images verified; matching factory inputs and ELF are
+archived locally. The complete ASan/UBSan suite and board build passed (58.138
+seconds). The first native boot joined candidate 1, authorized the pool and
+completed three 5/5 live-data cycles. Wallet data was valid, SD was mounted,
+minimum unused feed stack was 3,676 bytes and no SDK TLS allocation fallback
+occurred. All 24 private-path probes passed. Three ordinary exports, a complete
+half-closed request and cancellation/busy/status coexistence passed. Blocked-peer
+pressure then passed **ten complete exports and 66 status requests**, including
+six while the bulk client stopped reading and a TCP-reset cancellation. Each
+CSV contained 335–336 nine-column records, with declared body lengths fully
+received. Minimum sampled free heap was **17,804 bytes**; no native fault,
+reboot or radio drop occurred during pressure. Timed endurance remains open.
+
+A failed saved-network join previously entered WiFiManager's 180-second setup
+portal, then restarted the board. Normal mining tasks and runtime Wi-Fi recovery
+could not start while that portal blocked. The repair preserves explicit BOOT
+Setup and missing-configuration provisioning, but allows a configured offline
+boot to finish and retry in the background. Retries clear temporary BSSID/channel
+pinning and restore all supported protocols and the configured TX power. A
+post-diagnostic scan now releases its results. Host tests cover the startup
+policy, an initial failed join and the existing retry timing. This successful
+boot did not exercise the failed-initial-join branch; that distinction remains
+part of native acceptance.
+
+### Previous TCP low-water startup attempt
+
+Firmware source `5049bca` passed the complete ASan/UBSan suite and the
+`ESP32-2432S028R` board build. Application SHA-256
+`a0e20291a4d45b05537405ddf9659d22d5938673bce418f47a271fb4f2c157a9`
+(1,783,520 bytes) was installed after a fresh verified 4 MB backup and verification
+of all four images. Its initial association failed despite a strong scanned
+signal. The blocking setup fallback caused the feed-smoke deadline to expire;
+at 286.872 capture seconds it restarted deliberately after the portal timeout,
+then joined on the next boot. That restart is counted as a native qualification
+fault; it was not a recorded SDK exception. This attempt failed startup
+prequalification, so the TCP/SD changes and timed endurance were not qualified.
+The RF cause remains unisolated; no router settings were changed.
+The SD sender now checks zero-timeout TCP write readiness, respecting the
+SDK's send low-water mark rather than filling its entire send queue. It keeps
+**20,480 bytes free / 6,144 bytes contiguous** before each bulk write, with
+512-byte stdio and retained transfer buffers. Socket errors are read with
+`SO_ERROR` without peeking/consuming the request's FIN. The 15-second idle and
+three-minute total transfer deadlines remain. Real host tests cover blocked
+write readiness, a TCP reset, repeated half-close checks, unread data, idle
+connections, stale errno and invalid descriptors. Native acceptance remains open.
+
+### Previous bounded-file qualification
+
+Installed application: **1,783,440 bytes**, SHA-256
+`d67f51076944500f0c33490ad0542587c5868b594b29c44783a4d609d14fc633`,
+firmware source `d5a39e4`. Fresh full 4 MB backup checksum/full-flash comparison
+and all four written images verified. Exact application, ELF and all four
+factory inputs are archived locally. The complete ASan/UBSan suite and the
+`ESP32-2432S028R` board build passed. Three complete native feed cycles,
+24 private-path denials and three complete CSV downloads passed. The downloads
+returned 14,832 bytes / 324 rows in 10.097, 5.752 and 5.845 seconds. A newly
+added half-close probe then failed after only 512 bytes. A separate blocked-peer
+pressure diagnostic failed on its fifth status connection, with **15,064 free
+bytes / 2,036 largest**; 4,096 SD body bytes had been queued. The 4,000-byte
+contiguous guard was still insufficient. This image failed prequalification;
+no timed run started. Original evidence for both failures is preserved.
+SD file stdio is now explicitly limited to **512 bytes** before any file
+operation; the installed SDK otherwise configures a separate 4,096-byte buffer.
+Bulk sends wait below **20,480 free bytes / 4,000 contiguous bytes**. A transfer
+also expires after **15 seconds without progress**, within its existing
+three-minute total deadline. This prevents an unreachable or low-memory peer
+from retaining a file for the entire total timeout. Nonblocking one-byte socket
+peeks detect actual socket errors without relying on stale errno; read EOF is
+allowed so a valid half-closed request can still receive its response.
+Real host socket tests cover idle/data/half-close/invalid descriptors, and
+transfer-policy cases cover idle expiry even while memory would prevent a send.
+Native complete-body, cancellation, blocked-client and endurance checks remain
+required. No hardware acceptance is inferred from the passing host tests.
+
+### Previous control-memory reserve qualification
 
 Installed application: **1,783,152 bytes**, SHA-256
 `a25a5ade0ae43679aa38de5356d2311d92bb6ec2b42ee931ea4bda5467044adb`,
 firmware source `cda9176`. Fresh full 4 MB backup checksum/full-flash comparison
 and all four written images verified. Exact application, ELF and all four
 factory inputs are archived locally. The complete ASan/UBSan host suite and
-`ESP32-2432S028R` board build passed; native prequalification is running.
+`ESP32-2432S028R` board build passed. Feed/privacy smoke passed, but the first
+ordinary CSV download timed out before any body bytes. The retained file left
+only **18,804 free bytes / 6,644 largest**, below the 24 KB cutoff. It remained
+held until the three-minute total timeout, then released with 0/14,558 bytes
+sent. No timed run started. This image failed prequalification; its original
+logs and outcome are preserved.
 The SD sender now waits below **24,576 bytes free** or **4,000 bytes contiguous**,
 leaving headroom for concurrent request buffers, JSON replies and TCP packets.
 The installed SDK uses a 1,436-byte TCP maximum segment and may retain a full
