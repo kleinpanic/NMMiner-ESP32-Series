@@ -26,6 +26,11 @@ Modded by HenrysCat, also MIT (Copyright (c) 2026 HenrysCat):
 
     https://github.com/HenrysCat/NerdMiner-Modded (522764d)
 
+TLS scratch allocation uses a separate instance of the TLSF allocator already
+bundled with LVGL 8.3.11, by Matthew Conte (Copyright 2006-2016). Its BSD-style
+license and required notice are retained in docs/licenses/tlsf-LICENSE.txt.
+This pool is separate from the UI allocator and does not change TLS verification.
+
 Hardware target: ESP32-2432S028R "Cheap Yellow Display" (ST7789/ILI9341).
 CYD SD + speaker wiring references adapted from
 witnessmenow/ESP32-Cheap-Yellow-Display (MIT).

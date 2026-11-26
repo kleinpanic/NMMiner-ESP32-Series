@@ -50,8 +50,8 @@ static const uint32_t PAGE_INTERVAL_MS = 20000;
 static uint32_t s_touch_events;
 static bool s_touch_enabled = true;
 static lv_disp_draw_buf_t s_draw_buf;
-// Ten rows keep 6.4 KB available for verified TLS while SD is mounted.
-static lv_color_t s_lines[320 * 4];
+// Small transfer chunks preserve verified-TLS heap while SD is mounted.
+static lv_color_t s_lines[320 * 2];
 static lv_disp_drv_t s_disp;
 static ui_model_t s_model;
 static bool s_backlight_on = true;
@@ -239,6 +239,7 @@ static void pm_init(void)
     s_disp.draw_buf = &s_draw_buf;
     lv_disp_drv_register(&s_disp);
     ui_init();
+    chainFeedPrepare();
 
     lv_mem_monitor_t mon;
     lv_mem_monitor(&mon);

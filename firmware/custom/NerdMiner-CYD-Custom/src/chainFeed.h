@@ -18,6 +18,7 @@ typedef struct {
     uint32_t wallet_updated_ms;
 } chain_snapshot_t;
 
+void chainFeedPrepare(void);  // reserve record buffers before SD/Wi-Fi fragment heap
 void chainFeedStart(void);    // idempotent; call once Wi-Fi is up
 void chainFeedPoke(void);     // fetch now instead of at the next period
 void chainFeedPokePaused(void); // diagnostic fetch with HW mining paused, then auto-resume

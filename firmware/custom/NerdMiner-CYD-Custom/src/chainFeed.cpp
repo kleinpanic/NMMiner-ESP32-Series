@@ -1,20 +1,31 @@
 // Bitcoin chain data for the PanicMiner Chain page, from mempool.space only.
 // A task fetches price, tip height, difficulty, network hashrate, the next
 // retarget and fees every 2 minutes over one TLS connection, verified against
-// a pinned root CA, then closes it so the TLS buffers go back to the heap.
+// a pinned root CA, then closes it. Reserved record buffers are reused while
+// transient TLS allocations return to the heap.
 #ifdef PANICMINER_UI
 
+#include <stdlib.h>
+// The SDK's C allocator header has no C++ linkage guard. Include it before
+// mbedTLS's config pulls it in, preserving the SDK symbols' C linkage.
+extern "C" {
+#include <esp_mem.h>
+}
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <atomic>
+#include <mbedtls/platform.h>
+#include <mbedtls/ssl_internal.h>
 
 #include "chainFeed.h"
 #include "mining.h"
 #include "monitor.h"
 #include "walletStats.h"
+#include "tlsRecordBuffers.h"
+#include "tlsScratchBuffer.h"
 #include "drivers/storage/storage.h"
 extern TSettings Settings;
 
@@ -65,6 +76,68 @@ static SemaphoreHandle_t s_mutex;
 static TaskHandle_t s_task;
 static chain_snapshot_t s_snap;
 static std::atomic<bool> s_pause_test{false};
+static TlsRecordBuffers s_records;
+static bool s_prepared;
+static bool s_records_ready;
+static uint32_t s_record_uses;
+static TlsScratchBuffer s_scratch;
+static uint32_t s_scratch_fallbacks;
+
+static void* feed_calloc(size_t count, size_t size)
+{
+    if (size && count > SIZE_MAX / size) return nullptr;
+    size_t bytes = count * size;
+    if (chainFeedIsCurrentTask()) {
+        if (s_records_ready &&
+            (bytes == MBEDTLS_SSL_IN_BUFFER_LEN || bytes == MBEDTLS_SSL_OUT_BUFFER_LEN)) {
+            void* buffer = s_records.acquire(count, size);
+            if (buffer) ++s_record_uses;
+            return buffer;
+        }
+        if (void* buffer = s_scratch.calloc(count, size)) return buffer;
+        ++s_scratch_fallbacks;
+    }
+    void* buffer = esp_mbedtls_mem_calloc(count, size);
+    if (!buffer && chainFeedIsCurrentTask())
+        Serial.printf("[CHAIN] allocation failed: %u bytes\n", (unsigned)bytes);
+    return buffer;
+}
+
+static void feed_free(void* ptr)
+{
+    if (s_records_ready && s_records.release(ptr)) return;
+    if (s_scratch.release(ptr)) return;
+    esp_mbedtls_mem_free(ptr);
+}
+
+void chainFeedPrepare(void)
+{
+    if (s_prepared) return;
+    s_prepared = true;
+    void* input = esp_mbedtls_mem_calloc(1, MBEDTLS_SSL_IN_BUFFER_LEN);
+    void* output = esp_mbedtls_mem_calloc(1, MBEDTLS_SSL_OUT_BUFFER_LEN);
+    s_records_ready = s_records.init(input, MBEDTLS_SSL_IN_BUFFER_LEN,
+                                    output, MBEDTLS_SSL_OUT_BUFFER_LEN);
+    if (!s_records_ready) {
+        esp_mbedtls_mem_free(input);
+        esp_mbedtls_mem_free(output);
+        Serial.println("[CHAIN] record buffer reservation failed");
+        return;
+    }
+    // RSA/certificate scratch allocations need coalescing space too. Keep
+    // their allocator separate from long-lived SD/network allocations.
+    constexpr size_t scratch_bytes = 24 * 1024;
+    void* scratch = esp_mbedtls_mem_calloc(1, scratch_bytes);
+    if (!s_scratch.init(scratch, scratch_bytes)) {
+        esp_mbedtls_mem_free(scratch);
+        Serial.println("[CHAIN] scratch reservation failed; using SDK fallback");
+    }
+    // Supported mbedTLS allocator hook. Other tasks retain the SDK's
+    // allocator; certificate checks are unchanged.
+    mbedtls_platform_set_calloc_free(feed_calloc, feed_free);
+    Serial.printf("[CHAIN] reserved record buffers %u + %u bytes\n",
+                  (unsigned)MBEDTLS_SSL_IN_BUFFER_LEN, (unsigned)MBEDTLS_SSL_OUT_BUFFER_LEN);
+}
 
 static bool get_body(HTTPClient& http, WiFiClientSecure& tls, const char* url, String& body,
                      const char* label = nullptr)
@@ -163,6 +236,10 @@ static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
                   n.difficulty, n.fee_fast, n.fee_hour, n.fee_eco);
     Serial.printf("[CHAIN] stack minimum free %u bytes; wallet %s\n",
                   (unsigned)uxTaskGetStackHighWaterMark(NULL), n.wallet_valid ? "loaded" : "unavailable");
+    Serial.printf("[CHAIN] reserved record uses %lu\n", (unsigned long)s_record_uses);
+    Serial.printf("[CHAIN] scratch used %u, peak %u, SDK fallbacks %lu\n",
+                  (unsigned)s_scratch.used(), (unsigned)s_scratch.peak(),
+                  (unsigned long)s_scratch_fallbacks);
 }
 
 static void feed_loop(void*)
@@ -193,12 +270,13 @@ static void feed_loop(void*)
 void chainFeedStart(void)
 {
     if (s_task) return;
+    chainFeedPrepare();
     s_mutex = xSemaphoreCreateMutex();
     // TLS hashes with the SHA-1 and SHA-512 engines, which share SHA_TEXT with
     // the miner's SHA-256 engine. With every engine held per job, mbedTLS finds
     // them busy and hashes in software instead (see minerShaLockAll).
     minerShaLockAll(true);
-    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 8192, NULL, 2, &s_task, APP_TASK_CORE);
+    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 10240, NULL, 2, &s_task, APP_TASK_CORE);
 }
 
 void chainFeedPoke(void)
