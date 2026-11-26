@@ -40,7 +40,7 @@
 - [ ] **HW-01**: Speaker beeps once per accepted share and stays silent at boot.
 - [ ] **HW-02**: SD card mounts and logs shares.
 - [ ] **HW-03**: RGB LED shows mining, share and disconnect states.
-- [ ] **HW-04**: The touch controller is identified (XPT2046, capacitive, or none) and touch works or is declared absent.
+- [x] **HW-04**: The touch controller is identified (XPT2046, capacitive, or none) and touch works or is declared absent.
 
 ## Out of scope
 

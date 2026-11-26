@@ -4,6 +4,103 @@ The CYD runs the matching Mine, Hash, Chain, Clock, Boot and Setup design in
 the fork's `ESP32-2432S028R` environment, with the verified panel inversion.
 The full 4 MB device image is backed up before every firmware write.
 
+## November 26: SD reinsertion update, ready for native installation
+
+The owner requested reinserting the purchased card and updating the firmware.
+The charger observer was preserved as interrupted, with 54 samples through
+787 seconds. It did not complete the 20-minute gate. Around the requested card
+change, HTTP and ICMP stopped responding and JNAP stopped listing an active
+miner. This does not isolate card insertion, a power interruption or a firmware
+fault; no USB serial connection was available to inspect the event.
+
+Source inspection found a concrete peripheral ownership conflict: TFT_eSPI and
+SDStore each constructed a separate `SPIClass(VSPI)` on different pins, while
+touch already owned HSPI. The second VSPI owner could reinitialize the display's
+hardware and had a separate transaction lock. The repair uses TFT_eSPI's public
+`getSPIinstance()` for the card, fans VSPI clock/data out to GPIO18/23 without
+detaching display pins GPIO14/13, and sets the common input to the SD's GPIO19.
+Separate GPIO15/5 chip selects isolate display/card transactions. SD unmount
+keeps the display controller running. The display deselects the card before its
+first traffic; touch and its calibration remain on the existing HSPI path.
+
+The checked Arduino SPI implementation returns early from `begin()` on an
+already started instance and serializes transactions on that instance's lock.
+The GPIO routing mechanism is also documented in Espressif's
+[SPI reference](https://github.com/espressif/esp-idf/blob/v4.4/docs/en/api-reference/peripherals/spi_master.rst).
+This repair addresses a source-level conflict; it does not establish the cause
+of previous Wi-Fi failures.
+
+The updated application builds for `ESP32-2432S028R`: 1,794,480 bytes, SHA-256
+`2a58b816ae8b1cbe94c8814f37b0c11208c89ca9ee0cad47f475400249e28fb9`.
+Production SDStore host checks cover shared ownership, retained display routes,
+missing-card/retry paths, non-disruptive unmount, capacity, CSV records and
+short-write accounting. Existing 132 regression cases and speaker tests pass.
+The negative control compiles the previous production SDStore with the same
+host boundaries and fails the shared-bus assertion; the repaired source passes.
+Native backup/installation, mounted capacity, downloaded CSV records, display
+and touch coexistence, and the 20-minute run remain pending laptop USB access.
+No new image has been flashed and no native SD success is claimed.
+
+## November 26: JNAP recovery and saved-settings restart
+
+Authenticated JNAP confirmed that the stored 2.4 GHz SSID and Wi-Fi password
+match the router, MAC filtering is disabled, and the stronger scanned AP is the
+actual router. The router is an EA8300. Its local UI source supplied the API
+names and request schema; radio settings come from `GetRadioInfo3`, not the
+unsupported `GetRadioSettings` actions.
+
+The owner moved the equipment as close as practical and unplugged/replugged the
+miner. Airtime fairness was disabled using `SetAirtimeFairnessSettings`; readback
+confirmed disabled. Applying it briefly interrupted router Wi-Fi. NetworkManager
+subsequently reported full laptop connectivity. WPA2 remained configured. The
+working configuration retains the disabled fairness setting, rather than making
+another radio change during acceptance testing.
+
+Installed application remains
+`82dca8181f64c04be39835fc3db2ea94e5076265988061d77bd2affe51644548`.
+A fresh EN boot joined the stronger AP with the first normal b/g/n profile,
+authorized the existing wallet worker and loaded **5/5 Chain endpoints**.
+Signal was -38 dBm; JNAP independently listed the miner on the 2.4 GHz radio.
+Thirty-four early samples included 957.0–986.7 kH/s in the latest ten; SHA
+verification showed 455 checked, zero mismatches and zero dropped candidates.
+These are startup observations, not a completed performance gate. Movement,
+USB power cycling and fairness changed together, so root cause remains
+confounded; do not attribute recovery solely to the router option.
+
+`PMSAVE` acknowledged `ESP_OK` with best difficulty `0.702206`. A subsequent EN
+reset, without USB provisioning, rejoined at -34 dBm, restored the same best,
+authorized the pool and loaded all five Chain endpoints. Later live readings
+were near 966–991 kH/s. That validates restart with stored settings, but EN reset
+is not a charger-powered cold boot. The user confirmed moving the unit to a USB charger near the router. The USB
+device disappeared from the laptop, JNAP independently listed the miner on
+2.4 GHz with its current lease, and its HTTP API reported pool authorization,
+restored best `0.702206052`, and a 10-second rate of `999.4349976 kH/s`.
+This verifies the charger-powered cold boot and mining without the laptop USB
+connection. The initial 60-second average was still warming up and is not used
+as a completed benchmark result.
+
+The original serial 20-minute observer was stopped before completion for the
+requested restart and charger check. A separate API observer attempted a
+fresh charger-powered 20-minute run after six consecutive in-band 10/60-second
+rate samples. It checks reported rates, pool authorization, API reachability and
+the independent work-counter delta. Serial SHA/Chain evidence is limited to the
+pre-unplug test; this API run does not establish continuous post-unplug SHA or
+TLS-event monitoring. The first API attempt stopped after about 40 seconds because one status read
+exceeded its three-second limit. JNAP still showed an associated miner and the
+next API response was authorized at 966.96/975.61 kH/s (10/60-second windows).
+That failed observation is retained; it does not establish a Wi-Fi disconnect.
+The second attempt also timed out, with a ten-second status limit. A subsequent
+response took 0.113 seconds, remained authorized, and showed increasing work at
+972.77/977.43 kH/s. All 12 ICMP probes responded during that later check. Both
+failed observations are retained. The continued work-counter observer was
+interrupted for the requested SD update as recorded above. There is no new
+20-minute PASS. The installed code is
+unchanged; the common success-path reconnection safeguard in `92a0f4d` is
+build-checked but not flashed. Its saved-network success path already enables
+automatic reconnection and is the path exercised in the successful EN test.
+Secrets, full responses containing credentials and device logs remain excluded
+from Git; JNAP diagnostic output is projected and redacted.
+
 ## Current repair and physical SD test
 
 The owner confirmed **SD removed and USB reconnected**. With the card absent,

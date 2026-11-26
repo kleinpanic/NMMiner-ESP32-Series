@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: Native Wi-Fi still fails after verified AP/channel retry firmware and a 25-second pinned join. Laptop USB retained; no further flash. Hold publication; see measured runtime validation.
-last_updated: "2026-11-26T04:50:48.898Z"
-state_head: faf47ddd1d86e926b5469535c2850619ce2e15fc
+stopped_at: SD shared-SPI repair built and host-tested; waiting for laptop USB with SD inserted to back up, flash, verify card logging/display/touch and complete the 20-minute Mine test. Publication held.
+last_updated: "2026-11-26T05:48:57.215Z"
+state_head: c17498a4d71b1a199a7f3be42f2f8724966a7c2d
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,45 +24,16 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Live firmware at 2026-11-25 16:38: fork `ac9d35e` (UI "D", Afterglow Blockspace),
-  flashed as `blockspace-d2`. It boots clean: LVGL pool 24 KB used of 56 KB, heap 145 KB
-  free. Boot banner `panicminer 0.1.0 starting`; setup AP `panicminer-DE0C`, password
-  `panicminer`.
-- Wi-Fi fails again since 2026-11-25 16:08: reason 2 AUTH_EXPIRE on every try, some
-  NO_AP_FOUND, and the router does not list the unit.
-  - The pre-D image (backup `cyd-backup-20261125-160543-pre-blockspace-d.bin`) fails
-    the same way at 16:25, so the UI is not the cause.
-  - 8.5 dBm + 802.11b (read back as 6.75 dBm) fails the same way at 16:36. Reverted to 13 dBm.
-  - Next step needs the operator: move the unit nearer the router, or join another
-    2.4 GHz network.
-- Wi-Fi worked from 2026-11-25 15:07 (IP 192.168.1.144). Cause: this unit's radio
-  is not heard by the router at full transmit power.
-  - At full power the router ignored nearly every auth request (reason 2 AUTH_EXPIRE) from
-    2026-11-24 23:34 on, on any MAC and after a router restart. One join got through at
-    15:00:51 with the router reading the unit at the weakest signal of all its clients.
-  - At 7 dBm the router answered auth and association every time; the WPA2 handshake
-    then timed out (reason 15).
-  - 13 dBm with 802.11b-only rates joined on the first try. Fix `ef5e330`: build flags
-    `PM_WIFI_TXPOWER` and `PM_WIFI_11B` on the ESP32-2432S028R env.
-  - Ruled out: the password (NVS and the router's JNAP settings match), MAC filtering
-    (off), band steering (5 GHz only), the router's 2.4 GHz radio (5 other clients rejoined
-    after the restart), and the firmware (the 22:24 image failed the same way).
-  - Router: Linksys EA8300, JNAP at `192.168.1.1/JNAP/`, admin password in
-    `secrets/router.json` (gitignored, mode 600). No router setting was changed.
-- Wi-Fi config: `secrets/device.json` (gitignored, mode 600). Push it with
-  `.venv/bin/python scripts/provision_fork_serial.py --log logs/provision.log`.
-  Homebase5 is 5 GHz only and cannot work.
-- The setup portal re-opens for 180 s after a failed join, then the unit restarts and
-  retries. It recovers by itself once the router accepts it.
-- Latest full backup: `hardware/backups/cyd-backup-20261125-163752-pre-blockspace-d2.bin`
-  (checksum sidecar beside it). `scripts/flash_fork_build.sh` takes one before every write.
-  To restore a backup:
-  `.venv/bin/esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash 0x0 <backup>`.
-- Serial commands: `PMDUMP` (framebuffer to `scripts/fbdump.py`), `PMNEXT` (next page),
-  `PMFEED` (chain fetch now). `PMLOCK` reports "all" and changes nothing on the pipelined
-  build. `NMCFG {json}` in the 6 s boot window sets Wi-Fi and pool.
+- Current hardware evidence is in [runtime validation](../docs/panicminer-validation-2026-11-25.md). Earlier failed joins below are historical, superseded by the November 26 recovery.
+- Installed normal application SHA-256: `82dca8181f64c04be39835fc3db2ea94e5076265988061d77bd2affe51644548`. The common success-path reconnect safeguard in source commit `92a0f4d` is build-checked but not installed; the saved-network boot path tested on hardware already enables reconnection.
+- Owner confirmed USB charger power near the router with the SD card removed. Laptop USB disappeared; JNAP independently listed the 2.4 GHz client and its API reported the saved worker pool-authorized, best restored to 0.702206052, and a 999.4 kH/s startup reading. Saved-settings EN restart also passed before moving to the charger.
+- All five Chain endpoints, native Stats/Chain frames and zero SHA mismatches/drops were observed before USB removal. These serial observations do not establish continuous post-unplug TLS/SHA coverage.
+- Airtime fairness is disabled on the EA8300; WPA2 remains configured. Placement, power cycling and the router setting changed together, so no single root cause is established.
+- Two API observers stopped on status-read timeouts; later responses remained authorized with increasing work. The continued charger observer was interrupted for the owner-requested SD update after 54 samples through 787 seconds. HTTP/ICMP and router association were lost around the card change; no cause is established without native logs. There is no new 20-minute PASS.
+- Saved configuration and full verified backups remain ignored. Every future firmware write requires a fresh verified full 4 MB backup. Use the checked flash/restore scripts.
+- Daily use: USB power, saved 2.4 GHz Wi-Fi and pool; tap left/right for manual pages, hold BOOT for Setup at 192.168.4.1.
 
-## Done this phase (fork `v4/panicminer`)
+## Implementation history (earlier fork commits)
 
 - `584ee19`: software share verification before submit.
 - `3778d55`: serial no longer prints the Wi-Fi password, wallet or pool password.
@@ -95,33 +66,22 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
   renders 19 frames in both themes. Mockup: https://claude.ai/artifact/16gC8qPdh5aGHearUekHD9
   - A review found 1 blocker (the strip missed feed updates) and 4 warnings; all are fixed
     in the same commit.
-  - Open from the review: `mining.cpp:565` rolls `Mhashes` and `hashes` over without a
-    lock, so the Monitor can read a torn pair and show a 10 s hashrate spike. This predates D.
+  - The historical work-counter race found in this review was repaired in root commit `599e170` using coherent locked increments and snapshots.
 
 ## Repos
 
-- Parent repo has no remote. Laptop disk is the only copy.
-- Fork `firmware/custom/NerdMiner-CYD-Custom`: branch `v4/panicminer`, pushed to
-  `origin`. Old clone stack preserved on `origin/archive/nmminer-clone-lvgl` (`9777259`).
+- Canonical repository: https://github.com/kleinpanic/NMMiner-ESP32-Series (root branch `main`). Firmware, tooling, tests and reverse-engineering notes are ordinary tracked files in this repository.
+- Source consolidation is commit `a730def`; the previous nested Git history is preserved locally under ignored `external/`.
+- The former `kleinpanic/NerdMiner-CYD-Custom` repository is historical. The owner requests one canonical public repository, with no release claim before hardware acceptance.
+- GitHub description and topics have been updated. Secrets and raw hardware evidence remain local and excluded from publication.
 
 ## Open questions
 
-- Not verified on the unit yet; each needs Wi-Fi:
-  - the four D pages read back with `scripts/fbdump.py --pages 4`;
-  - the D hashrate against the 994 kH/s baseline (UI-05: at most 5 % lower), on the Mine page;
-  - chain feed `[CHAIN]` lines;
-  - `[SHA]` mismatch counts (lock-all is always on in the pipelined build);
-  - the boot self-test line and the loop the miner picks;
-  - real hashrate. To measure it, use the change in `[SHA]` checked + dropped, × 65536 ÷
-    seconds, since the attempt counter moves in 256K-nonce chunks;
-  - the first accepted share with the zero-padded nonce.
-- Panel: settled 2026-11-25 by photo. It needs INVON (fork `0f0cc75`, flashed 20:15 as
-  `panel-invon`; owner confirmed the colours). Backup before it:
-  `cyd-backup-20261125-201431-pre-panel-invon.bin`.
-- Chain feed: mbedTLS reports "X509 - Certificate verification failed" on the unit. Notes
-  in `.planning/debug/chain-feed-x509-verify.md`. The fork's uncommitted `src/chainFeed.cpp`
-  diff is the error logging that found it.
-- Touch: XPT2046 answers with no-press readings. Needs a press test.
+- Owner requests SD re-enabled and tested. SDStore/display VSPI ownership repair builds and passes the production host checks. Candidate SHA-256 is `2a58b816ae8b1cbe94c8814f37b0c11208c89ca9ee0cad47f475400249e28fb9`; it is not installed. Wait for laptop USB, take a fresh verified full backup, install, verify native SD CSV/display/touch and restart the full 20-minute Mine run.
+- Intermittent HTTP status timeouts need diagnosis if they recur. At the last check the miner stayed associated, pool-authorized and advancing work, with 12/12 ICMP replies.
+- SD reinsertion, a one-hour unattended soak, native egress capture and a pool-confirmed share/block remain unverified. Zero accepted shares is an observed result, not evidence of a payout or a license problem.
+- The owner's manual-page requirement supersedes the old UI-04 timer-rotation wording. Touch direction and one action per held press were confirmed on hardware.
+- Historical phase checklists have broader gates than the current delivery; do not mark all five phases or all requirements complete from this closeout.
 
 ## Decisions
 
@@ -133,13 +93,16 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 - [Phase 1]: User confirmed physical SD removal plus USB reconnection. The d2c601e8 build now joins, authorizes the saved wallet with the pool, mines, restores saved best on EN reset, and renders complete native Stats and Chain screens. The first timed run then failed with a Wi-Fi drop and a 415 kH/s minimum; do not mark stability passed. — Card removal and USB power cycle changed together, so neither is isolated as the cause. Preserve failed evidence locally. Fix the verified merkle buffer overrun, long-coinbase truncation, hot-path serial logging and incoherent work snapshots before retesting; keep publication held.
 - [Phase 1]: Owner disclosed moving the miner farther from the router while the laptop charged, then moved it back. Failed joins after the initial recovery are confounded by that relocation; native scans ranged from -62 to -80 dBm. RF-only recalibration succeeded but did not restore joining at that position. — Do not diagnose SD, firmware load, radio hardware or credentials as the sole cause. A read-only Wi-Fi isolation test was interrupted after 49 seconds to restore normal mining firmware before the owner relocates it; it did not complete all profiles. Restore app e8cfc642 and verify from the new position.
 - [Phase 1]: Owner requires laptop USB; alternate power test unavailable. Near-router scan sees two WPA2 APs; association still fails. — Do not treat distance or power as established causes. Test early reconnect policy and explicit AP/channel selection in normal firmware.
+- [Phase 1]: JNAP verified credentials and no MAC filter. Proximity improved signal to -38 dBm with airtime fairness disabled; native mining, pool authorization and all five Chain feeds recovered. Saved-settings EN restart passed. — Placement, USB power cycle and router option changed together, so root cause is not isolated. Keep working firmware and router configuration; verify charger cold boot and fresh timed run before publication.
+- [Phase 1]: Owner confirmed charger power. Laptop USB device is absent; JNAP and the miner API independently confirm 2.4 GHz, pool authorization, preserved best difficulty and about 999 kH/s after cold boot. — Standalone startup is verified. A fresh API-based 20-minute run is measuring reported rates and work-counter progress; full post-unplug serial SHA and TLS events are unavailable.
+- [Phase 1]: Owner requests SD card use and a firmware update, superseding the temporary card-removed closeout. Shared-VSPI ownership repair is committed as c17498a, builds for CYD and passes production SD tests plus an old-code negative control. — The display and SD previously owned separate SPIClass(VSPI) instances, which reconfigure the same controller with independent locks. New code uses the display SPI instance and GPIO-matrix output sharing; touch retains HSPI. A fresh verified backup, native SD CSV/display/touch checks and the full 20-minute Mine test require laptop USB. Do not claim installation or hardware acceptance from host tests.
 
 ## Session
 
-**Last session:** 2026-11-26T04:50:48.848Z
-**Stopped at:** Native Wi-Fi still fails after verified AP/channel retry firmware and a 25-second pinned join. Laptop USB retained; no further flash. Hold publication; see measured runtime validation.
+**Last session:** 2026-11-26T05:48:10.302Z
+**Stopped at:** SD shared-SPI repair built and host-tested; waiting for laptop USB with SD inserted to back up, flash, verify card logging/display/touch and complete the 20-minute Mine test. Publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Near-router laptop-USB test still fails: all eight AP/channel/profile attempts and a separate 25-second known-channel join failed on verified image 82dca818. No fresh 20-minute run is possible until Wi-Fi joins; AP-side evidence or physical radio/network isolation is needed. SD reinsertion and publication remain held.
+- Native SD update and endurance test require the owner to reconnect the miner to laptop USB with the SD inserted. Shared-VSPI repair builds and passes production host tests, but is not flashed. Miner API and router association disappeared around the card change. No public release or push until the directed hardware checks pass.
