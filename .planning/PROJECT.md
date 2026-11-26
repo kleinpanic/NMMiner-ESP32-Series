@@ -72,8 +72,12 @@ guard and timing diagnostics (da95928) are installed as 8e482e7d after verified
 full backup, but its blocked-client pressure check still failed. A native
 request pass took 18.826 seconds and speaker-only replies also truncated.
 Deferred response hooks now prioritize retained HTTP headers/JSON over SD
-bulk writes (3596762), installed as 744567d9 after verified full backup; fresh
-native qualification is running. Charger
+bulk writes (3596762), installed as 744567d9 after verified full backup. That
+image failed blocked-client pressure with 13,064 bytes free / 628 largest and a
+512/591-byte incomplete response; no timed run started. The 24 KB / 4,000-byte
+control-memory reserve (cda9176) passed sanitizer tests and the board build, and
+is installed as a25a5ade after a fresh verified full backup. Native
+prequalification is running. Charger
 cold boot with SD remains a separate physical gate. The owner is asleep and authorized continued USB testing; do not prompt
 for another move tonight. Publication remains held until hardware acceptance.
 The application is open source; Espressif radio binaries and chip ROM are still

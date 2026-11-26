@@ -37,17 +37,17 @@ at 1 MB. Saved internal settings take priority over optional SD recovery setting
 Native tests have confirmed card capacity, successful rows and a complete Stats
 screen. Recovery tools take and verify a full backup before every firmware write.
 
-**Hardware acceptance is still open.** The newest installed image uses fixed
-mining-job queues and nonblocking SD exports/API replies with retained bytes and a larger
-memory reserve. Its contiguous reserve also handles the observed 4,084-byte
-fragmentation plateau without stalling. It protects private SD paths against case and filename
-aliases. A fresh verified backup preceded installation; native export pressure
-and fresh endurance qualification are running. The preceding image maintained
-**968.153 kH/s** for a full 20-minute window, but its post-run SD download timed
-out and triggered a mining-job allocation abort; that composite attempt failed.
-Charger cold boot with the SD card inserted still requires the owner's physical
-test. Publication remains on hold. Exact digests, tests and failed attempts are
-preserved in [runtime validation](docs/panicminer-validation-2026-11-25.md).
+**Hardware acceptance is still open.** Fixed mining-job queues and nonblocking
+SD/API writes are implemented, with private SD paths protected against case and
+filename aliases. Native pressure testing exposed memory exhaustion when an SD
+client stopped reading. The new 24 KB / 4,000-byte memory reserve passed the
+sanitizer suite and board build. It is installed after a fresh verified full
+backup; native retesting is underway.
+Earlier firmware maintained **968.153 kH/s** for 20 minutes, but failed its later
+export test, so that composite attempt is rejected. Charger cold boot with the
+SD card inserted still requires the owner's physical test. Publication remains
+on hold. Exact digests, tests and failed attempts are preserved in
+[runtime validation](docs/panicminer-validation-2026-11-25.md).
 
 Wallet BTC/USD values come from the **configured payout address**, after removing
 its worker suffix. They describe that address's funds, including other transfers;

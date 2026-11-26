@@ -4,9 +4,9 @@ milestone: v4.0
 milestone_name: "PanicMiner: owned open firmware"
 current_phase: 1
 status: executing
-stopped_at: Deferred API replies 3596762 installed as 744567d9 after verified full backup. Feed/privacy smoke passed; native export pressure and fresh endurance qualification running. Previous SDK response path stalled 18.826 seconds. Physical SD charger/publication held.
-last_updated: "2026-11-26T13:22:52.155Z"
-state_head: 3596762b00fc5cb890fa836f1d79a27843822fea
+stopped_at: Control-memory reserve cda9176 installed as a25a5ade after verified full backup. Native prequalification running. Previous deferred reply image failed blocked SD pressure with a 628-byte largest heap block; no timed run. Physical SD charger/publication held.
+last_updated: "2026-11-26T13:37:23.906Z"
+state_head: cda91761a20c4e975ce77e55520a4763527a8839
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Device
 
-- Current installed application 744567d982e4c33f019647f961bb801e6521c6f2bdfeaf4623b33da67c7ccb3c (1,783,152 bytes), source 3596762. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified; exact factory inputs and ELF archived. API headers/JSON now retain one bounded response and use nonblocking writes with priority over SD bulk traffic; partial bytes persist and buffers release after completion. Fixed mining requests, 16 KB aggregate / 2 KB contiguous reserve and private-path protection remain. Full sanitizer suite and board build pass, including pending-response backpressure/allocation-failure tests. Three complete native feeds and private-path checks passed; native export pressure and fresh endurance qualification are running. Previous 8e482e7d passed ordinary exports but failed blocked-client pressure; a request pass took 18.826 seconds, and speaker-only replies also truncated. No timed run started on that image. All original failed evidence is preserved.
+- Current installed application a25a5ade0ae43679aa38de5356d2311d92bb6ec2b42ee931ea4bda5467044adb (1,783,152 bytes), source cda9176. Fresh full 4 MB backup checksum/full-flash comparison and all four written images verified; exact factory inputs and ELF archived. The SD sender now waits below 24,576 bytes free / 4,000 contiguous, preserving control-connection and feed headroom. Full ASan/UBSan suite and board build pass, including regressions from the native blocked-peer memory trace. Native prequalification is running. Previous 744567d9 passed feed/privacy and ordinary exports but failed blocked-client pressure: free heap 13,064 / largest block 628, reply incomplete 512/591. That image had one boot/no native fault; no timed run started. All original failed evidence is preserved.
 - Earlier scheduling image f9b46f96 passed the original 1,200.984-second performance window at 968.076 kH/s (225 samples), then its SD CSV download stalled and radio dropped. Composite qualification failed and soak was interrupted. The first bounded-transfer image a21a35e3 then aborted in JobPush under download memory pressure and restarted; it is rejected. Heap tracing measured a 1,396-byte largest block during another transfer.
 - Earlier continuous-work f8da51e3 passed feed/page/reconnect checks, then failed after 63.264 seconds at 944.1116 kH/s. Native timing isolated a 272.937 ms job-preparation pause; hardware SHA lock waits stayed at most 25 µs. The failed attempt and interrupted soak are retained.
 
@@ -84,7 +84,7 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Open questions
 
-- Finish native pressure and endurance qualification of 744567d9/source 3596762. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
+- Finish native pressure and endurance qualification of a25a5ade/source cda9176. Preserve all prior failures. Feed evidence now uses the actual sample window, with regression coverage; intentional preflight disconnects cannot falsely fail the timed window. All real API/native/rate/wallet/SD gates remain.
 - Standalone charger cold boot with SD awaits the owner's physical availability. Continue all unblocked USB work; do not prompt again tonight or infer this gate from an EN reset.
 - One-hour soak and native egress capture remain broader milestone gates. Accepted shares are observed; no accepted block or payout is claimed. Do not mark all five phases complete from this repair.
 - Manual debounced pages supersede the old timer rotation requirement. Physical left/right and held-press behavior were confirmed earlier; native post-SD Stats capture is complete.
@@ -105,10 +105,10 @@ Milestone: v4.0 PanicMiner. v3.0 closed as superseded on 2026-11-24
 
 ## Session
 
-**Last session:** 2026-11-26T13:22:52.127Z
-**Stopped at:** Deferred API replies 3596762 installed as 744567d9 after verified full backup. Feed/privacy smoke passed; native export pressure and fresh endurance qualification running. Previous SDK response path stalled 18.826 seconds. Physical SD charger/publication held.
+**Last session:** 2026-11-26T13:37:23.883Z
+**Stopped at:** Control-memory reserve cda9176 installed as a25a5ade after verified full backup. Native prequalification running. Previous deferred reply image failed blocked SD pressure with a 628-byte largest heap block; no timed run. Physical SD charger/publication held.
 **Resume file:** docs/panicminer-validation-2026-11-25.md
 
 ### Blockers
 
-- Clean full-hour USB/SD qualification of installed 744567d9 remains open. Charger cold boot with SD requires owner availability; publication held.
+- Clean full-hour USB/SD qualification of installed a25a5ade remains open. Charger cold boot with SD requires owner availability; publication held.

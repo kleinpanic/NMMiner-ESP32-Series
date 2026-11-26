@@ -6,15 +6,37 @@ The full 4 MB device image is backed up before every firmware write.
 
 ## November 26: SD, runtime reconnect and wallet follow-up
 
-### Current deferred-API qualification
+### Current control-memory reserve qualification
+
+Installed application: **1,783,152 bytes**, SHA-256
+`a25a5ade0ae43679aa38de5356d2311d92bb6ec2b42ee931ea4bda5467044adb`,
+firmware source `cda9176`. Fresh full 4 MB backup checksum/full-flash comparison
+and all four written images verified. Exact application, ELF and all four
+factory inputs are archived locally. The complete ASan/UBSan host suite and
+`ESP32-2432S028R` board build passed; native prequalification is running.
+The SD sender now waits below **24,576 bytes free** or **4,000 bytes contiguous**,
+leaving headroom for concurrent request buffers, JSON replies and TCP packets.
+The installed SDK uses a 1,436-byte TCP maximum segment and may retain a full
+segment for a 512-byte write. The policy still permits the observed 4,084-byte
+fragmentation shape once aggregate memory recovers. Regression coverage uses
+the actual blocked-peer memory trace below. Native pressure and endurance
+acceptance are required; host tests alone do not prove this budget sufficient.
+
+### Previous deferred-API qualification
 
 Installed application: **1,783,152 bytes**, SHA-256
 `744567d982e4c33f019647f961bb801e6521c6f2bdfeaf4623b33da67c7ccb3c`,
 firmware source `3596762`. Fresh full 4 MB backup checksum/full-flash comparison
 and all four written images verified. Exact application, ELF and all four
-factory inputs are archived locally. Three complete feed cycles and native
-private-path checks passed. Export pressure/page/reconnect and fresh endurance
-qualification remain open; no overall hardware PASS is claimed.
+factory inputs are archived locally. Three complete feed cycles, 24 private-path
+denials, three complete CSV downloads, cancellation recovery and three concurrent
+busy/status scenarios passed. The blocked-client pressure stage then failed.
+A repeat measured **13,064 bytes free with only a 628-byte largest block** while
+an SD client stopped reading; a status response sent only 512 of its 591 bytes.
+After cancellation, memory recovered to 28,832 free / 6,644 largest. This confirms
+contiguous-memory exhaustion during that stall. The 16 KB / 2 KB bulk reserve
+was insufficient. Mining continued with one boot and no native fault; no timed
+run started. Original reports and diagnostic logs are preserved.
 
 Both the SD body and the HTTP headers/JSON replies now avoid the SDK's repeated
 synchronous writes. The server write hooks retain one response (at most 8 KB),
@@ -25,7 +47,7 @@ has a ten-second total deadline and releases its buffer/socket reference after
 completion; an SD header retains the separate file-transfer socket reference.
 Host cases cover exact headers/body under repeated backpressure, bounds,
 allocation failure, invalid writes and reset. Full ASan/UBSan tests and board
-build pass; native blocked-client pressure is still required.
+build pass; this image nevertheless failed native blocked-client pressure.
 
 ### Previous API socket-state qualification
 
@@ -66,7 +88,7 @@ request in 475 ms, but its second request stalled while mining and feeds
 continued. One boot and no native fault were observed. The image failed
 prequalification; no timed run started. Original evidence is preserved.
 
-The contiguous heap floor is now **2 KB**, retaining the **16 KB** aggregate
+This candidate used a **2 KB** contiguous heap floor with a **16 KB** aggregate
 reserve and one nonblocking send of at most 512 bytes per loop. The regression
 uses the prior native 21,224-byte free / 4,084-byte largest-block reading:
 the former 4,096-byte cutoff waits at that fragmentation plateau, while the
