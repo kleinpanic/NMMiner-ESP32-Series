@@ -26,6 +26,7 @@ extern "C" {
 #include "walletStats.h"
 #include "tlsRecordBuffers.h"
 #include "tlsScratchBuffer.h"
+#include "chainHttp.h"
 #include "drivers/storage/storage.h"
 extern TSettings Settings;
 
@@ -142,20 +143,14 @@ void chainFeedPrepare(void)
 static bool get_body(HTTPClient& http, WiFiClientSecure& tls, const char* url, String& body,
                      const char* label = nullptr)
 {
-    if (!http.begin(tls, url)) return false;
-    int code = http.GET();
-    if (code == HTTP_CODE_OK) {
-        body = http.getString();
-    } else {
+    return chainGetBody(http, tls, url, body, [&](int code, unsigned attempt) {
         // HTTPClient reports DNS, TCP, TLS and certificate failures all as -1;
         // mbedTLS's own error and the heap tell them apart.
         char err[100] = "";
         tls.lastError(err, sizeof(err));
-        Serial.printf("[CHAIN] %s -> %d %s; heap %u free, largest block %u\n", label ? label : url, code, err,
+        Serial.printf("[CHAIN] %s attempt %u -> %d %s; heap %u free, largest block %u\n", label ? label : url, attempt, code, err,
                       (unsigned)ESP.getFreeHeap(), (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    }
-    http.end();   // keeps the connection open for the next request (setReuse)
-    return code == HTTP_CODE_OK;
+    }, [] { vTaskDelay(pdMS_TO_TICKS(250)); });
 }
 
 static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
