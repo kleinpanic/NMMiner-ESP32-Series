@@ -47,5 +47,18 @@ int main() {
         assert(http.gets == 1 && http.ends == 1);
         ++scenarios;
     }
+    {
+        // Multiple snapshots must keep the authenticated connection usable.
+        // The caller owns its lifetime; a successful GET never closes TLS.
+        Http http; http.codes.assign(18, 200);
+        Tls tls; std::string body;
+        for (unsigned request = 0; request < 18; ++request) {
+            assert(chainGetBody(http, tls, "https://test.invalid/feed", body,
+                [](int, unsigned) { assert(false); }, [] { assert(false); }));
+            assert(body == http.response && tls.stops == 0);
+        }
+        assert(http.gets == 18 && http.ends == 18);
+        ++scenarios;
+    }
     std::cout << "PASS Chain HTTP: " << scenarios << " transport retry, cleanup and error scenarios\n";
 }

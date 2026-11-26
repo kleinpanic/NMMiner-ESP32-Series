@@ -1,8 +1,8 @@
 // Bitcoin chain data for the PanicMiner Chain page, from mempool.space only.
 // A task fetches price, tip height, difficulty, network hashrate, the next
-// retarget and fees every 2 minutes over one TLS connection, verified against
-// a pinned root CA, then closes it. Reserved record buffers are reused while
-// transient TLS allocations return to the heap.
+// retarget and fees over one TLS connection, verified against a pinned root
+// CA. Reuse the connection between updates: repeating the RSA handshake on
+// every update takes CPU time from mining and can exceed the server timeout.
 #ifdef PANICMINER_UI
 
 #include <stdlib.h>
@@ -31,7 +31,7 @@ extern "C" {
 extern TSettings Settings;
 
 #define PRICE_API "https://mempool.space/api/v1/prices"
-#define PERIOD_MS (2 * 60 * 1000)
+#define PERIOD_MS (45 * 1000)
 #define RETRY_MS (10 * 1000)
 
 // mempool.space chains to USERTrust RSA Certification Authority (expires
@@ -220,8 +220,6 @@ static void fetch_all(HTTPClient& http, WiFiClientSecure& tls)
             }
         }
     }
-    tls.stop();
-
     n.valid = n.height && n.price_usd > 0 && n.difficulty > 0;
     xSemaphoreTake(s_mutex, portMAX_DELAY);
     s_snap = n;
@@ -256,6 +254,10 @@ static void feed_loop(void*)
                 minerHwPauseForChain(false);
                 Serial.println("[CHAIN] controlled test: HW miner resumed");
             }
+        } else {
+            // A disconnected network cannot retain a usable TLS session.
+            http.end();
+            tls.stop();
         }
         // A PMFEED command wakes the task early.
         ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(s_snap.valid ? PERIOD_MS : RETRY_MS));
@@ -271,10 +273,10 @@ void chainFeedStart(void)
     // the miner's SHA-256 engine. With every engine held per job, mbedTLS finds
     // them busy and hashes in software instead (see minerShaLockAll).
     minerShaLockAll(true);
-    // Share core-0 compute time with the software miner during RSA/TLS.
-    // Priority 2 preempted that miner for the whole certificate operation,
-    // pushing the native rolling rate below the allowed 5% band.
-    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 10240, NULL, 1, &s_task, APP_TASK_CORE);
+    // Finish the initial handshake before the server's deadline. Equal
+    // priority with the software miner doubles its duration and the peer
+    // resets the connection. Later updates reuse the authenticated session.
+    xTaskCreatePinnedToCore(feed_loop, "ChainFeed", 10240, NULL, 2, &s_task, APP_TASK_CORE);
 }
 
 void chainFeedPoke(void)
